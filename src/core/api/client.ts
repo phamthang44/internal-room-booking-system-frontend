@@ -13,16 +13,22 @@ export const apiClient: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  // Important: Allow credentials (httpOnly cookies) to be sent with requests
+  withCredentials: true,
 });
 
-// Request interceptor - attach token
+// Request interceptor - attach token and language header
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem("authToken");
+    // Attach language header for backend to respond in correct language
+    // Gets current language from localStorage (managed by i18n provider)
+    const language = localStorage.getItem("language") || "en";
+    config.headers["Accept-Language"] = language;
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // NOTE: accessToken is NOT stored in localStorage for security
+    // It's kept in memory in Zustand store and sent via Authorization header
+    // by the calling code when needed.
+    // Backend handles refreshToken in httpOnly cookies (automatic for API calls)
 
     return config;
   },
@@ -34,11 +40,10 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Clear auth data
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("user");
+      // Clear auth data from memory
+      localStorage.removeItem("language"); // Keep language, but clear auth
 
-      // Redirect to login (can be handled by router or auth store)
+      // Redirect to login
       window.location.href = "/login";
     }
 

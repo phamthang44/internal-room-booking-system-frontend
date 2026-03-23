@@ -8,22 +8,47 @@ export type UserRole =
 
 export interface User {
   id: string;
-  email: string;
-  name: string;
+  username?: string;
+  name?: string;
   role: UserRole;
   avatar?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface LoginRequest {
-  email: string;
+  identifier: string; // Can be email or username
   password: string;
 }
 
-export interface LoginResponse {
-  accessToken: string;
-  user: User;
+/**
+ * Backend API Response Wrapper Format
+ * All API responses follow this structure
+ */
+export interface ApiResponse<T> {
+  data: T;
+  meta: {
+    apiVersion: string;
+    message: string;
+    serverTime: number;
+    traceId: string;
+  };
 }
+
+/**
+ * Login Response Data from Backend
+ * Contains tokens and user role
+ */
+export interface LoginResponseData {
+  accessToken: string;
+  refreshToken: string;
+  role: UserRole;
+  status: string; // e.g., "LOGIN_SUCCESS"
+}
+
+/**
+ * Complete Login Response with wrapper
+ */
+export type LoginResponse = ApiResponse<LoginResponseData>;
 
 export interface AuthState {
   user: User | null;

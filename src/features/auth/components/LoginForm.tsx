@@ -30,17 +30,17 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      {/* Email Field */}
+      {/* Identifier Field (Email or Username) */}
       <FormField
         label={t("auth.login.email.label")}
-        error={errors.email?.message?.toString()}
+        error={errors.identifier?.message?.toString()}
         required
       >
         <Input
-          {...register("email")}
-          type="email"
+          {...register("identifier")}
+          type="text"
           placeholder={t("auth.login.email.placeholder")}
-          isError={!!errors.email}
+          isError={!!errors.identifier}
           disabled={isLoading}
         />
       </FormField>

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import authApi from "../api/auth.api";
 import { useAuthStore } from "./useAuthStore";
 import { useI18n } from "@shared/i18n/useI18n";
+import { decodeJWT } from "../utils/jwt";
+import type { User } from "../types/auth.types";
 
 export type GoogleAuthError =
   | "USER_NOT_FOUND"
@@ -35,17 +37,40 @@ export const useGoogleAuth = () => {
       setLoading(true);
       setError(null);
     },
-    onSuccess: (data) => {
-      // Store token (refreshToken in httpOnly cookie by backend)
-      localStorage.setItem("authToken", data.accessToken);
+    onSuccess: (response) => {
+      try {
+        const { accessToken, refreshToken, role } = response.data;
 
-      // Update auth state
-      setUser(data.user);
-      setToken(data.accessToken);
-      setLoading(false);
+        // NOTE: Do NOT store accessToken in localStorage (XSS vulnerability)
+        // Keep in memory via Zustand store only
+        // Backend handles refreshToken in httpOnly cookie automatically
 
-      // Redirect to dashboard
-      navigate("/dashboard");
+        // Decode JWT to extract user information
+        const tokenPayload = decodeJWT(accessToken);
+        if (!tokenPayload) {
+          throw new Error("Failed to decode authentication token");
+        }
+
+        // Create user object from token data
+        const user: User = {
+          id: tokenPayload.userId?.toString() || "",
+          username: tokenPayload.sub || "",
+          role: role || tokenPayload.role || "STUDENT",
+        };
+
+        // Update auth state (stored in memory via Zustand)
+        setUser(user);
+        setToken(accessToken); // Stored in Zustand, not localStorage
+        setLoading(false);
+
+        // Redirect to loading screen first, then to home page
+        navigate("/loading");
+      } catch (error) {
+        const errorCode: GoogleAuthError = "UNKNOWN";
+        const errorMessage = getErrorMessage(errorCode, t);
+        setError(errorMessage);
+        setLoading(false);
+      }
     },
     onError: (error: any) => {
       const errorCode: GoogleAuthError = categorizeError(error);

@@ -1,14 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "@features/auth";
 import { useAuthStore } from "@features/auth";
-
-// Placeholder for Dashboard (to be implemented)
-const DashboardPage = () => (
-  <div className="p-8">
-    <h1>Dashboard</h1>
-    <p>Dashboard content coming soon...</p>
-  </div>
-);
+import { HomePage, LoadingScreen } from "@features/home";
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -29,17 +22,26 @@ export const Router = () => {
 
       {/* Protected Routes */}
       <Route
-        path="/dashboard"
+        path="/loading"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <LoadingScreen />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <HomePage />
           </ProtectedRoute>
         }
       />
 
       {/* Fallback */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 };
