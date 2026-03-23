@@ -55,4 +55,67 @@
   .input-field {
     @apply w-full px-4 py-3 bg-surface-container-highest border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-slate-400;
   }
+
+  .macos-modal-backdrop {
+    animation: macosBackdropIn 220ms ease-out both;
+  }
+
+  .macos-modal-window {
+    transform-origin: center top;
+    animation: macosWindowPopIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    box-shadow:
+      0 28px 65px rgba(15, 23, 42, 0.24),
+      0 2px 6px rgba(15, 23, 42, 0.08);
+  }
+
+  .macos-tap {
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      filter 180ms ease;
+  }
+
+  .macos-tap:hover {
+    filter: brightness(1.02);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.16);
+  }
+
+  .macos-tap:active {
+    transform: scale(0.97);
+  }
+}
+
+@keyframes macosBackdropIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(2px);
+  }
+}
+
+@keyframes macosWindowPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .macos-modal-backdrop,
+  .macos-modal-window,
+  .macos-tap {
+    animation: none !important;
+    transition: none !important;
+  }
 }

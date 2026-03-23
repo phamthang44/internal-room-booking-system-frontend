@@ -29,6 +29,10 @@ export const en = {
       oauth: {
         google: "Continue with Google",
         loading: "Signing in with Google...",
+        dialog: {
+          title: "Google Sign-In Failed",
+          confirm: "Got it",
+        },
         error: {
           userNotFound:
             "Your account is not registered. Please contact the administrator.",

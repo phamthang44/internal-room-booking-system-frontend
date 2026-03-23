@@ -15,6 +15,11 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true,
+    headers: {
+      // Allow Google OAuth library's popup to communicate back
+      // This fixes: "Cross-Origin-Opener-Policy policy would block the window.postMessage call"
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
   },
   build: {
     outDir: "dist",

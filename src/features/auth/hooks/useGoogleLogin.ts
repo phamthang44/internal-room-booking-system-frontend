@@ -2,17 +2,40 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import authApi from "../api/auth.api";
 import { useAuthStore } from "./useAuthStore";
+import { useI18n } from "@shared/i18n/useI18n";
 import type { CredentialResponse } from "@react-oauth/google";
+import type { LoginResponseData } from "../types/auth.types";
 
+export type GoogleAuthError =
+  | "USER_NOT_FOUND"
+  | "INVALID_TOKEN"
+  | "NETWORK_ERROR"
+  | "UNKNOWN";
+
+/**
+ * Hook for Google OAuth authentication
+ * Handles credential response from @react-oauth/google library
+ * Exchanges ID Token with backend and manages state
+ *
+ * Security:
+ * - Never stores token in localStorage (XSS vulnerability)
+ * - Stores accessToken in memory via Zustand store only
+ * - Stores refreshToken in httpOnly cookie via backend response
+ *
+ * Usage:
+ * const { googleLogin, isLoading, error } = useGoogleLogin()
+ * googleLogin(credentialResponse)
+ */
 export const useGoogleLogin = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const { setUser, setToken, setError, setLoading } = useAuthStore();
 
   const mutation = useMutation({
     mutationFn: async (credentialResponse: CredentialResponse) => {
       // Extract id_token from Google credential response
       if (!credentialResponse.credential) {
-        throw new Error("No credential in response");
+        throw new Error("INVALID_TOKEN");
       }
 
       // Send id_token to backend via POST (never GET) with secure body
@@ -25,22 +48,40 @@ export const useGoogleLogin = () => {
       setError(null);
     },
     onSuccess: (data) => {
-      // Store token in localStorage (refreshToken stored in httpOnly cookie by backend)
-      localStorage.setItem("authToken", data.accessToken);
+      try {
+        // Extract data from ApiResponse wrapper
+        const responseData: LoginResponseData = data.data;
+        const { accessToken, role } = responseData;
 
-      // Update auth state with user data
-      setUser(data.user);
-      setToken(data.accessToken);
-      setLoading(false);
+        // NOTE: Do NOT store accessToken in localStorage (XSS vulnerability)
+        // Keep in memory via Zustand store only
+        // Backend handles refreshToken in httpOnly cookie automatically
 
-      // Redirect to dashboard
-      navigate("/dashboard");
+        // Extract user info from token
+        const user = {
+          id: "", // Will be populated from token if needed
+          role: role || "STUDENT",
+        };
+
+        // Update auth state (stored in memory via Zustand)
+        setUser(user);
+        setToken(accessToken);
+        setLoading(false);
+
+        // Redirect to home page
+        navigate("/");
+      } catch (error) {
+        const errorMessage = "Failed to process authentication response";
+        setError(errorMessage);
+        setLoading(false);
+      }
     },
     onError: (error: any) => {
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Google login failed. Please try again.";
+      const errorCode: GoogleAuthError = categorizeError(error);
+      const backendMessage =
+        error?.response?.data?.error?.message || error?.response?.data?.message;
+      const fallbackMessage = getErrorMessage(errorCode, t);
+      const errorMessage = backendMessage || fallbackMessage;
 
       setError(errorMessage);
       setLoading(false);
@@ -54,3 +95,65 @@ export const useGoogleLogin = () => {
     isSuccess: mutation.isSuccess,
   };
 };
+
+/**
+ * Categorize OAuth errors based on backend response or error type
+ */
+function categorizeError(error: any): GoogleAuthError {
+  const code =
+    error?.response?.data?.error?.code || error?.response?.data?.code;
+  const status = error?.response?.status;
+  const message = error?.message?.toLowerCase() || "";
+
+  // Backend-specific error codes (from server)
+  if (code === "USER_NOT_FOUND") {
+    return "USER_NOT_FOUND";
+  }
+  if (code === "AUTH_014") {
+    return "USER_NOT_FOUND";
+  }
+  if (code === "INVALID_TOKEN") {
+    return "INVALID_TOKEN";
+  }
+
+  // HTTP status codes
+  if (status >= 500) {
+    return "NETWORK_ERROR";
+  }
+  if (status === 400 || status === 401) {
+    return "INVALID_TOKEN";
+  }
+  if (status === 404) {
+    return "USER_NOT_FOUND";
+  }
+  if (status === 403) {
+    return "INVALID_TOKEN";
+  }
+
+  // Network errors
+  if (message.includes("network") || message.includes("enotfound")) {
+    return "NETWORK_ERROR";
+  }
+  if (message.includes("timeout")) {
+    return "NETWORK_ERROR";
+  }
+
+  return "UNKNOWN";
+}
+
+/**
+ * Get user-facing error message based on error type
+ */
+function getErrorMessage(
+  errorType: GoogleAuthError,
+  t: (key: string) => string,
+): string {
+  const errorMessages: Record<GoogleAuthError, string> = {
+    USER_NOT_FOUND: t("auth.login.oauth.error.userNotFound"),
+    INVALID_TOKEN: t("auth.login.oauth.error.invalidToken"),
+    NETWORK_ERROR: t("auth.login.oauth.error.network"),
+    UNKNOWN: t("auth.login.oauth.error.unknown"),
+  };
+
+  return errorMessages[errorType];
+}

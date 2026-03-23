@@ -29,6 +29,10 @@ export const vi = {
       oauth: {
         google: "Tiếp tục với Google",
         loading: "Đang đăng nhập bằng Google...",
+        dialog: {
+          title: "Đăng nhập Google thất bại",
+          confirm: "Đã hiểu",
+        },
         error: {
           userNotFound:
             "Tài khoản của bạn chưa được đăng ký. Vui lòng liên hệ quản trị viên.",
