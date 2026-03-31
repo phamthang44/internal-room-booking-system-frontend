@@ -1,0 +1,163 @@
+import { useEffect, type ReactNode } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { cn } from "@shared/utils/cn";
+import { useSidebarStore } from "@shared/hooks/useSidebarStore";
+import { useAuthStore } from "@features/auth";
+import { useI18n } from "@shared/i18n/useI18n";
+
+interface AppLayoutProps {
+  children: ReactNode;
+}
+
+export const AppLayout = ({ children }: AppLayoutProps) => {
+  const { isOpen, toggle, close } = useSidebarStore();
+  const { user } = useAuthStore();
+  const { pathname } = useLocation();
+  const { t, language, setLanguage } = useI18n();
+
+  // Close drawer on mobile when route changes
+  useEffect(() => {
+    if (window.innerWidth < 1024) close();
+  }, [pathname, close]);
+
+  const NAV_ITEMS = [
+    { icon: "dashboard", label: t("nav.dashboard"), to: "/dashboard" },
+    { icon: "meeting_room", label: t("nav.browseRooms"), to: "/rooms" },
+    { icon: "event_note", label: t("nav.myBookings"), to: "/bookings" },
+    { icon: "verified_user", label: t("nav.approvals"), to: "/approvals" },
+    { icon: "settings", label: t("nav.settings"), to: "/settings" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-surface font-body">
+      {/* ── Overlay (mobile only) ── */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-on-surface/30 backdrop-blur-sm lg:hidden"
+          onClick={close}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* ── Sidebar Drawer ── */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-30 flex w-64 flex-col bg-surface-container-low transition-transform duration-300 ease-in-out",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* Brand */}
+        <div className="flex h-16 items-center gap-3 border-b border-outline-variant/20 px-6">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-container">
+            <span className="material-symbols-outlined text-sm text-on-primary">
+              school
+            </span>
+          </div>
+          <div>
+            <p className="font-headline text-sm font-bold leading-tight text-on-surface">
+              {t("nav.brand")}
+            </p>
+            <p className="text-xs text-on-surface-variant">{t("nav.portal")}</p>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <ul className="space-y-1">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.to}>
+                <NavLink
+                  to={item.to}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                      isActive
+                        ? "bg-primary text-on-primary shadow-sm"
+                        : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                    )
+                  }
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {item.icon}
+                  </span>
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* User profile footer */}
+        <div className="border-t border-outline-variant/20 p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed">
+              {user?.name?.charAt(0) ?? "U"}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-on-surface">
+                {user?.name ?? "Student"}
+              </p>
+              <p className="truncate text-xs text-on-surface-variant">
+                {user?.username ?? ""}
+              </p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* ── Main content area ── */}
+      <div
+        className={cn(
+          "flex min-h-screen flex-col transition-[margin] duration-300 ease-in-out",
+          isOpen ? "lg:ml-64" : "lg:ml-0"
+        )}
+      >
+        {/* Top bar */}
+        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-outline-variant/20 bg-surface-container-lowest/80 px-4 backdrop-blur-sm lg:px-6">
+          <button
+            id="sidebar-toggle"
+            onClick={toggle}
+            aria-label={t("nav.toggleSidebar")}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+          >
+            <span className="material-symbols-outlined text-[22px]">
+              {isOpen ? "menu_open" : "menu"}
+            </span>
+          </button>
+
+          <div className="flex-1" />
+
+          {/* Language switcher — wired to i18n context */}
+          <div className="flex items-center gap-1.5 rounded-full bg-surface-container px-3 py-1.5 text-xs font-medium">
+            <button
+              onClick={() => setLanguage("en")}
+              className={cn(
+                "transition-colors",
+                language === "en"
+                  ? "font-semibold text-on-surface"
+                  : "text-on-surface-variant/50 hover:text-on-surface-variant"
+              )}
+            >
+              {t("nav.langEn")}
+            </button>
+            <span className="text-on-surface-variant/40">|</span>
+            <button
+              onClick={() => setLanguage("vi")}
+              className={cn(
+                "transition-colors",
+                language === "vi"
+                  ? "font-semibold text-on-surface"
+                  : "text-on-surface-variant/50 hover:text-on-surface-variant"
+              )}
+            >
+              {t("nav.langVi")}
+            </button>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+      </div>
+    </div>
+  );
+};

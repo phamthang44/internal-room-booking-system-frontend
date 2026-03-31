@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "@features/auth";
 import { useAuthStore } from "@features/auth";
 import { HomePage, LoadingScreen } from "@features/home";
+import { StudentDashboard } from "@features/dashboard";
+import { RoomListPage } from "@features/rooms";
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -39,9 +41,27 @@ export const Router = () => {
         }
       />
 
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <StudentDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/rooms"
+        element={
+          <ProtectedRoute>
+            <RoomListPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Fallback */}
-      <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route path="*" element={<Navigate to="/home" replace />} />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };
