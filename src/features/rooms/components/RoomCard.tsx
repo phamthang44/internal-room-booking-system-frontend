@@ -18,7 +18,10 @@ export const RoomCard = ({ room }: RoomCardProps) => {
       className="group flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_2px_12px_rgba(24,28,30,0.06)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(24,28,30,0.10)]"
     >
       {/* ── Image / gradient ─────────────────────────────────────────── */}
-      <div className="relative h-44 w-full overflow-hidden" style={{ background: room.imageGradient }}>
+      <div
+        className="relative h-44 w-full overflow-hidden"
+        style={{ background: room.imageGradient }}
+      >
         {/* Building badge — top-left */}
         {room.building && (
           <span className="absolute left-3 top-3 rounded-full bg-surface-container-lowest/85 px-2.5 py-0.5 font-headline text-[10px] font-bold uppercase tracking-wider text-on-surface backdrop-blur-sm">
@@ -49,11 +52,15 @@ export const RoomCard = ({ room }: RoomCardProps) => {
             </h3>
             <span className="shrink-0 text-xs font-semibold text-on-surface-variant">
               {room.capacity}
-              <span className="ml-0.5 text-[10px] font-normal">SEATS</span>
+              <span className="ml-0.5 text-[10px] font-normal">
+                {t("rooms.card.seats")}
+              </span>
             </span>
           </div>
           {room.building && (
-            <p className="mt-0.5 text-xs text-on-surface-variant truncate">{room.building}</p>
+            <p className="mt-0.5 text-xs text-on-surface-variant truncate">
+              {room.building}
+            </p>
           )}
         </div>
 
@@ -123,7 +130,9 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
               {room.name}
             </h3>
             {room.building && (
-              <p className="mt-0.5 text-xs text-on-surface-variant">{room.building}</p>
+              <p className="mt-0.5 text-xs text-on-surface-variant">
+                {room.building}
+              </p>
             )}
           </div>
           <StatusChip status={room.availability} className="shrink-0" />
@@ -131,23 +140,31 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
 
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-on-surface-variant">
           <span className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-[13px]">people</span>
-            {room.capacity} seats
+            <span className="material-symbols-outlined text-[13px]">
+              people
+            </span>
+            {room.capacity} {t("rooms.card.seats")}
           </span>
           {room.roomType && (
             <span className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-[13px]">category</span>
+              <span className="material-symbols-outlined text-[13px]">
+                category
+              </span>
               {room.roomType}
             </span>
           )}
           {room.equipmentNames.slice(0, 3).map((name) => (
             <span key={name} className="flex items-center gap-0.5">
-              <span className="material-symbols-outlined text-[12px]">{getEquipmentIcon(name)}</span>
+              <span className="material-symbols-outlined text-[12px]">
+                {getEquipmentIcon(name)}
+              </span>
               {name}
             </span>
           ))}
           {room.equipmentNames.length > 3 && (
-            <span>+{room.equipmentNames.length - 3} more</span>
+            <span>
+              +{room.equipmentNames.length - 3} {t("rooms.card.more")}
+            </span>
           )}
         </div>
       </div>

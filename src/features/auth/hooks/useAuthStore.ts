@@ -9,6 +9,7 @@ interface AuthStoreState extends AuthState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   reset: () => void;
+  clearAuth: () => void;
 }
 
 const initialState: AuthState = {
@@ -42,6 +43,8 @@ export const useAuthStore = create<AuthStoreState>()(
         setError: (error) => set({ error }),
 
         reset: () => set(initialState),
+
+        clearAuth: () => set(initialState),
       }),
       {
         name: "auth-store",

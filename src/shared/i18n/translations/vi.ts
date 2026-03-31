@@ -78,10 +78,12 @@ export const vi = {
     settings: "Cài đặt",
     langEn: "EN",
     langVi: "VI",
+    logout: "Đăng xuất",
   },
   dashboard: {
     greeting: "Chào mừng trở lại, {{name}}.",
-    subtitle: "Không gian sáng tạo đang chờ bạn. Sẵn sàng đặt phòng học tiếp theo chưa?",
+    subtitle:
+      "Không gian sáng tạo đang chờ bạn. Sẵn sàng đặt phòng học tiếp theo chưa?",
     newBooking: "Đặt phòng mới",
     stats: {
       totalBookings: "Tổng đặt phòng",
@@ -147,6 +149,7 @@ export const vi = {
       moreEquipment: "+{{count}} thiết bị khác",
       viewDetails: "Xem chi tiết",
       checkAvailability: "Kiểm tra lịch trống",
+      seats: "chỗ ngồi",
     },
     grid: {
       noResults: "Không có kết quả",

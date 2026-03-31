@@ -77,10 +77,12 @@ export const en = {
     settings: "Settings",
     langEn: "EN",
     langVi: "VI",
+    logout: "Logout",
   },
   dashboard: {
     greeting: "Welcome back, {{name}}.",
-    subtitle: "Your creative space is waiting. Ready to book your next study session?",
+    subtitle:
+      "Your creative space is waiting. Ready to book your next study session?",
     newBooking: "New Booking",
     stats: {
       totalBookings: "Total Bookings",
@@ -146,6 +148,7 @@ export const en = {
       moreEquipment: "+{{count}} more",
       viewDetails: "View Details",
       checkAvailability: "Check Availability",
+      seats: "seats",
     },
     grid: {
       noResults: "No results",

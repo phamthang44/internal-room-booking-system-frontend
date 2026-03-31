@@ -22,7 +22,7 @@ export const decodeJWT = (token: string): JWTPayload | null => {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) {
-      console.error("Invalid JWT format");
+      if (import.meta.env.DEV) console.error("Invalid JWT format");
       return null;
     }
 
@@ -33,7 +33,7 @@ export const decodeJWT = (token: string): JWTPayload | null => {
     const decoded = atob(padded);
     return JSON.parse(decoded);
   } catch (error) {
-    console.error("Failed to decode JWT:", error);
+    if (import.meta.env.DEV) console.error("Failed to decode JWT:", error);
     return null;
   }
 };

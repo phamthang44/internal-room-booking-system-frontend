@@ -1,9 +1,10 @@
 import { useEffect, type ReactNode } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@shared/utils/cn";
 import { useSidebarStore } from "@shared/hooks/useSidebarStore";
 import { useAuthStore } from "@features/auth";
 import { useI18n } from "@shared/i18n/useI18n";
+import authApi from "@features/auth/api/auth.api";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -11,14 +12,37 @@ interface AppLayoutProps {
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const { isOpen, toggle, close } = useSidebarStore();
-  const { user } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
   const { pathname } = useLocation();
   const { t, language, setLanguage } = useI18n();
+  const navigate = useNavigate();
 
   // Close drawer on mobile when route changes
   useEffect(() => {
     if (window.innerWidth < 1024) close();
   }, [pathname, close]);
+
+  const handleLanguageChange = (lang: "en" | "vi") => {
+    if (language === lang) return;
+    setLanguage(lang);
+    // Reload the page to ensure all API calls re-fetch data with the new Accept-Language header
+    window.location.reload();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+      clearAuth();
+      navigate("/login");
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Logout failed:", error);
+      }
+      // Still clear auth and redirect even if API call fails
+      clearAuth();
+      navigate("/login");
+    }
+  };
 
   const NAV_ITEMS = [
     { icon: "dashboard", label: t("nav.dashboard"), to: "/dashboard" },
@@ -43,7 +67,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-30 flex w-64 flex-col bg-surface-container-low transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* Brand */}
@@ -73,7 +97,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
                       "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                       isActive
                         ? "bg-primary text-on-primary shadow-sm"
-                        : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                        : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface",
                     )
                   }
                 >
@@ -89,7 +113,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
         {/* User profile footer */}
         <div className="border-t border-outline-variant/20 p-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed">
               {user?.name?.charAt(0) ?? "U"}
             </div>
@@ -102,6 +126,15 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
               </p>
             </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-error"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              logout
+            </span>
+            {t("nav.logout")}
+          </button>
         </div>
       </aside>
 
@@ -109,7 +142,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       <div
         className={cn(
           "flex min-h-screen flex-col transition-[margin] duration-300 ease-in-out",
-          isOpen ? "lg:ml-64" : "lg:ml-0"
+          isOpen ? "lg:ml-64" : "lg:ml-0",
         )}
       >
         {/* Top bar */}
@@ -130,24 +163,24 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           {/* Language switcher — wired to i18n context */}
           <div className="flex items-center gap-1.5 rounded-full bg-surface-container px-3 py-1.5 text-xs font-medium">
             <button
-              onClick={() => setLanguage("en")}
+              onClick={() => handleLanguageChange("en")}
               className={cn(
                 "transition-colors",
                 language === "en"
                   ? "font-semibold text-on-surface"
-                  : "text-on-surface-variant/50 hover:text-on-surface-variant"
+                  : "text-on-surface-variant/50 hover:text-on-surface-variant",
               )}
             >
               {t("nav.langEn")}
             </button>
             <span className="text-on-surface-variant/40">|</span>
             <button
-              onClick={() => setLanguage("vi")}
+              onClick={() => handleLanguageChange("vi")}
               className={cn(
                 "transition-colors",
                 language === "vi"
                   ? "font-semibold text-on-surface"
-                  : "text-on-surface-variant/50 hover:text-on-surface-variant"
+                  : "text-on-surface-variant/50 hover:text-on-surface-variant",
               )}
             >
               {t("nav.langVi")}

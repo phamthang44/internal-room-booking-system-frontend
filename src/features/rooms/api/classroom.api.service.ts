@@ -2,7 +2,6 @@
 // Classroom API Service — GET /api/v1/rooms
 // Uses the shared apiClient (axios with Bearer + Accept-Language interceptors)
 // ─────────────────────────────────────────────────────────────────────────────
-
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
 import { useAuthStore } from "@features/auth";
@@ -61,7 +60,7 @@ const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): Ro
 
 // ── API service ───────────────────────────────────────────────────────────────
 
-const BASE = "/api/v1";
+const BASE = import.meta.env.VITE_API_URL;
 
 export const classroomApiService = {
   /**

@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 function App() {
-  if (!googleClientId) {
+  if (!googleClientId && import.meta.env.DEV) {
     console.warn("VITE_GOOGLE_CLIENT_ID environment variable is not set");
   }
 
