@@ -1,12 +1,21 @@
 import { useState } from "react";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
+import { useAuthStore } from "@features/auth";
 import { useRoomFilterStore, TIME_SLOTS } from "../hooks/useRoomFilterStore";
 import { FilterGroup } from "./FilterGroup";
 import { Popover, PopoverContent, PopoverTrigger } from "@shared/components/ui/popover";
 import { Calendar } from "@shared/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@shared/components/ui/select";
 import { format, parseISO } from "date-fns";
+import type { RoomStatusApi } from "../types/classroom.api.types";
+
+const STATUS_OPTIONS: { value: RoomStatusApi; labelKey: string }[] = [
+  { value: "AVAILABLE", labelKey: "rooms.status.available" },
+  { value: "INACTIVE", labelKey: "rooms.status.occupied" },
+  { value: "MAINTENANCE", labelKey: "rooms.status.maintenance" },
+  { value: "DELETED", labelKey: "rooms.status.cancelled" },
+];
 
 // Known equipment items from the design + DB
 // equipmentId maps to EquipmentResponse.id returned from the API
@@ -42,6 +51,7 @@ interface FilterSidebarProps {
 
 export const FilterSidebar = ({ className }: FilterSidebarProps) => {
   const { t } = useI18n();
+  const { user } = useAuthStore();
   const {
     bookingDate,
     timeSlotId,
@@ -52,6 +62,8 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
     setTimeSlotId,
     setCapacityRange,
     setEquipmentId,
+    roomStatus,
+    setRoomStatus,
     clearAll,
     activeFilterCount,
   } = useRoomFilterStore();
@@ -171,6 +183,40 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
               ))}
             </div>
           </div>
+        </div>
+      </FilterGroup>
+
+      {/* ── Status ──────────────────────────────────────────────────────── */}
+      <FilterGroup title={t("rooms.filters.status")}>
+        <div className="flex flex-wrap gap-2">
+          {STATUS_OPTIONS.filter(opt => opt.value !== "DELETED" || user?.role === "ADMIN").map((opt) => {
+            const isActive = roomStatus === opt.value;
+            // Map the API status to UI classes
+            const getStatusColorClass = (status: RoomStatusApi, active: boolean) => {
+              if (!active) return "border-outline-variant bg-surface text-on-surface-variant hover:border-primary/40 hover:text-on-surface";
+              switch (status) {
+                case "AVAILABLE": return "border-tertiary bg-tertiary-fixed text-on-tertiary-fixed-variant";
+                case "INACTIVE": return "border-secondary bg-secondary-container text-on-secondary-container";
+                case "MAINTENANCE": return "border-error bg-error-container text-on-error-container";
+                case "DELETED": return "border-outline text-on-surface-variant bg-surface-variant";
+                default: return "border-primary bg-primary text-on-primary";
+              }
+            };
+            
+            return (
+              <button
+                key={opt.value}
+                id={`filter-status-${opt.value}`}
+                onClick={() => setRoomStatus(opt.value)}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-xs font-medium transition-all",
+                  getStatusColorClass(opt.value, isActive)
+                )}
+              >
+                {t(opt.labelKey)}
+              </button>
+            );
+          })}
         </div>
       </FilterGroup>
 

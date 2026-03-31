@@ -8,12 +8,12 @@ import { CustomSelect } from "@shared/components/CustomSelect";
 
 // ── Sort options ──────────────────────────────────────────────────────────────
 const SORT_OPTIONS: { value: RoomSortApi | ""; label: string }[] = [
-  { value: "", label: "Popularity" },
-  { value: "newest", label: "Newest" },
-  { value: "room_name_asc", label: "Name A→Z" },
-  { value: "room_name_desc", label: "Name Z→A" },
-  { value: "capacity_asc", label: "Capacity ↑" },
-  { value: "capacity_desc", label: "Capacity ↓" },
+  { value: "", label: "rooms.sort.default" },
+  { value: "newest", label: "rooms.sort.newest" },
+  { value: "room_name_asc", label: "rooms.sort.nameAsc" },
+  { value: "room_name_desc", label: "rooms.sort.nameDesc" },
+  { value: "capacity_asc", label: "rooms.sort.capacityAsc" },
+  { value: "capacity_desc", label: "rooms.sort.capacityDesc" },
 ];
 
 // ── Skeleton cards ─────────────────────────────────────────────────────────────
@@ -134,7 +134,7 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
         <div className="flex items-center gap-3">
           {/* Sort dropdown */}
           <div className="flex items-center gap-2 text-sm text-on-surface-variant z-10">
-            <span className="font-medium text-on-surface">SORT:</span>
+            <span className="font-medium text-on-surface">{t("rooms.sort.title")}</span>
             <CustomSelect
               value={sort}
               onChange={(val) => setSort(val as typeof sort)}
@@ -149,7 +149,7 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
             <button
               id="view-toggle-grid"
               onClick={() => setViewMode("grid")}
-              title="Grid view"
+              title={t("rooms.view.grid")}
               className={cn(
                 "flex h-8 w-8 items-center justify-center transition-colors",
                 isGrid
@@ -162,7 +162,7 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
             <button
               id="view-toggle-list"
               onClick={() => setViewMode("list")}
-              title="List view"
+              title={t("rooms.view.list")}
               className={cn(
                 "flex h-8 w-8 items-center justify-center transition-colors",
                 !isGrid

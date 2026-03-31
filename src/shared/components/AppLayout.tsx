@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@shared/utils/cn";
 import { useSidebarStore } from "@shared/hooks/useSidebarStore";
-import { useAuthStore } from "@features/auth";
+import { useAuthStore, useProfileStore } from "@features/auth";
 import { useI18n } from "@shared/i18n/useI18n";
 import authApi from "@features/auth/api/auth.api";
 
@@ -12,7 +12,8 @@ interface AppLayoutProps {
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const { isOpen, toggle, close } = useSidebarStore();
-  const { user, clearAuth } = useAuthStore();
+  const { user, isAuthenticated, clearAuth } = useAuthStore();
+  const { profile, fetchProfile } = useProfileStore();
   const { pathname } = useLocation();
   const { t, language, setLanguage } = useI18n();
   const navigate = useNavigate();
@@ -21,6 +22,12 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   useEffect(() => {
     if (window.innerWidth < 1024) close();
   }, [pathname, close]);
+
+  useEffect(() => {
+    if (isAuthenticated && !profile) {
+      fetchProfile();
+    }
+  }, [isAuthenticated, profile, fetchProfile]);
 
   const handleLanguageChange = (lang: "en" | "vi") => {
     if (language === lang) return;
@@ -115,14 +122,14 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="border-t border-outline-variant/20 p-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed">
-              {user?.name?.charAt(0) ?? "U"}
+              {(profile?.fullName || user?.name)?.charAt(0) ?? "U"}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-on-surface">
-                {user?.name ?? "Student"}
+                {profile?.fullName || user?.name || "Student"}
               </p>
               <p className="truncate text-xs text-on-surface-variant">
-                {user?.username ?? ""}
+                {profile?.email || user?.username || ""}
               </p>
             </div>
           </div>
@@ -173,7 +180,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             >
               {t("nav.langEn")}
             </button>
-            <span className="text-on-surface-variant/40">|</span>
+            <span className="text-on-surface-variant/40">/</span>
             <button
               onClick={() => handleLanguageChange("vi")}
               className={cn(
@@ -185,6 +192,31 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             >
               {t("nav.langVi")}
             </button>
+          </div>
+
+          {/* Notifications */}
+          <button className="relative ml-2 flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface">
+            <span className="material-symbols-outlined text-[24px]">notifications</span>
+            {/* Red dot for future implementation */}
+            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-error" />
+          </button>
+
+          {/* Divider */}
+          <div className="mx-2 h-8 w-[1px] bg-outline-variant/30" />
+
+          {/* User Profile Info */}
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end text-right">
+              <span className="text-sm font-semibold text-on-surface">{profile?.fullName || user?.name || "Student"}</span>
+              <span className="text-xs text-on-surface-variant">Student ID: {profile?.studentCode || "N/A"}</span>
+            </div>
+            {profile?.avatar || user?.avatar ? (
+              <img src={profile?.avatar || user?.avatar} alt="User avatar" className="h-10 w-10 rounded-full object-cover shadow-sm" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed shadow-sm">
+                {(profile?.fullName || user?.name)?.charAt(0) ?? "U"}
+              </div>
+            )}
           </div>
         </header>
 

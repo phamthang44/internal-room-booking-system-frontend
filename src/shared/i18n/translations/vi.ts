@@ -120,15 +120,22 @@ export const vi = {
       timeSlot: "Ca học",
       anyTime: "Tất cả ca",
       capacity: "Sức chứa (chỗ ngồi)",
+      status: "Trạng thái",
       equipment: "Thiết bị",
       mobileToggle: "Bộ lọc",
     },
     sort: {
+      title: "Sắp xếp",
+      default: "Mặc định",  
       newest: "Mới nhất trước",
       nameAsc: "Tên phòng (A → Z)",
       nameDesc: "Tên phòng (Z → A)",
       capacityAsc: "Sức chứa (thấp → cao)",
       capacityDesc: "Sức chứa (cao → thấp)",
+    },
+    view: {
+      grid: "Dạng lưới",
+      list: "Dạng danh sách",
     },
     availability: {
       available: "Còn trống",

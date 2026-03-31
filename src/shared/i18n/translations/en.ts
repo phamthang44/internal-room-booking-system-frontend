@@ -119,15 +119,22 @@ export const en = {
       timeSlot: "Time Slot",
       anyTime: "Any time",
       capacity: "Capacity (Seats)",
+      status: "Status",
       equipment: "Equipment",
       mobileToggle: "Filters",
     },
     sort: {
+      title: "Sort",
+      default: "Default",
       newest: "Newest first",
       nameAsc: "Room name (A → Z)",
       nameDesc: "Room name (Z → A)",
       capacityAsc: "Capacity (low → high)",
       capacityDesc: "Capacity (high → low)",
+    },
+    view: {
+      grid: "Grid view",
+      list: "List view",
     },
     availability: {
       available: "Available",

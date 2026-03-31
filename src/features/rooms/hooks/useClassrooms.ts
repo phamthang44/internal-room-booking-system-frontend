@@ -23,6 +23,7 @@ export const useClassrooms = (page = 1) => {
     timeSlotId,
     minCapacity,
     equipmentId,
+    roomStatus,
     sort,
   } = useRoomFilterStore();
 
@@ -32,6 +33,7 @@ export const useClassrooms = (page = 1) => {
     ...(timeSlotId > 0 && { timeSlotId }),
     ...(minCapacity !== "" && { capacity: Number(minCapacity) }),
     ...(equipmentId > 0 && { equipmentId }),
+    ...(roomStatus && { roomStatus }),
     ...(sort && { sort }),
     page,
     size: PAGE_SIZE,

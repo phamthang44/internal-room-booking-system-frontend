@@ -13,6 +13,7 @@ export { default as authApi } from "./api/auth.api";
 // Hooks
 export { useLogin } from "./hooks/useLogin";
 export { useAuthStore } from "./hooks/useAuthStore";
+export { useProfileStore } from "./hooks/useProfileStore";
 
 // Components
 export { LoginForm } from "./components/LoginForm";

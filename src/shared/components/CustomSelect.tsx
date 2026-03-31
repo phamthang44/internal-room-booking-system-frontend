@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "../i18n/useI18n";
 
 export interface CustomSelectOption {
   value: string | number;
@@ -27,6 +28,7 @@ export function CustomSelect({
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
 
   const selectedOption = options.find((o) => o.value === value);
 
@@ -59,7 +61,7 @@ export function CustomSelect({
             {icon}
           </span>
         )}
-        <span className="truncate">{selectedOption?.label ?? placeholder ?? ""}</span>
+        <span className="truncate">{t(selectedOption?.label ?? placeholder ?? "")}</span>
         <span
           className={cn(
             "material-symbols-outlined text-[18px] text-on-surface-variant transition-transform duration-200 pointer-events-none",
@@ -94,7 +96,7 @@ export function CustomSelect({
                   : "text-on-surface"
               )}
             >
-              {option.label}
+              {t(option.label)}
             </li>
           ))}
         </ul>
