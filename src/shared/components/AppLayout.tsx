@@ -153,7 +153,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         )}
       >
         {/* Top bar */}
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-outline-variant/20 bg-surface-container-lowest/80 px-4 backdrop-blur-sm lg:px-6">
+        <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b border-outline-variant/20 bg-surface-container-lowest/80 px-4 backdrop-blur-sm lg:px-6">
           <button
             id="sidebar-toggle"
             onClick={toggle}
