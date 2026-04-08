@@ -25,3 +25,11 @@ dist-ssr
 
 .env
 documents
+.gitnexus
+
+.claude
+
+.github
+ 
+# Batch helper files 
+*.bat 
