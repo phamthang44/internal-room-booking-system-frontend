@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/utils/cn";
 import { useSidebarStore } from "@shared/hooks/useSidebarStore";
 import { useAuthStore, useProfileStore } from "@features/auth";
@@ -17,6 +18,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const { pathname } = useLocation();
   const { t, language, setLanguage } = useI18n();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Close drawer on mobile when route changes
   useEffect(() => {
@@ -32,8 +34,9 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const handleLanguageChange = (lang: "en" | "vi") => {
     if (language === lang) return;
     setLanguage(lang);
-    // Reload the page to ensure all API calls re-fetch data with the new Accept-Language header
-    window.location.reload();
+    // Invalidate all queries to refetch data in the new language
+    // The Axios interceptor automatically sends Accept-Language header from localStorage
+    queryClient.invalidateQueries();
   };
 
   const handleLogout = async () => {
@@ -122,14 +125,14 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="border-t border-outline-variant/20 p-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed">
-              {(profile?.fullName || user?.name)?.charAt(0) ?? "U"}
+              {(profile?.fullName || user?.fullName)?.charAt(0) ?? "U"}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-on-surface">
-                {profile?.fullName || user?.name || "Student"}
+                {profile?.fullName || user?.fullName || "Student"}
               </p>
               <p className="truncate text-xs text-on-surface-variant">
-                {profile?.email || user?.username || ""}
+                {profile?.email || user?.email || ""}
               </p>
             </div>
           </div>
@@ -207,14 +210,14 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           {/* User Profile Info */}
           <div className="flex items-center gap-3">
             <div className="flex flex-col items-end text-right">
-              <span className="text-sm font-semibold text-on-surface">{profile?.fullName || user?.name || "Student"}</span>
+              <span className="text-sm font-semibold text-on-surface">{profile?.fullName || user?.fullName || "Student"}</span>
               <span className="text-xs text-on-surface-variant">Student ID: {profile?.studentCode || "N/A"}</span>
             </div>
             {profile?.avatar || user?.avatar ? (
               <img src={profile?.avatar || user?.avatar} alt="User avatar" className="h-10 w-10 rounded-full object-cover shadow-sm" />
             ) : (
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed shadow-sm">
-                {(profile?.fullName || user?.name)?.charAt(0) ?? "U"}
+                {(profile?.fullName || user?.fullName)?.charAt(0) ?? "U"}
               </div>
             )}
           </div>

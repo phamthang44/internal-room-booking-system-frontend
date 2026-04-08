@@ -4,9 +4,19 @@ import { useI18n } from "@shared/i18n/useI18n";
 import { useAuthStore } from "@features/auth";
 import { useRoomFilterStore, TIME_SLOTS } from "../hooks/useRoomFilterStore";
 import { FilterGroup } from "./FilterGroup";
-import { Popover, PopoverContent, PopoverTrigger } from "@shared/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/components/ui/popover";
 import { Calendar } from "@shared/components/ui/calendar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@shared/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@shared/components/ui/select";
 import { format, parseISO } from "date-fns";
 import type { RoomStatusApi } from "../types/classroom.api.types";
 
@@ -40,8 +50,8 @@ const CAPACITY_PRESETS = [
 const todayISO = () => {
   const d = new Date();
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
@@ -98,21 +108,55 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
             </label>
             <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
               <PopoverTrigger asChild>
-                <div role="button" aria-expanded={isCalendarOpen} className="relative flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-outline-variant/40 bg-surface px-3 transition-all hover:border-outline-variant focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 data-[state=open]:border-primary/50 data-[state=open]:ring-2 data-[state=open]:ring-primary/10">
+                <div
+                  role="button"
+                  aria-expanded={isCalendarOpen}
+                  className="relative flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-outline-variant/40 bg-surface px-3 transition-all hover:border-outline-variant focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 data-[state=open]:border-primary/50 data-[state=open]:ring-2 data-[state=open]:ring-primary/10"
+                >
                   <span className="pointer-events-none shrink-0 text-on-surface-variant/50">
-                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="1.5" y="2.5" width="13" height="12" rx="2"/>
-                      <path d="M1.5 6.5h13M5 1v3M11 1v3"/>
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect x="1.5" y="2.5" width="13" height="12" rx="2" />
+                      <path d="M1.5 6.5h13M5 1v3M11 1v3" />
                     </svg>
                   </span>
-                  <span className={cn("flex-1 text-sm", bookingDate ? "text-on-surface" : "text-on-surface-variant/40")}>
+                  <span
+                    className={cn(
+                      "flex-1 text-sm",
+                      bookingDate
+                        ? "text-on-surface"
+                        : "text-on-surface-variant/40",
+                    )}
+                  >
                     {bookingDate
-                      ? new Date(bookingDate + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+                      ? new Date(bookingDate + "T00:00:00").toLocaleDateString(
+                          "en-US",
+                          { weekday: "short", month: "short", day: "numeric" },
+                        )
                       : t("rooms.filters.pickDate")}
                   </span>
-                  <span className="pointer-events-none text-on-surface-variant/40 transition-transform duration-200" style={{ transform: isCalendarOpen ? "rotate(180deg)" : "none" }}>
+                  <span
+                    className="pointer-events-none text-on-surface-variant/40 transition-transform duration-200"
+                    style={{
+                      transform: isCalendarOpen ? "rotate(180deg)" : "none",
+                    }}
+                  >
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M2.5 4.5L6 8L9.5 4.5"
+                        stroke="currentColor"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </span>
                 </div>
@@ -143,13 +187,25 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
             <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/50">
               {t("rooms.filters.timeSlot")}
             </label>
-            <Select value={String(timeSlotId)} onValueChange={(val) => setTimeSlotId(Number(val))}>
+            <Select
+              value={String(timeSlotId)}
+              onValueChange={(val) => setTimeSlotId(Number(val))}
+            >
               <SelectTrigger className="flex h-11 w-full items-center justify-between rounded-xl border border-outline-variant/40 bg-surface px-3 py-2 text-sm transition-all focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10 hover:border-outline-variant data-[placeholder]:text-on-surface-variant/50">
                 <div className="flex items-center gap-2">
                   <span className="text-on-surface-variant/50">
-                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="8" cy="8" r="6.5"/>
-                      <path d="M8 4.5V8l2.5 2"/>
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="8" cy="8" r="6.5" />
+                      <path d="M8 4.5V8l2.5 2" />
                     </svg>
                   </span>
                   <SelectValue placeholder={t("rooms.filters.anyTime")} />
@@ -167,7 +223,10 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
 
             {/* Quick-pick chips */}
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {[{ id: 0, label: t("rooms.filters.anyTime") }, ...TIME_SLOTS].map((slot) => (
+              {[
+                { id: 0, label: t("rooms.filters.anyTime") },
+                ...TIME_SLOTS,
+              ].map((slot) => (
                 <button
                   key={slot.id}
                   onClick={() => setTimeSlotId(slot.id)}
@@ -175,7 +234,7 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
                     "rounded-full border px-3 py-1 text-xs transition-all",
                     timeSlotId === slot.id
                       ? "border-outline-variant bg-surface-variant font-medium text-on-surface"
-                      : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant/60 hover:text-on-surface"
+                      : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant/60 hover:text-on-surface",
                   )}
                 >
                   {slot.label}
@@ -189,20 +248,31 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
       {/* ── Status ──────────────────────────────────────────────────────── */}
       <FilterGroup title={t("rooms.filters.status")}>
         <div className="flex flex-wrap gap-2">
-          {STATUS_OPTIONS.filter(opt => opt.value !== "DELETED" || user?.role === "ADMIN").map((opt) => {
+          {STATUS_OPTIONS.filter(
+            (opt) => opt.value !== "DELETED" || user?.roleName === "ADMIN",
+          ).map((opt) => {
             const isActive = roomStatus === opt.value;
             // Map the API status to UI classes
-            const getStatusColorClass = (status: RoomStatusApi, active: boolean) => {
-              if (!active) return "border-outline-variant bg-surface text-on-surface-variant hover:border-primary/40 hover:text-on-surface";
+            const getStatusColorClass = (
+              status: RoomStatusApi,
+              active: boolean,
+            ) => {
+              if (!active)
+                return "border-outline-variant bg-surface text-on-surface-variant hover:border-primary/40 hover:text-on-surface";
               switch (status) {
-                case "AVAILABLE": return "border-tertiary bg-tertiary-fixed text-on-tertiary-fixed-variant";
-                case "INACTIVE": return "border-secondary bg-secondary-container text-on-secondary-container";
-                case "MAINTENANCE": return "border-error bg-error-container text-on-error-container";
-                case "DELETED": return "border-outline text-on-surface-variant bg-surface-variant";
-                default: return "border-primary bg-primary text-on-primary";
+                case "AVAILABLE":
+                  return "border-tertiary bg-tertiary-fixed text-on-tertiary-fixed-variant";
+                case "INACTIVE":
+                  return "border-secondary bg-secondary-container text-on-secondary-container";
+                case "MAINTENANCE":
+                  return "border-error bg-error-container text-on-error-container";
+                case "DELETED":
+                  return "border-outline text-on-surface-variant bg-surface-variant";
+                default:
+                  return "border-primary bg-primary text-on-primary";
               }
             };
-            
+
             return (
               <button
                 key={opt.value}
@@ -210,7 +280,7 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
                 onClick={() => setRoomStatus(opt.value)}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs font-medium transition-all",
-                  getStatusColorClass(opt.value, isActive)
+                  getStatusColorClass(opt.value, isActive),
                 )}
               >
                 {t(opt.labelKey)}
@@ -240,7 +310,7 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
                   "rounded-full border px-3 py-1 text-xs font-medium transition-all",
                   isActive
                     ? "border-primary bg-primary text-on-primary"
-                    : "border-outline-variant bg-surface text-on-surface-variant hover:border-primary/40 hover:text-on-surface"
+                    : "border-outline-variant bg-surface text-on-surface-variant hover:border-primary/40 hover:text-on-surface",
                 )}
               >
                 {p.label}

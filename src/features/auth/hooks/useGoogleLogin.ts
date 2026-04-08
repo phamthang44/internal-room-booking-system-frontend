@@ -4,7 +4,7 @@ import authApi from "../api/auth.api";
 import { useAuthStore } from "./useAuthStore";
 import { useI18n } from "@shared/i18n/useI18n";
 import type { CredentialResponse } from "@react-oauth/google";
-import type { LoginResponseData } from "../types/auth.types";
+import type { LoginResponseData, User } from "../types/auth.types";
 
 export type GoogleAuthError =
   | "USER_NOT_FOUND"
@@ -47,7 +47,7 @@ export const useGoogleLogin = () => {
       setLoading(true);
       setError(null);
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       try {
         // Extract data from ApiResponse wrapper
         const responseData: LoginResponseData = data.data;
@@ -57,19 +57,31 @@ export const useGoogleLogin = () => {
         // Keep in memory via Zustand store only
         // Backend handles refreshToken in httpOnly cookie automatically
 
-        // Extract user info from token
-        const user = {
-          id: "", // Will be populated from token if needed
-          role: role || "STUDENT",
-        };
-
-        // Update auth state (stored in memory via Zustand)
-        setUser(user);
+        // Store the token first so subsequent API calls can use it
         setToken(accessToken);
+
+        // Fetch full user profile from /users/me
+        try {
+          const userResponse = await authApi.getCurrentUser();
+          setUser(userResponse.data);
+        } catch (error) {
+          // If fetching user profile fails, create minimal user object
+          console.error("Failed to fetch user profile:", error);
+          const user: User = {
+            id: 0,
+            fullName: "Unknown User",
+            username: "",
+            roleName: role || "STUDENT",
+            email: "",
+            studentCode: "",
+          };
+          setUser(user);
+        }
+
         setLoading(false);
 
-        // Redirect to home page
-        navigate("/");
+        // Redirect to loading screen for consistent post-login flow
+        navigate("/loading");
       } catch (error) {
         const errorMessage = "Failed to process authentication response";
         setError(errorMessage);

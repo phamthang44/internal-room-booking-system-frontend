@@ -1,5 +1,5 @@
 import apiClient from "@core/api/client";
-import type { LoginRequest, LoginResponse } from "../types/auth.types";
+import type { LoginRequest, LoginResponse, User, ApiResponse } from "../types/auth.types";
 
 /**
  * Google OAuth Login Request
@@ -70,9 +70,10 @@ export const authApi = {
 
   /**
    * Get current user profile
+   * Returns user data wrapped in ApiResponse structure
    */
-  getCurrentUser: async () => {
-    const response = await apiClient.get("/auth/me");
+  getCurrentUser: async (): Promise<ApiResponse<User>> => {
+    const response = await apiClient.get<ApiResponse<User>>("/users/me");
     return response.data;
   },
 

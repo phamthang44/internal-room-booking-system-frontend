@@ -60,6 +60,13 @@ export const vi = {
     errors: {
       unknown: "Đã xảy ra lỗi. Vui lòng thử lại.",
     },
+    loading: {
+      title: "Đang tải",
+      subtitle: "Đang chuẩn bị trải nghiệm của bạn...",
+      redirecting: "Đang chuyển hướng...",
+      initializing: "Đang khởi tạo dịch vụ...",
+      ready: "Sẵn sàng",
+    },
     language: "Ngôn ngữ",
     help: "Trợ giúp",
     security: "Chính sách bảo mật",
@@ -85,10 +92,25 @@ export const vi = {
     subtitle:
       "Không gian sáng tạo đang chờ bạn. Sẵn sàng đặt phòng học tiếp theo chưa?",
     newBooking: "Đặt phòng mới",
+    hero: {
+      createBooking: "Đặt phòng",
+      viewSchedule: "Xem lịch",
+    },
     stats: {
       totalBookings: "Tổng đặt phòng",
       upcomingToday: "Sắp diễn ra hôm nay",
       pendingRequests: "Yêu cầu đang chờ",
+      labels: {
+        lifetime: "Toàn bộ",
+        active: "Đang hoạt động",
+        awaiting: "Chờ xử lý",
+      },
+    },
+    recentActivity: {
+      title: "Hoạt động đặt phòng gần đây",
+      subtitle: "Các tương tác và cập nhật trạng thái gần nhất của bạn",
+      viewHistory: "Xem lịch sử",
+      noActivity: "Không có hoạt động gần đây",
     },
     recentRooms: {
       title: "Phòng đã xem gần đây",
@@ -100,8 +122,16 @@ export const vi = {
       viewAll: "Xem tất cả",
       today: "Hôm nay",
       empty: "Không có đặt phòng sắp tới",
+      createNew: "Tạo một đặt phòng mới để bắt đầu",
       browseRooms: "Duyệt các phòng trống →",
       loadError: "Không thể tải đặt phòng. Vui lòng làm mới.",
+    },
+    loading: {
+      message: "Đang tải bảng điều khiển...",
+    },
+    error: {
+      title: "Không thể tải dữ liệu bảng điều khiển",
+      message: "Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
     },
   },
   rooms: {
@@ -126,7 +156,7 @@ export const vi = {
     },
     sort: {
       title: "Sắp xếp",
-      default: "Mặc định",  
+      default: "Mặc định",
       newest: "Mới nhất trước",
       nameAsc: "Tên phòng (A → Z)",
       nameDesc: "Tên phòng (Z → A)",

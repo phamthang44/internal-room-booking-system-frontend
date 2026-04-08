@@ -30,6 +30,10 @@ documents
 .claude
 
 .github
+.shared
  
 # Batch helper files 
 *.bat 
+
+CLAUDE.md
+AGENTS.md

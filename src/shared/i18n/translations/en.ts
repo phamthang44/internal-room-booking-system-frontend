@@ -59,6 +59,13 @@ export const en = {
     errors: {
       unknown: "An error occurred. Please try again.",
     },
+    loading: {
+      title: "Loading",
+      subtitle: "Preparing your experience...",
+      redirecting: "Redirecting...",
+      initializing: "Initializing services...",
+      ready: "Ready",
+    },
     language: "Language",
     help: "Help",
     security: "Security Policy",
@@ -84,10 +91,25 @@ export const en = {
     subtitle:
       "Your creative space is waiting. Ready to book your next study session?",
     newBooking: "New Booking",
+    hero: {
+      createBooking: "Create Booking",
+      viewSchedule: "View Schedule",
+    },
     stats: {
       totalBookings: "Total Bookings",
       upcomingToday: "Upcoming Today",
       pendingRequests: "Pending Requests",
+      labels: {
+        lifetime: "Lifetime",
+        active: "Active",
+        awaiting: "Awaiting",
+      },
+    },
+    recentActivity: {
+      title: "Recent Booking Activity",
+      subtitle: "Your latest interactions and status updates",
+      viewHistory: "View History",
+      noActivity: "No recent activity",
     },
     recentRooms: {
       title: "Recently Viewed Rooms",
@@ -99,8 +121,16 @@ export const en = {
       viewAll: "View all",
       today: "Today",
       empty: "No upcoming bookings",
+      createNew: "Create a new booking to get started",
       browseRooms: "Browse available rooms →",
       loadError: "Failed to load bookings. Please refresh.",
+    },
+    loading: {
+      message: "Loading dashboard...",
+    },
+    error: {
+      title: "Unable to load dashboard data",
+      message: "Please try again later or contact support.",
     },
   },
   rooms: {

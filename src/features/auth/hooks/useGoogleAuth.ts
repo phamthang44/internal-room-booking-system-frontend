@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import authApi from "../api/auth.api";
 import { useAuthStore } from "./useAuthStore";
 import { useI18n } from "@shared/i18n/useI18n";
-import { decodeJWT } from "../utils/jwt";
 import type { User } from "../types/auth.types";
 
 export type GoogleAuthError =
@@ -37,7 +36,7 @@ export const useGoogleAuth = () => {
       setLoading(true);
       setError(null);
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       try {
         const { accessToken, refreshToken, role } = response.data;
 
@@ -45,22 +44,27 @@ export const useGoogleAuth = () => {
         // Keep in memory via Zustand store only
         // Backend handles refreshToken in httpOnly cookie automatically
 
-        // Decode JWT to extract user information
-        const tokenPayload = decodeJWT(accessToken);
-        if (!tokenPayload) {
-          throw new Error("Failed to decode authentication token");
+        // Store the token first so subsequent API calls can use it
+        setToken(accessToken);
+
+        // Fetch full user profile from /users/me
+        try {
+          const userResponse = await authApi.getCurrentUser();
+          setUser(userResponse.data);
+        } catch (error) {
+          // If fetching user profile fails, create minimal user object
+          console.error("Failed to fetch user profile:", error);
+          const user: User = {
+            id: 0,
+            fullName: "Unknown User",
+            username: "",
+            roleName: role || "STUDENT",
+            email: "",
+            studentCode: "",
+          };
+          setUser(user);
         }
 
-        // Create user object from token data
-        const user: User = {
-          id: tokenPayload.userId?.toString() || "",
-          username: tokenPayload.sub || "",
-          role: role || tokenPayload.role || "STUDENT",
-        };
-
-        // Update auth state (stored in memory via Zustand)
-        setUser(user);
-        setToken(accessToken); // Stored in Zustand, not localStorage
         setLoading(false);
 
         // Redirect to loading screen first, then to home page

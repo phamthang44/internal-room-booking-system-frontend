@@ -14,6 +14,7 @@ export { default as authApi } from "./api/auth.api";
 export { useLogin } from "./hooks/useLogin";
 export { useAuthStore } from "./hooks/useAuthStore";
 export { useProfileStore } from "./hooks/useProfileStore";
+export { useInitAuth } from "./hooks/useInitAuth";
 
 // Components
 export { LoginForm } from "./components/LoginForm";

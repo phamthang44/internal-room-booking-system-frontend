@@ -3,7 +3,9 @@ import { devtools, persist } from "zustand/middleware";
 import type { User, AuthState } from "../types/auth.types";
 
 interface AuthStoreState extends AuthState {
+  hasHydrated: boolean;
   // Actions
+  setHasHydrated: (hasHydrated: boolean) => void;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
   setLoading: (loading: boolean) => void;
@@ -25,6 +27,9 @@ export const useAuthStore = create<AuthStoreState>()(
     persist(
       (set) => ({
         ...initialState,
+        hasHydrated: false,
+
+        setHasHydrated: (hasHydrated) => set({ hasHydrated }),
 
         setUser: (user) =>
           set({
@@ -53,6 +58,9 @@ export const useAuthStore = create<AuthStoreState>()(
           token: state.token,
           isAuthenticated: state.isAuthenticated,
         }),
+        onRehydrateStorage: () => (state) => {
+          state?.setHasHydrated(true);
+        },
       },
     ),
     { name: "AuthStore" },

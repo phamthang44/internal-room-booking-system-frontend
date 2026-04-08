@@ -18,7 +18,7 @@ export const useLogin = () => {
       setLoading(true);
       setError(null);
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       try {
         const { accessToken, refreshToken, role } = response.data;
 
@@ -26,22 +26,30 @@ export const useLogin = () => {
         // Keep in memory via Zustand store only
         // Backend handles refreshToken in httpOnly cookie automatically
 
-        // Decode JWT to extract user information
-        const tokenPayload = decodeJWT(accessToken);
-        if (!tokenPayload) {
-          throw new Error("Failed to decode authentication token");
+        // Store the token first so subsequent API calls can use it
+        setToken(accessToken);
+
+        // Fetch full user profile from /users/me
+        try {
+          const userResponse = await authApi.getCurrentUser();
+          setUser(userResponse.data);
+        } catch (error) {
+          // If fetching user profile fails, create minimal user object from token
+          console.error("Failed to fetch user profile:", error);
+          const tokenPayload = decodeJWT(accessToken);
+          if (tokenPayload) {
+            const user: User = {
+              id: tokenPayload.userId || 0,
+              fullName: tokenPayload.sub || "Unknown User",
+              username: tokenPayload.sub || "",
+              roleName: role || tokenPayload.role || "STUDENT",
+              email: "",
+              studentCode: "",
+            };
+            setUser(user);
+          }
         }
 
-        // Create user object from token data
-        const user: User = {
-          id: tokenPayload.userId?.toString() || "",
-          username: tokenPayload.sub || "",
-          role: role || tokenPayload.role || "STUDENT",
-        };
-
-        // Update auth state (stored in memory via Zustand)
-        setUser(user);
-        setToken(accessToken); // Stored in Zustand, not localStorage
         setLoading(false);
 
         // Redirect to loading screen first, then to home page

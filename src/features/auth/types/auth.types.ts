@@ -6,13 +6,18 @@ export type UserRole =
   | "FACILITY_STAFF"
   | "MANAGER";
 
+/**
+ * User profile data from /users/me endpoint
+ * Matches backend response structure
+ */
 export interface User {
-  id: string;
-  username?: string;
-  name?: string;
-  role: UserRole;
+  id: number;
+  fullName: string;
+  username: string;
+  roleName: UserRole;
+  email: string;
+  studentCode: string;
   avatar?: string;
-  createdAt?: string;
 }
 
 export interface LoginRequest {

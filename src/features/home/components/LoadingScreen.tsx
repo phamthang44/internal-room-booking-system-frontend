@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useI18n } from "@shared/i18n/useI18n";
 
 interface LoadingScreenProps {
   duration?: number; // Duration in milliseconds before redirecting
@@ -7,6 +8,7 @@ interface LoadingScreenProps {
 
 export const LoadingScreen = ({ duration = 3000 }: LoadingScreenProps) => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [isComplete, setIsComplete] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -26,7 +28,7 @@ export const LoadingScreen = ({ duration = 3000 }: LoadingScreenProps) => {
     }, duration - 500);
 
     const redirectTimer = setTimeout(() => {
-      navigate("/home");
+      navigate("/dashboard");
     }, duration);
 
     return () => {
@@ -85,12 +87,14 @@ export const LoadingScreen = ({ duration = 3000 }: LoadingScreenProps) => {
           <h2
             className={`text-2xl font-semibold text-on-surface transition-opacity duration-500 ${isComplete ? "opacity-0" : "opacity-100"}`}
           >
-            {isComplete ? "Ready" : "Loading"}
+            {isComplete ? t("common.loading.ready") : t("common.loading.title")}
           </h2>
           <p
             className={`text-sm text-on-surface-variant transition-opacity duration-500 ${isComplete ? "opacity-0" : "opacity-100"}`}
           >
-            {isComplete ? "Redirecting..." : "Preparing your experience..."}
+            {isComplete
+              ? t("common.loading.redirecting")
+              : t("common.loading.subtitle")}
           </p>
         </div>
 
@@ -108,7 +112,7 @@ export const LoadingScreen = ({ duration = 3000 }: LoadingScreenProps) => {
             className="text-xs text-on-surface-variant space-y-1 animate-fadeIn"
             style={{ animationDelay: "0.5s" }}
           >
-            <p className="opacity-70">Initializing services...</p>
+            <p className="opacity-70">{t("common.loading.initializing")}</p>
           </div>
         )}
       </div>

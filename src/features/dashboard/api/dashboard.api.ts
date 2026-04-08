@@ -3,6 +3,7 @@ import type {
   UpcomingBooking,
   RecentRoom,
 } from "../types/dashboard.types";
+import { fetchStudentDashboard } from "./student-dashboard.api";
 
 // ─── Mock Data ──────────────────────────────────────────────────────────────
 
@@ -66,30 +67,78 @@ const MOCK_RECENT_ROOMS: RecentRoom[] = [
   },
 ];
 
-// ─── API Functions (swap USE_MOCK → false when backend is ready) ─────────────
+// ─── API Functions ─────────────────────────────────────────────────────────────
 
-const USE_MOCK = true;
-const BASE = "/api/v1";
+const USE_MOCK = false;
+const toUpcomingStatus = (status: string): UpcomingBooking["status"] => {
+  const normalized = status.toUpperCase();
+  if (normalized === "APPROVED" || normalized === "CONFIRMED") {
+    return "confirmed";
+  }
+  if (normalized === "CANCELLED" || normalized === "REJECTED") {
+    return "cancelled";
+  }
+  return "pending";
+};
+
+const parseTimeSlotRange = (
+  timeSlotRange: string,
+): { startTime: string; endTime: string } => {
+  const [startTimeRaw, endTimeRaw] = timeSlotRange
+    .split("-")
+    .map((v) => v.trim());
+  return {
+    startTime: startTimeRaw || "00:00",
+    endTime: endTimeRaw || "00:00",
+  };
+};
+
+const mapUpcomingBookings = (
+  limit: number,
+  items: Array<{
+    bookingId: number;
+    bookingDate: string;
+    timeSlotRange: string;
+    status: string;
+  }>,
+): UpcomingBooking[] => {
+  return items.slice(0, limit).map((item) => {
+    const { startTime, endTime } = parseTimeSlotRange(item.timeSlotRange);
+
+    return {
+      id: String(item.bookingId),
+      title: `Booking #${item.bookingId}`,
+      roomName: "Room details pending",
+      building: "TBD",
+      date: item.bookingDate,
+      startTime,
+      endTime,
+      status: toUpcomingStatus(item.status),
+    };
+  });
+};
 
 export const dashboardApi = {
   getSummary: async (): Promise<DashboardSummary> => {
     if (USE_MOCK) return Promise.resolve(MOCK_SUMMARY);
-    const res = await fetch(`${BASE}/dashboard/summary`);
-    return res.json();
+    const response = await fetchStudentDashboard();
+    return {
+      totalBookings: response.data.totalBookings,
+      upcomingToday: response.data.upcomingBookings,
+      pendingRequests: response.data.pendingBookings,
+    };
   },
 
   getUpcomingBookings: async (limit = 5): Promise<UpcomingBooking[]> => {
     if (USE_MOCK)
       return Promise.resolve(MOCK_UPCOMING_BOOKINGS.slice(0, limit));
-    const res = await fetch(`${BASE}/bookings?status=UPCOMING&limit=${limit}`);
-    const data = await res.json();
-    return data.bookings;
+    const response = await fetchStudentDashboard();
+    return mapUpcomingBookings(limit, response.data.upcomingList);
   },
 
   getRecentlyViewedRooms: async (limit = 3): Promise<RecentRoom[]> => {
     if (USE_MOCK) return Promise.resolve(MOCK_RECENT_ROOMS.slice(0, limit));
-    const res = await fetch(`${BASE}/rooms/recently-viewed?limit=${limit}`);
-    const data = await res.json();
-    return data.rooms;
+    const rooms: RecentRoom[] = [];
+    return rooms.slice(0, limit);
   },
 };
