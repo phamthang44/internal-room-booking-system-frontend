@@ -1,20 +1,25 @@
 // Types
 export type {
+  RoomDetail,
+  BookingDetail,
+  ActivityHistoryItem,
+  EnhancedDashboardData,
   DashboardSummary,
   UpcomingBooking,
   RecentRoom,
 } from "./types/dashboard.types";
 
 // API
-export { dashboardApi } from "./api/dashboard.api";
+export { fetchStudentDashboard } from "./api/student-dashboard.api";
 
 // Hooks
-export { useDashboard } from "./hooks/useDashboard";
+export { useStudentDashboardRecentActivity } from "./hooks/useStudentDashboardRecentActivity";
 
 // Components
-export { DashboardStats } from "./components/DashboardStats";
-export { RecentlyViewedSection } from "./components/RecentlyViewedSection";
-export { UpcomingBookingsSection } from "./components/UpcomingBookingsSection";
+export { HeroSection } from "./components/recent-activity/HeroSection";
+export { SummaryBento } from "./components/recent-activity/SummaryBento";
+export { ActivityCarousel } from "./components/recent-activity/ActivityCarousel";
+export { UpcomingList } from "./components/recent-activity/UpcomingList";
 
 // Pages
 export { StudentDashboard } from "./pages/StudentDashboard";
