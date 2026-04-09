@@ -29,11 +29,13 @@ export interface BookingDetail {
 
 export interface ActivityHistoryItem {
   bookingId: number;
-  action: "APPROVED" | "PENDING" | "CANCELLED" | "REJECTED" | "COMPLETED" | "CHECKED_IN" | "SUBMITTED";
+  classroomName: string;
+  action: string;
+  statusAfter?: string;
   timestamp: string; // ISO string
-  note?: string;
-  room?: RoomDetail;
+  message?: string;
   title?: string;
+  buildingName?: string;
 }
 
 export interface EnhancedDashboardData {

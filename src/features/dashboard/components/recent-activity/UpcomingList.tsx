@@ -1,12 +1,14 @@
 import { useI18n } from "@shared/i18n/useI18n";
 import type { UpcomingBookingItem } from "../../api/student-dashboard.api";
+import { RoomIdentifier } from "@shared/components/RoomIdentifier";
+import { formatDisplayDate } from "@shared/utils/date";
 
 interface UpcomingListProps {
   upcomingList?: UpcomingBookingItem[];
 }
 
 export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   if (!upcomingList || upcomingList.length === 0) {
     return (
@@ -49,9 +51,9 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
       <div className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm">
         <div className="divide-y divide-slate-100">
           {upcomingList.map((booking) => {
-            const { statusClass, statusLabel } = getStatusStyle(booking.status);
+            const { statusClass, statusLabel } = getStatusStyle(booking.status, t);
             const iconConfig = getIconConfig(booking.status);
-            const dateLabel = formatBookingDate(booking.bookingDate);
+            const dateLabel = formatDisplayDate(booking.bookingDate, t, language);
 
             return (
               <div
@@ -74,16 +76,18 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                       {booking.title || `Booking #${booking.bookingId}`}
                     </h5>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-                      <p className="text-xs text-on-surface-variant flex items-center gap-1 font-body">
-                        <span
-                          className="material-symbols-outlined text-[14px]"
-                          data-icon="meeting_room"
-                        >
-                          meeting_room
-                        </span>
-                        {booking.roomName || "Room TBD"}
-                        {booking.building && ` - ${booking.building}`}
-                      </p>
+                      <RoomIdentifier
+                        name={
+                          booking.classroomName || t("common.placeholders.tbd")
+                        }
+                        className="text-xs text-on-surface-variant font-body"
+                        iconClassName="!text-[14px]"
+                      />
+                      {booking.buildingName && (
+                        <p className="text-xs text-on-surface-variant flex items-center gap-1 font-body ml-[-8px]">
+                          - {booking.buildingName}
+                        </p>
+                      )}
                       <p className="text-xs text-on-surface-variant flex items-center gap-1 font-body">
                         <span
                           className="material-symbols-outlined text-[14px]"
@@ -121,23 +125,23 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
 };
 
 // Helper Functions
-function getStatusStyle(status: string) {
+function getStatusStyle(status: string, t: any) {
   const statusUpper = status.toUpperCase();
 
   if (statusUpper === "APPROVED" || statusUpper === "CONFIRMED") {
     return {
       statusClass: "bg-emerald-50 text-emerald-700",
-      statusLabel: "CONFIRMED",
+      statusLabel: t("dashboard.upcomingBookings.status.confirmed"),
     };
   } else if (statusUpper === "PENDING" || statusUpper === "SUBMITTED") {
     return {
       statusClass: "bg-amber-50 text-amber-700",
-      statusLabel: "PENDING",
+      statusLabel: t("dashboard.upcomingBookings.status.pending"),
     };
   } else if (statusUpper === "CANCELLED") {
     return {
       statusClass: "bg-red-50 text-red-700",
-      statusLabel: "CANCELLED",
+      statusLabel: t("dashboard.upcomingBookings.status.cancelled"),
     };
   }
 
@@ -166,21 +170,4 @@ function getIconConfig(status: string) {
     icon: "laptop_mac",
     bgClass: "bg-secondary-container text-primary",
   };
-}
-
-function formatBookingDate(dateString: string): string {
-  const date = new Date(dateString);
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  // Reset time for comparison
-  today.setHours(0, 0, 0, 0);
-  tomorrow.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-
-  if (date.getTime() === today.getTime()) return "Today";
-  if (date.getTime() === tomorrow.getTime()) return "Tomorrow";
-
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }

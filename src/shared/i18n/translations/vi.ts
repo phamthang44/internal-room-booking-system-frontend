@@ -57,8 +57,24 @@ export const vi = {
           "Trải nghiệm một môi trường đặt chỗ phức tạp được thiết kế cho lối sống học tập hiện đại.",
       },
     },
+    copyright: "Bản quyền © 2026 Scholarly Sanctuary. Bảo lưu mọi quyền.",
     errors: {
       unknown: "Đã xảy ra lỗi. Vui lòng thử lại.",
+      http: {
+        401: {
+          title: "Phiên đăng nhập hết hạn",
+          message: "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+        },
+        403: {
+          title: "Không có quyền truy cập",
+          message: "Bạn không có quyền thực hiện hành động này.",
+        },
+        404: {
+          title: "Không tìm thấy tài nguyên",
+          message: "Tài nguyên được yêu cầu không tồn tại.",
+        },
+        dismiss: "Đóng",
+      },
     },
     loading: {
       title: "Đang tải",
@@ -72,7 +88,20 @@ export const vi = {
     security: "Chính sách bảo mật",
     terms: "Điều khoản dịch vụ",
     support: "Hỗ trợ CNTT",
-    copyright: "© 2026 Trường đại học. Tất cả các quyền được bảo lưu.",
+    date: {
+      justNow: "Vừa xong",
+      hourAgo: "1 giờ trước",
+      hoursAgo: "{{count}} giờ trước",
+      yesterday: "Hôm qua",
+      daysAgo: "{{count}} ngày trước",
+      today: "Hôm nay",
+      tomorrow: "Ngày mai",
+    },
+    placeholders: {
+      tbd: "Chờ xác định",
+      na: "N/A",
+    },
+    roomLabel: "Phòng",
   },
   nav: {
     brand: "Academic Atelier",
@@ -98,7 +127,7 @@ export const vi = {
     },
     stats: {
       totalBookings: "Tổng đặt phòng",
-      upcomingToday: "Sắp diễn ra hôm nay",
+      upcomingToday: "Lịch đặt sắp tới",
       pendingRequests: "Yêu cầu đang chờ",
       labels: {
         lifetime: "Toàn bộ",
@@ -111,6 +140,14 @@ export const vi = {
       subtitle: "Các tương tác và cập nhật trạng thái gần nhất của bạn",
       viewHistory: "Xem lịch sử",
       noActivity: "Không có hoạt động gần đây",
+      status: {
+        confirmed: "Đã xác nhận",
+        submitted: "Đã gửi yêu cầu",
+        checkIn: "Điểm danh thành công",
+        cancelled: "Đã hủy",
+        rejected: "Đã từ chối",
+        unknown: "Hoạt động không xác định",
+      },
     },
     recentRooms: {
       title: "Phòng đã xem gần đây",
@@ -125,6 +162,11 @@ export const vi = {
       createNew: "Tạo một đặt phòng mới để bắt đầu",
       browseRooms: "Duyệt các phòng trống →",
       loadError: "Không thể tải đặt phòng. Vui lòng làm mới.",
+      status: {
+        confirmed: "ĐÃ XÁC NHẬN",
+        pending: "CHỜ DUYỆT",
+        cancelled: "ĐÃ HỦY",
+      },
     },
     loading: {
       message: "Đang tải bảng điều khiển...",

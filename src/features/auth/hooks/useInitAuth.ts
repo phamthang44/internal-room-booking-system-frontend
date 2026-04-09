@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useAuthStore } from "./useAuthStore";
 import authApi from "../api/auth.api";
-import apiClient from "@core/api/client";
 
 /**
  * Initialize authentication on app load.
@@ -10,6 +9,10 @@ import apiClient from "@core/api/client";
  * 1. Waits for Zustand to rehydrate from localStorage
  * 2. If no token exists but refresh token is in httpOnly cookie, attempts to refresh
  * 3. Ensures user session persists across page refreshes
+ *
+ * NOTE: Uses `refreshClient` (raw axios) instead of `apiClient` so that a
+ * 401 response from /auth/refresh does NOT trigger the interceptor's own
+ * refresh logic, which would cause a loop.
  */
 export const useInitAuth = () => {
   const { token, hasHydrated, setToken, setUser } = useAuthStore();
@@ -25,27 +28,29 @@ export const useInitAuth = () => {
     }
 
     // Token doesn't exist. Try to refresh using refresh token from httpOnly cookie
-    const refreshToken = async () => {
+    const initRefresh = async () => {
       try {
-        const response = await apiClient.post<{
-          accessToken: string;
-        }>("/auth/refresh");
+        const refreshResponse = await authApi.refreshToken();
+        const { accessToken } = refreshResponse.data;
+        setToken(accessToken);
 
-        setToken(response.data.accessToken);
-        
         // Fetch user profile after token refresh
         try {
           const userResponse = await authApi.getCurrentUser();
           setUser(userResponse.data);
-        } catch (error) {
-          console.error("Failed to fetch user profile after token refresh:", error);
+        } catch (profileError) {
+          console.error(
+            "Failed to fetch user profile after token refresh:",
+            profileError,
+          );
         }
       } catch {
-        // Refresh failed - user will be redirected to login by ProtectedRoute
-        // This is expected if refresh token is expired or invalid
+        // Refresh failed — user will be redirected to login by ProtectedRoute.
+        // This is expected if the refresh token is expired or not present in
+        // the httpOnly cookie.
       }
     };
 
-    refreshToken();
+    initRefresh();
   }, [hasHydrated, token, setToken, setUser]);
 };

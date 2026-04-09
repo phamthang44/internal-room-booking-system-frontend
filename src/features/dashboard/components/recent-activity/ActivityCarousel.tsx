@@ -1,12 +1,14 @@
 import { useI18n } from "@shared/i18n/useI18n";
 import type { HistoryItem } from "../../api/student-dashboard.api";
+import { RoomIdentifier } from "@shared/components/RoomIdentifier";
+import { getRelativeTime } from "@shared/utils/date";
 
 interface ActivityCarouselProps {
   historyList?: HistoryItem[];
 }
 
 export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   if (!historyList || historyList.length === 0) {
     return (
@@ -52,10 +54,12 @@ export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
         {historyList.slice(0, 3).map((item) => {
           const { icon, colorTheme, statusText } = getActivityStyle(
             item.action,
+            t,
+            item.statusAfter,
           );
-          const timeAgoText = getTimeAgo(item.timestamp);
+          const timeAgoText = getRelativeTime(item.timestamp, t, language);
           const themeClasses = getThemeClasses(colorTheme);
-          const roomName = item.roomName || `Booking #${item.bookingId}`;
+          const hasRoomName = Boolean(item.classroomName);
 
           return (
             <div
@@ -78,12 +82,20 @@ export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
                 </span>
               </div>
               <div>
-                <h4 className="font-bold text-on-surface leading-tight">
-                  {roomName}
-                </h4>
-                {item.building && (
+                {hasRoomName ? (
+                  <RoomIdentifier
+                    name={item.classroomName}
+                    className="text-on-surface font-bold text-sm"
+                    iconClassName="text-primary/70 !text-[18px]"
+                  />
+                ) : (
+                  <h4 className="font-bold text-on-surface leading-tight">
+                    {`Booking #${item.bookingId}`}
+                  </h4>
+                )}
+                {item.buildingName && (
                   <p className="text-[10px] text-on-surface-variant mt-0.5">
-                    {item.building}
+                    {item.buildingName}
                   </p>
                 )}
                 <p
@@ -91,11 +103,12 @@ export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
                 >
                   {statusText}
                 </p>
-                {item.note && item.note !== "N/A" && (
-                  <p className="text-xs text-on-surface-variant mt-1 italic line-clamp-2">
-                    {item.note}
-                  </p>
-                )}
+                {item.message &&
+                  item.message !== t("common.placeholders.na") && (
+                    <p className="text-xs text-on-surface-variant mt-1 italic line-clamp-2">
+                      {item.message}
+                    </p>
+                  )}
               </div>
               <div className="mt-auto pt-3 border-t border-slate-50">
                 <div className="flex items-center gap-1.5">
@@ -103,7 +116,7 @@ export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
                     className={`w-1.5 h-1.5 rounded-full ${themeClasses.dot}`}
                   ></span>
                   <span className="text-[10px] font-bold text-on-surface-variant uppercase">
-                    {item.action}
+                    {getActionTranslation(item.action, t)}
                   </span>
                 </div>
               </div>
@@ -116,56 +129,79 @@ export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
 };
 
 // Helper Functions
-function getActivityStyle(action: string) {
+function getActivityStyle(action: string, t: any, statusAfter?: string) {
   const actionUpper = action.toUpperCase();
+  const statusUpper = statusAfter?.toUpperCase() || "";
 
-  if (actionUpper === "APPROVED" || actionUpper === "CONFIRMED") {
+  if (
+    actionUpper === "APPROVED" ||
+    actionUpper === "CONFIRMED" ||
+    actionUpper === "CONFIRM_BOOKING" ||
+    statusUpper === "CONFIRMED" ||
+    statusUpper === "APPROVED"
+  ) {
     return {
       icon: "check_circle",
       colorTheme: "emerald" as const,
-      statusText: "Booking Confirmed",
+      statusText: t("dashboard.recentActivity.status.confirmed"),
     };
-  } else if (actionUpper === "PENDING" || actionUpper === "SUBMITTED") {
+  } else if (
+    actionUpper === "PENDING" ||
+    actionUpper === "SUBMITTED" ||
+    actionUpper === "SUBMIT_BOOKING" ||
+    statusUpper === "PENDING"
+  ) {
     return {
       icon: "pending",
       colorTheme: "amber" as const,
-      statusText: "Request Submitted",
+      statusText: t("dashboard.recentActivity.status.submitted"),
     };
-  } else if (actionUpper === "COMPLETED" || actionUpper === "CHECKED_IN") {
+  } else if (
+    actionUpper === "COMPLETED" ||
+    actionUpper === "CHECKED_IN" ||
+    statusUpper === "COMPLETED"
+  ) {
     return {
       icon: "login",
       colorTheme: "blue" as const,
-      statusText: "Check-in Successful",
+      statusText: t("dashboard.recentActivity.status.checkIn"),
     };
-  } else if (actionUpper === "CANCELLED" || actionUpper === "REJECTED") {
+  } else if (
+    actionUpper === "CANCELLED" ||
+    actionUpper === "REJECTED" ||
+    actionUpper === "CANCEL_BOOKING" ||
+    statusUpper === "CANCELLED" ||
+    statusUpper === "REJECTED"
+  ) {
     return {
       icon: "cancel",
       colorTheme: "red" as const,
       statusText:
-        actionUpper === "CANCELLED" ? "Booking Cancelled" : "Booking Rejected",
+        actionUpper.includes("CANCEL") || statusUpper.includes("CANCEL")
+          ? t("dashboard.recentActivity.status.cancelled")
+          : t("dashboard.recentActivity.status.rejected"),
     };
   }
 
   return {
     icon: "info",
     colorTheme: "blue" as const,
-    statusText: action,
+    statusText: t("dashboard.recentActivity.status.unknown"),
   };
 }
 
-function getTimeAgo(timestamp: string): string {
-  const date = new Date(timestamp);
-  const hoursAgo = Math.floor((Date.now() - date.getTime()) / 3600000);
+function getActionTranslation(action: string, t: any) {
+  const actionUpper = action.toUpperCase();
+  if (actionUpper.includes("CANCEL"))
+    return t("dashboard.recentActivity.status.cancelled");
+  if (actionUpper.includes("CONFIRM"))
+    return t("dashboard.recentActivity.status.confirmed");
+  if (actionUpper.includes("SUBMIT"))
+    return t("dashboard.recentActivity.status.submitted");
+  if (actionUpper.includes("CHECK_IN"))
+    return t("dashboard.recentActivity.status.checkIn");
 
-  if (hoursAgo < 1) return "Just now";
-  if (hoursAgo < 24)
-    return `${hoursAgo} ${hoursAgo === 1 ? "hour" : "hours"} ago`;
-
-  const daysAgo = Math.floor(hoursAgo / 24);
-  if (daysAgo === 1) return "Yesterday";
-  if (daysAgo < 7) return `${daysAgo} days ago`;
-
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return action.replace(/_/g, " ");
 }
 
 function getThemeClasses(colorTheme: "emerald" | "amber" | "blue" | "red") {

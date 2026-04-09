@@ -13,18 +13,19 @@ export interface UpcomingBookingItem {
   bookingDate: string;
   timeSlotRange: string;
   status: string;
-  roomName?: string;
-  building?: string;
+  classroomName?: string;
+  buildingName?: string;
   title?: string;
 }
 
 export interface HistoryItem {
   bookingId: number;
+  classroomName: string;
   action: string;
+  statusAfter?: string;
   timestamp: string;
-  note: string;
-  roomName?: string;
-  building?: string;
+  message: string;
+  buildingName?: string;
 }
 
 export interface StudentDashboardData {
@@ -49,21 +50,20 @@ const MOCK_RESPONSE: StudentDashboardResponse = {
     pendingBookings: 1,
     upcomingList: [
       {
-        bookingId: 101,
-        bookingDate: "2026-04-08",
-        timeSlotRange: "14:00 - 16:30",
+        bookingId: 20,
+        classroomName: "A.101",
+        buildingName: "Tòa nhà A",
+        bookingDate: "2026-04-13",
+        timeSlotRange: "07:00 - 11:30",
         status: "APPROVED",
-        roomName: "Room 402",
-        building: "Arts Block",
-        title: "Senior Design Capstone Review",
       },
       {
         bookingId: 102,
         bookingDate: "2026-04-09",
         timeSlotRange: "09:00 - 11:00",
         status: "PENDING",
-        roomName: "Seminar Room B",
-        building: "Science Building",
+        classroomName: "Seminar Room B",
+        buildingName: "Science Building",
         title: "Psychology Research Group",
       },
       {
@@ -71,35 +71,37 @@ const MOCK_RESPONSE: StudentDashboardResponse = {
         bookingDate: "2026-04-10",
         timeSlotRange: "13:00 - 15:00",
         status: "APPROVED",
-        roomName: "FabLab Workspace",
-        building: "Engineering Block",
+        classroomName: "FabLab Workspace",
+        buildingName: "Engineering Block",
         title: "Digital Fabrication Lab",
       },
     ],
     historyList: [
       {
+        bookingId: 19,
+        classroomName: "A.101",
+        buildingName: "Tòa nhà A",
+        action: "APPROVED",
+        timestamp: "2026-04-01T03:28:24.851531Z",
+        message: "Đơn đặt phòng đã được phê duyệt.",
+      },
+      {
         bookingId: 100,
-        action: "CONFIRMED",
+        classroomName: "Design Studio 402",
+        action: "CONFIRM_BOOKING",
+        statusAfter: "CONFIRMED",
         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        note: "Auto-confirmed after payment",
-        roomName: "Design Studio 402",
-        building: "Arts Block",
+        message: "Auto-confirmed after payment",
+        buildingName: "Arts Block",
       },
       {
         bookingId: 99,
-        action: "SUBMITTED",
+        classroomName: "Collaborative Pod C",
+        action: "SUBMIT_BOOKING",
+        statusAfter: "PENDING",
         timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-        note: "Awaiting approval",
-        roomName: "Collaborative Pod C",
-        building: "Library",
-      },
-      {
-        bookingId: 98,
-        action: "CHECKED_IN",
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        note: "Session completed",
-        roomName: "Great Hall Annex",
-        building: "Main Building",
+        message: "Awaiting approval",
+        buildingName: "Library",
       },
     ],
   },

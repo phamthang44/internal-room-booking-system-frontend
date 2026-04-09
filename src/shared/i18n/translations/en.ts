@@ -56,8 +56,24 @@ export const en = {
           "Experience a sophisticated booking environment designed for the modern academic lifestyle.",
       },
     },
+    copyright: "Copyright © 2026 Scholarly Sanctuary. All rights reserved.",
     errors: {
       unknown: "An error occurred. Please try again.",
+      http: {
+        401: {
+          title: "Session Expired",
+          message: "Your session has expired. Please sign in again.",
+        },
+        403: {
+          title: "Access Denied",
+          message: "You do not have permission to perform this action.",
+        },
+        404: {
+          title: "Resource Not Found",
+          message: "The requested resource could not be found.",
+        },
+        dismiss: "Dismiss",
+      },
     },
     loading: {
       title: "Loading",
@@ -71,7 +87,20 @@ export const en = {
     security: "Security Policy",
     terms: "Terms of Service",
     support: "IT Support",
-    copyright: "© 2026 University Academic Atelier. All rights reserved.",
+    date: {
+      justNow: "Just now",
+      hourAgo: "1 hour ago",
+      hoursAgo: "{{count}} hours ago",
+      yesterday: "Yesterday",
+      daysAgo: "{{count}} days ago",
+      today: "Today",
+      tomorrow: "Tomorrow",
+    },
+    placeholders: {
+      tbd: "TBD",
+      na: "N/A",
+    },
+    roomLabel: "Room",
   },
   nav: {
     brand: "Academic Atelier",
@@ -97,7 +126,7 @@ export const en = {
     },
     stats: {
       totalBookings: "Total Bookings",
-      upcomingToday: "Upcoming Today",
+      upcomingToday: "Upcoming Sessions",
       pendingRequests: "Pending Requests",
       labels: {
         lifetime: "Lifetime",
@@ -110,6 +139,14 @@ export const en = {
       subtitle: "Your latest interactions and status updates",
       viewHistory: "View History",
       noActivity: "No recent activity",
+      status: {
+        confirmed: "Booking Confirmed",
+        submitted: "Request Submitted",
+        checkIn: "Check-in Successful",
+        cancelled: "Booking Cancelled",
+        rejected: "Booking Rejected",
+        unknown: "Unknown Activity",
+      },
     },
     recentRooms: {
       title: "Recently Viewed Rooms",
@@ -124,6 +161,11 @@ export const en = {
       createNew: "Create a new booking to get started",
       browseRooms: "Browse available rooms →",
       loadError: "Failed to load bookings. Please refresh.",
+      status: {
+        confirmed: "CONFIRMED",
+        pending: "PENDING",
+        cancelled: "CANCELLED",
+      },
     },
     loading: {
       message: "Loading dashboard...",

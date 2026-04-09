@@ -3,6 +3,8 @@ import { LoginPage, useAuthStore, useInitAuth } from "@features/auth";
 import { HomePage, LoadingScreen } from "@features/home";
 import { StudentDashboard } from "@features/dashboard";
 import { RoomListPage } from "@features/rooms";
+import { NotFoundPage } from "@features/error";
+import { HttpErrorToast } from "@shared/components/HttpErrorToast";
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -34,51 +36,61 @@ const RouterContent = () => {
   useInitAuth();
 
   return (
-    <Routes>
-      {/* Auth Routes */}
-      <Route path="/login" element={<LoginPage />} />
+    <>
+      {/* Global HTTP error toast — renders above everything */}
+      <HttpErrorToast />
 
-      {/* Protected Routes */}
-      <Route
-        path="/loading"
-        element={
-          <ProtectedRoute>
-            <LoadingScreen />
-          </ProtectedRoute>
-        }
-      />
+      <Routes>
+        {/* Auth Routes */}
+        <Route path="/login" element={<LoginPage />} />
 
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        }
-      />
+        {/* Protected Routes */}
+        <Route
+          path="/loading"
+          element={
+            <ProtectedRoute>
+              <LoadingScreen />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <StudentDashboard />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/rooms"
-        element={
-          <ProtectedRoute>
-            <RoomListPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Fallback */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+        <Route
+          path="/rooms"
+          element={
+            <ProtectedRoute>
+              <RoomListPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Error Pages */}
+        <Route path="/404" element={<NotFoundPage />} />
+
+        {/* Root redirect */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+        {/* Catch-all — show 404 page instead of silently redirecting */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
   );
 };
 

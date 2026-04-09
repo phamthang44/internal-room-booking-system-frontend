@@ -1,5 +1,12 @@
-import apiClient from "@core/api/client";
-import type { LoginRequest, LoginResponse, User, ApiResponse } from "../types/auth.types";
+import apiClient, { refreshClient } from "@core/api/client";
+import type {
+  LoginRequest,
+  LoginResponse,
+  LoginResponseData,
+  User,
+  ApiResponse,
+} from "../types/auth.types";
+import { AUTH_ENDPOINTS } from "../constants/auth.constants";
 
 /**
  * Google OAuth Login Request
@@ -24,7 +31,10 @@ export const authApi = {
    * Returns access token and user data
    */
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>("/auth/login", data);
+    const response = await apiClient.post<LoginResponse>(
+      AUTH_ENDPOINTS.LOGIN,
+      data,
+    );
     return response.data;
   },
 
@@ -55,7 +65,7 @@ export const authApi = {
    */
   googleLogin: async (data: GoogleLoginRequest): Promise<LoginResponse> => {
     const response = await apiClient.post<LoginResponse>(
-      "/auth/google-login",
+      AUTH_ENDPOINTS.GOOGLE_LOGIN,
       data,
     );
     return response.data;
@@ -65,7 +75,7 @@ export const authApi = {
    * Logout - clear session on backend
    */
   logout: async (): Promise<void> => {
-    await apiClient.post("/auth/logout");
+    await apiClient.post(AUTH_ENDPOINTS.LOGOUT);
   },
 
   /**
@@ -73,16 +83,20 @@ export const authApi = {
    * Returns user data wrapped in ApiResponse structure
    */
   getCurrentUser: async (): Promise<ApiResponse<User>> => {
-    const response = await apiClient.get<ApiResponse<User>>("/users/me");
+    const response = await apiClient.get<ApiResponse<User>>(
+      AUTH_ENDPOINTS.GET_CURRENT_USER,
+    );
     return response.data;
   },
 
   /**
    * Refresh access token using refresh token
+   * Auth is handled by httpOnly cookie only (no Bearer header)
+   * Header clearing is already handled by refreshClient interceptor
    */
-  refreshToken: async (): Promise<{ accessToken: string }> => {
-    const response = await apiClient.post<{ accessToken: string }>(
-      "/auth/refresh",
+  refreshToken: async (): Promise<ApiResponse<LoginResponseData>> => {
+    const response = await refreshClient.post<ApiResponse<LoginResponseData>>(
+      AUTH_ENDPOINTS.REFRESH,
     );
     return response.data;
   },
