@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage, useAuthStore, useInitAuth } from "@features/auth";
 import { HomePage, LoadingScreen } from "@features/home";
 import { StudentDashboard } from "@features/dashboard";
-import { RoomListPage } from "@features/rooms";
+import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
 import { NotFoundPage } from "@features/error";
 import { HttpErrorToast } from "@shared/components/HttpErrorToast";
 
@@ -77,6 +77,24 @@ const RouterContent = () => {
           element={
             <ProtectedRoute>
               <RoomListPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/rooms/:roomId"
+          element={
+            <ProtectedRoute>
+              <RoomDetailPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/booking/success"
+          element={
+            <ProtectedRoute>
+              <BookingConfirmationPage />
             </ProtectedRoute>
           }
         />

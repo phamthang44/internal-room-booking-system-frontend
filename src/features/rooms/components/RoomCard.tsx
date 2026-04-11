@@ -89,7 +89,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
         {/* Actions */}
         <div className="mt-auto flex gap-2 pt-1">
           <Link
-            to={`/rooms/${room.id}/book`}
+            to={`/rooms/${room.id}`}
             className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
           >
             {t("rooms.card.checkAvailability")}
@@ -172,7 +172,7 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
       {/* Actions */}
       <div className="flex shrink-0 flex-col gap-2">
         <Link
-          to={`/rooms/${room.id}/book`}
+          to={`/rooms/${room.id}`}
           className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
         >
           {t("rooms.card.checkAvailability")}
