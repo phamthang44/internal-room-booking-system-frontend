@@ -127,6 +127,13 @@ export const vi = {
     langEn: "EN",
     langVi: "VI",
     logout: "Đăng xuất",
+    header: {
+      rooms: "Phòng học",
+      roomDetail: "Chi tiết phòng",
+      bookingSuccess: "Yêu cầu đặt phòng",
+      back: "Quay lại",
+      fallback: "Trang chủ",
+    },
   },
   dashboard: {
     greeting: "Chào mừng trở lại, {{name}}.",

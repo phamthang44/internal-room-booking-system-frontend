@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { matchPath, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/utils/cn";
 import { useSidebarStore } from "@shared/hooks/useSidebarStore";
@@ -11,11 +11,48 @@ interface AppLayoutProps {
   children: ReactNode;
 }
 
+function useRouteHeader(pathname: string) {
+  if (matchPath({ path: "/booking/success", end: true }, pathname)) {
+    return {
+      titleKey: "nav.header.bookingSuccess" as const,
+      showBack: true,
+      backTo: "/rooms",
+    };
+  }
+  if (matchPath({ path: "/rooms/:roomId", end: true }, pathname)) {
+    return {
+      titleKey: "nav.header.roomDetail" as const,
+      showBack: true,
+      backTo: "/rooms",
+    };
+  }
+  if (matchPath({ path: "/rooms", end: true }, pathname)) {
+    return {
+      titleKey: "nav.header.rooms" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
+  if (matchPath({ path: "/dashboard", end: true }, pathname)) {
+    return {
+      titleKey: "nav.dashboard" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
+  return {
+    titleKey: "nav.header.fallback" as const,
+    showBack: false,
+    backTo: null,
+  };
+}
+
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const { isOpen, toggle, close } = useSidebarStore();
   const { user, isAuthenticated, clearAuth } = useAuthStore();
   const { profile, fetchProfile } = useProfileStore();
   const { pathname } = useLocation();
+  const routeHeader = useRouteHeader(pathname);
   const { t, language, setLanguage } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -156,19 +193,32 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         )}
       >
         {/* Top bar */}
-        <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b border-outline-variant/20 bg-surface-container-lowest/80 px-4 backdrop-blur-sm lg:px-6">
+        <header className="sticky top-0 z-50 flex h-16 min-w-0 items-center gap-3 border-b border-outline-variant/20 bg-surface-container-lowest/80 px-4 backdrop-blur-sm lg:gap-4 lg:px-6">
           <button
             id="sidebar-toggle"
             onClick={toggle}
             aria-label={t("nav.toggleSidebar")}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
           >
             <span className="material-symbols-outlined text-[22px]">
               {isOpen ? "menu_open" : "menu"}
             </span>
           </button>
 
-          <div className="flex-1" />
+          {routeHeader.showBack && routeHeader.backTo ? (
+            <button
+              type="button"
+              onClick={() => navigate(routeHeader.backTo!)}
+              aria-label={t("nav.header.back")}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+            >
+              <span className="material-symbols-outlined text-[22px]">arrow_back</span>
+            </button>
+          ) : null}
+
+          <p className="min-w-0 flex-1 truncate font-headline text-lg font-semibold leading-tight text-on-surface">
+            {t(routeHeader.titleKey)}
+          </p>
 
           {/* Language switcher — wired to i18n context */}
           <div className="flex items-center gap-1.5 rounded-full bg-surface-container px-3 py-1.5 text-xs font-medium">

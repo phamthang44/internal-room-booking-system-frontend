@@ -115,11 +115,30 @@ export interface BookingSubmitPayload {
   attendees: number;
 }
 
+/** POST /bookings → response.data (create booking summary). */
+export interface BookingCreatedTimeSlotDto {
+  id: number;
+  startTime: string;
+  endTime: string;
+  slotName: string;
+}
+
+export interface CreateBookingResponseDataDto {
+  bookingId: number;
+  roomName: string;
+  building: BuildingDto;
+  bookingDate: string;
+  timeSlots: BookingCreatedTimeSlotDto[];
+  bookingStatus: string;
+}
+
+/** Normalized success payload for /booking/success (router state). */
 export interface BookingConfirmation {
   bookingId: string;
   roomName: string;
-  building: string;
+  building: BuildingDto;
   date: string;
+  /** Display string derived from `timeSlots` (e.g. "13:00 — 15:00"). */
   timeSlot: string;
-  status: "PENDING" | "CONFIRMED";
+  status: string;
 }

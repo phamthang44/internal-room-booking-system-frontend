@@ -148,7 +148,7 @@ export const BookingConfirmationPage = () => {
                 <SummaryRow
                   icon={<School size={20} className="text-on-primary-fixed-variant" strokeWidth={1.5} />}
                   label={t("bookingSuccess.summary.room")}
-                  value={`${booking.roomName} · ${booking.building}`}
+                  value={`${booking.roomName} · ${booking.building.name}`}
                 />
                 <SummaryRow
                   icon={<CalendarDays size={20} className="text-on-primary-fixed-variant" strokeWidth={1.5} />}
@@ -170,7 +170,9 @@ export const BookingConfirmationPage = () => {
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-tertiary-fixed/20 border border-tertiary-fixed/30">
                   <Clock3 size={12} className="text-on-tertiary-fixed-variant" />
                   <span className="text-xs font-bold text-on-tertiary-fixed-variant uppercase tracking-wide">
-                    {t("bookingSuccess.statusLabel")}
+                    {booking.status?.toUpperCase() === "PENDING"
+                      ? t("bookingSuccess.statusLabel")
+                      : booking.status}
                   </span>
                 </div>
               </div>

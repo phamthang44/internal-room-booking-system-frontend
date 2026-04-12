@@ -126,6 +126,13 @@ export const en = {
     langEn: "EN",
     langVi: "VI",
     logout: "Logout",
+    header: {
+      rooms: "Rooms",
+      roomDetail: "Room details",
+      bookingSuccess: "Booking requested",
+      back: "Back",
+      fallback: "Home",
+    },
   },
   dashboard: {
     greeting: "Welcome back, {{name}}.",

@@ -113,13 +113,9 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
   // ── Result label ────────────────────────────────────────────────────────────
   const countLabel = (() => {
     if (!total || total === 0) return t("rooms.grid.noResults");
-    if (total === 1)
-      return t("rooms.grid.showingOne")
-        .replace("{{shown}}", String(rooms?.length ?? 0))
-        .replace("{{total}}", String(total));
-    return t("rooms.grid.showing")
-      .replace("{{shown}}", String(rooms?.length ?? 0))
-      .replace("{{total}}", String(total));
+    const shown = rooms?.length ?? 0;
+    if (total === 1) return t("rooms.grid.showingOne", { shown, total });
+    return t("rooms.grid.showing", { shown, total });
   })();
 
   return (

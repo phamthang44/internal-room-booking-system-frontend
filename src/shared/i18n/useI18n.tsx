@@ -4,10 +4,13 @@ import { vi } from "./translations/vi";
 
 type Language = "en" | "vi";
 
+/** Values substituted for `{{key}}` placeholders in translation strings. */
+export type TranslationParams = Record<string, string | number>;
+
 interface I18nContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: TranslationParams) => string;
 }
 
 const translations = { en, vi };
@@ -20,6 +23,12 @@ const getNestedValue = (obj: any, path: string): string => {
     path.split(".").reduce((current, prop) => current?.[prop], obj) ?? path
   );
 };
+
+const interpolate = (template: string, params: TranslationParams): string =>
+  template.replace(/\{\{(\w+)\}\}/g, (_, name: string) => {
+    const v = params[name];
+    return v !== undefined && v !== null ? String(v) : `{{${name}}}`;
+  });
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>(() => {
@@ -42,10 +51,10 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  // Translation function
-  const t = (key: string): string => {
+  const t = (key: string, params?: TranslationParams): string => {
     const value = getNestedValue(translations[language], key);
-    return typeof value === "string" ? value : key;
+    if (typeof value !== "string") return key;
+    return params ? interpolate(value, params) : value;
   };
 
   return (

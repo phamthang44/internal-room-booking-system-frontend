@@ -26,6 +26,8 @@ export type {
   RoomDetail,
   BookingSubmitPayload,
   BookingConfirmation,
+  BookingCreatedTimeSlotDto,
+  CreateBookingResponseDataDto,
   RoomDetailDataDto,
   RoomDetailApiResponse,
   RoomScheduleDto,

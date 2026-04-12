@@ -106,9 +106,10 @@ export const RoomListPage = () => {
                   <span className="material-symbols-outlined text-[18px]">chevron_left</span>
                 </button>
                 <span className="text-sm text-on-surface-variant">
-                  {t("rooms.pagination.pageOf")
-                    .replace("{{page}}", String(data.page))
-                    .replace("{{total}}", String(data.totalPages))}
+                  {t("rooms.pagination.pageOf", {
+                    page: data.page,
+                    total: data.totalPages,
+                  })}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}

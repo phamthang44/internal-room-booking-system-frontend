@@ -190,10 +190,9 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
       if (Number.isNaN(n) || n < 1) {
         newErrors.attendees = t("roomDetail.error.attendeesInvalid");
       } else if (n > room.capacity) {
-        newErrors.attendees = t("roomDetail.error.attendeesOverCapacity").replace(
-          "{{max}}",
-          String(room.capacity)
-        );
+        newErrors.attendees = t("roomDetail.error.attendeesOverCapacity", {
+          max: room.capacity,
+        });
       }
     }
 

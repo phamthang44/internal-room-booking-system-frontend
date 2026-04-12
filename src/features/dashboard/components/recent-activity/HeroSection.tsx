@@ -21,7 +21,7 @@ export const HeroSection = ({ name }: HeroSectionProps) => {
     <section className="relative overflow-hidden rounded-3xl p-8 md:p-12 bg-primary text-white">
       <div className="relative z-10 max-w-2xl">
         <h2 className="font-headline text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
-          {t("dashboard.greeting").replace("{{name}}", name)}
+          {t("dashboard.greeting", { name })}
         </h2>
         <p className="font-body text-on-primary-container text-lg font-medium max-w-md">
           {t("dashboard.subtitle")}

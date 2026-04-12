@@ -13,6 +13,8 @@ import type {
   RoomScheduleDto,
   BookingSubmitPayload,
   BookingConfirmation,
+  CreateBookingResponseDataDto,
+  BookingCreatedTimeSlotDto,
 } from "../types/roomDetail.types";
 
 const EQUIPMENT_ICON_MAP: Record<string, string> = {
@@ -76,6 +78,42 @@ const adaptRoomDetail = (raw: RoomDetailDataDto): RoomDetail => ({
 
 const BASE = import.meta.env.VITE_API_URL;
 
+const formatTimeShort = (time: string) => time.slice(0, 5);
+
+/** Builds a single-line summary for the success screen from API time slots. */
+const formatBookingTimeSlotSummary = (
+  slots: BookingCreatedTimeSlotDto[],
+  fallbackSlotIds: string[]
+): string => {
+  if (slots.length > 0) {
+    return slots
+      .map(
+        (s) =>
+          `${formatTimeShort(s.startTime)} — ${formatTimeShort(s.endTime)}`
+      )
+      .join(", ");
+  }
+  return fallbackSlotIds.join(", ");
+};
+
+const EMPTY_BUILDING: CreateBookingResponseDataDto["building"] = {
+  id: 0,
+  name: "",
+  address: "",
+};
+
+const adaptCreateBookingResponse = (
+  raw: CreateBookingResponseDataDto,
+  payload: BookingSubmitPayload
+): BookingConfirmation => ({
+  bookingId: String(raw.bookingId ?? ""),
+  roomName: raw.roomName ?? "",
+  building: raw.building ?? EMPTY_BUILDING,
+  date: raw.bookingDate ?? payload.date,
+  timeSlot: formatBookingTimeSlotSummary(raw.timeSlots ?? [], payload.slotIds),
+  status: raw.bookingStatus ?? "PENDING",
+});
+
 export const roomDetailApiService = {
   getRoomById: async (roomId: string): Promise<RoomDetail> => {
     const { token } = useAuthStore.getState();
@@ -93,22 +131,16 @@ export const roomDetailApiService = {
     const response = await apiClient.post(
       `${BASE}/bookings`,
       {
-        classroomId: payload.roomId,
+        classroomId: Number(payload.roomId),
         bookingDate: payload.date,
         timeSlotIds: payload.slotIds.map((id) => Number(id)),
+        timeBooking: new Date().toISOString(),
         purpose: payload.purpose,
-        expectedAttendees: payload.attendees,
+        attendees: payload.attendees,
       },
       { ...getAuthConfig(token ?? null) }
     );
-    const raw = response.data?.data ?? response.data;
-    return {
-      bookingId: String(raw.bookingId ?? raw.id ?? ""),
-      roomName: raw.roomName ?? raw.classroomName ?? "",
-      building: raw.buildingName ?? "",
-      date: raw.bookingDate ?? payload.date,
-      timeSlot: raw.timeSlot ?? payload.slotIds.join(", "),
-      status: raw.status ?? "PENDING",
-    };
+    const raw = (response.data?.data ?? response.data) as CreateBookingResponseDataDto;
+    return adaptCreateBookingResponse(raw, payload);
   },
 };
