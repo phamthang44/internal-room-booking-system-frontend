@@ -32,6 +32,7 @@ export const useGoogleLogin = () => {
   const { setUser, setToken, setError, setLoading } = useAuthStore();
 
   const mutation = useMutation({
+    meta: { skipGlobalError: true },
     mutationFn: async (credentialResponse: CredentialResponse) => {
       // Extract id_token from Google credential response
       if (!credentialResponse.credential) {

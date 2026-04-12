@@ -25,6 +25,7 @@ export const useGoogleAuth = () => {
   const { setUser, setToken, setError, setLoading } = useAuthStore();
 
   const mutation = useMutation({
+    meta: { skipGlobalError: true },
     mutationFn: async (idToken: string) => {
       if (!idToken || typeof idToken !== "string") {
         throw new Error("INVALID_TOKEN");

@@ -1,17 +1,11 @@
 import { BrowserRouter } from "react-router-dom";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Router } from "@core/routing";
+import { createAppQueryClient } from "@core/query";
 import { I18nProvider } from "@shared/i18n/useI18n";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+const queryClient = createAppQueryClient();
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 

@@ -4,7 +4,7 @@ import { HomePage, LoadingScreen } from "@features/home";
 import { StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
 import { NotFoundPage } from "@features/error";
-import { HttpErrorToast } from "@shared/components/HttpErrorToast";
+import { AppToastStack } from "@shared/components/AppToastStack";
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -37,8 +37,7 @@ const RouterContent = () => {
 
   return (
     <>
-      {/* Global HTTP error toast — renders above everything */}
-      <HttpErrorToast />
+      <AppToastStack />
 
       <Routes>
         {/* Auth Routes */}

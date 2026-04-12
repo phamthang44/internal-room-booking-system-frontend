@@ -187,23 +187,8 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // ──────────────────────────────────────────────
-    // 403 Forbidden — notify UI (modal/toast)
-    // ──────────────────────────────────────────────
-    if (status === 403) {
-      window.dispatchEvent(
-        new CustomEvent("http:error", { detail: { status: 403 } }),
-      );
-    }
-
-    // ──────────────────────────────────────────────
-    // 404 Not Found — notify UI (modal/toast)
-    // ──────────────────────────────────────────────
-    if (status === 404) {
-      window.dispatchEvent(
-        new CustomEvent("http:error", { detail: { status: 404 } }),
-      );
-    }
+    // 403 / 404 / other HTTP errors: global UX via React Query caches (mutations
+    // by default; queries opt in with meta.showGlobalError) — see createAppQueryClient.
 
     return Promise.reject(error);
   },

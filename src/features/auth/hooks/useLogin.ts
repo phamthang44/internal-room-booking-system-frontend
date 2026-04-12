@@ -11,6 +11,7 @@ export const useLogin = () => {
   const { setUser, setToken, setError, setLoading } = useAuthStore();
 
   const mutation = useMutation({
+    meta: { skipGlobalError: true },
     mutationFn: async (data: LoginRequest) => {
       return await authApi.login(data);
     },
