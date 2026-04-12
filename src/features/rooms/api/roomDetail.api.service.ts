@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Room Detail API Service
-// GET /api/v1/rooms/:id — fetch single classroom details
-// POST /api/v1/bookings — submit a booking request
+// GET BASE_URL/rooms/:id — classroom details + schedule
+// POST BASE_URL/bookings — submit booking
 // ─────────────────────────────────────────────────────────────────────────────
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
@@ -9,11 +9,12 @@ import { useAuthStore } from "@features/auth";
 import type {
   RoomDetail,
   EquipmentDetail,
+  RoomDetailDataDto,
+  RoomScheduleDto,
   BookingSubmitPayload,
   BookingConfirmation,
 } from "../types/roomDetail.types";
 
-// Map equipment names to lucide-react icon names
 const EQUIPMENT_ICON_MAP: Record<string, string> = {
   projector: "Projector",
   "interactive whiteboard": "PenLine",
@@ -33,54 +34,58 @@ const resolveIcon = (name: string): string => {
   for (const [key, icon] of Object.entries(EQUIPMENT_ICON_MAP)) {
     if (lower.includes(key)) return icon;
   }
-  return "Cpu"; // fallback
+  return "Cpu";
 };
 
-// ── Adapter: raw API room → RoomDetail ────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const adaptRoomDetail = (raw: any): RoomDetail => ({
-  id: String(raw.classroomId ?? raw.id ?? ""),
-  name: raw.roomName ?? raw.name ?? "",
-  building: raw.buildingName ?? raw.building ?? "",
-  floor: raw.floor ?? "",
-  capacity: raw.capacity ?? 0,
-  roomType: raw.roomType ?? "",
-  imageUrl: raw.imageUrl ?? undefined,
+const sortSchedule = (schedule: RoomScheduleDto): RoomScheduleDto => ({
+  ...schedule,
+  availabilities: [...schedule.availabilities].sort((a, b) => a.date.localeCompare(b.date)),
+});
+
+const unwrapData = (body: unknown): RoomDetailDataDto => {
+  if (body && typeof body === "object" && "data" in body) {
+    const d = (body as { data: RoomDetailDataDto }).data;
+    if (d && typeof d === "object" && "classroomId" in d) return d;
+  }
+  if (body && typeof body === "object" && "classroomId" in (body as object)) {
+    return body as RoomDetailDataDto;
+  }
+  throw new Error("roomDetail: unexpected API response shape");
+};
+
+const adaptRoomDetail = (raw: RoomDetailDataDto): RoomDetail => ({
+  id: String(raw.classroomId),
+  name: raw.roomName,
+  building: raw.building,
+  addressBuildingLocation: raw.addressBuildingLocation,
+  capacity: raw.capacity,
+  roomType: raw.roomType,
+  imageUrl: undefined,
   imageGradient:
-    raw.imageGradient ??
     "linear-gradient(135deg, #002045 0%, #1a365d 60%, #003f21 100%)",
   equipments: (raw.equipments ?? []).map(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (e: any, idx: number): EquipmentDetail => ({
+    (e, idx): EquipmentDetail => ({
       id: e.id ?? idx,
       name: e.name ?? "",
-      description: e.description ?? "",
+      description: undefined,
       icon: resolveIcon(e.name ?? ""),
     })
   ),
+  schedule: sortSchedule(raw.schedule),
 });
 
 const BASE = import.meta.env.VITE_API_URL;
 
 export const roomDetailApiService = {
-  /**
-   * GET /api/v1/rooms/:roomId
-   * Fetches detailed information about a single classroom.
-   */
   getRoomById: async (roomId: string): Promise<RoomDetail> => {
     const { token } = useAuthStore.getState();
     const response = await apiClient.get(`${BASE}/rooms/${roomId}`, {
       ...getAuthConfig(token ?? null),
     });
-    // The API may wrap in { data: ... } or return directly
-    const raw = response.data?.data ?? response.data;
+    const raw = unwrapData(response.data);
     return adaptRoomDetail(raw);
   },
 
-  /**
-   * POST /api/v1/bookings
-   * Submits a new booking request for a classroom.
-   */
   submitBooking: async (
     payload: BookingSubmitPayload
   ): Promise<BookingConfirmation> => {
@@ -90,8 +95,9 @@ export const roomDetailApiService = {
       {
         classroomId: payload.roomId,
         bookingDate: payload.date,
-        timeSlotId: payload.slotId,
+        timeSlotIds: payload.slotIds.map((id) => Number(id)),
         purpose: payload.purpose,
+        expectedAttendees: payload.attendees,
       },
       { ...getAuthConfig(token ?? null) }
     );
@@ -101,7 +107,7 @@ export const roomDetailApiService = {
       roomName: raw.roomName ?? raw.classroomName ?? "",
       building: raw.buildingName ?? "",
       date: raw.bookingDate ?? payload.date,
-      timeSlot: raw.timeSlot ?? payload.slotId,
+      timeSlot: raw.timeSlot ?? payload.slotIds.join(", "),
       status: raw.status ?? "PENDING",
     };
   },

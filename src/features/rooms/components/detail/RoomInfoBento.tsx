@@ -1,7 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // RoomInfoBento — Bento-style detail cards: Capacity, Location, Equipment
-// Follows the "No-Line Rule" from the Scholarly Sanctuary design system:
-// — hierarchy defined by background color shifts, NOT borders
 // ─────────────────────────────────────────────────────────────────────────────
 import {
   Users,
@@ -18,7 +16,6 @@ import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
 import type { RoomDetail, EquipmentDetail } from "../../types/roomDetail.types";
 
-// ── Equipment icon resolver ───────────────────────────────────────────────────
 const ICON_MAP: Record<string, React.ElementType> = {
   Projector,
   PenLine,
@@ -39,8 +36,6 @@ const EquipmentIcon = ({
   const Icon = ICON_MAP[iconName] ?? Cpu;
   return <Icon size={28} strokeWidth={1.5} className={className} />;
 };
-
-// ── Sub-components ────────────────────────────────────────────────────────────
 
 const InfoCard = ({
   icon,
@@ -85,8 +80,6 @@ const EquipmentPill = ({ item }: { item: EquipmentDetail }) => (
   </div>
 );
 
-// ── Main component ────────────────────────────────────────────────────────────
-
 interface RoomInfoBentoProps {
   room: RoomDetail;
   className?: string;
@@ -97,7 +90,6 @@ export const RoomInfoBento = ({ room, className }: RoomInfoBentoProps) => {
 
   return (
     <div className={cn("space-y-4", className)}>
-      {/* Row 1: Capacity + Location */}
       <div className="grid grid-cols-2 gap-4">
         <InfoCard
           icon={<Users size={20} className="text-on-primary-fixed-variant" strokeWidth={1.5} />}
@@ -114,15 +106,16 @@ export const RoomInfoBento = ({ room, className }: RoomInfoBentoProps) => {
           label={t("roomDetail.location")}
         >
           <p className="text-lg font-headline font-bold text-secondary leading-tight">
-            {room.building}
+            {room.building.name}
           </p>
-          {room.floor && (
-            <p className="text-sm text-on-surface-variant mt-0.5">{room.floor}</p>
+          {(room.building.address || room.addressBuildingLocation) && (
+            <p className="text-sm text-on-surface-variant mt-0.5">
+              {room.building.address || room.addressBuildingLocation}
+            </p>
           )}
         </InfoCard>
       </div>
 
-      {/* Row 2: Equipment (full width) */}
       {room.equipments.length > 0 && (
         <div className="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
           <div className="flex items-center gap-3 mb-5">

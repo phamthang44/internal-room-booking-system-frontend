@@ -13,10 +13,10 @@ interface RoomHeroImageProps {
 
 export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
   const navigate = useNavigate();
+  const locationLine = [room.building.name, room.building.address].filter(Boolean).join(" · ");
 
   return (
     <div className={cn("relative group overflow-hidden rounded-2xl", className)}>
-      {/* Background: image or gradient fallback */}
       {room.imageUrl ? (
         <img
           src={room.imageUrl}
@@ -28,16 +28,13 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
           className="w-full h-full min-h-[320px]"
           style={{ background: room.imageGradient }}
         >
-          {/* Animated ambient orb for depth */}
           <div className="absolute top-8 right-12 w-48 h-48 rounded-full bg-white/5 blur-3xl animate-pulse" />
           <div className="absolute bottom-12 left-8 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
         </div>
       )}
 
-      {/* Gradient overlay — bottom fade for text readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-      {/* Back button — top-left */}
       <button
         onClick={() => navigate(-1)}
         aria-label="Back to rooms"
@@ -47,12 +44,11 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
         <span className="hidden sm:inline">Rooms</span>
       </button>
 
-      {/* Room identity — bottom-left */}
       <div className="absolute bottom-6 left-6 right-6 text-white z-10">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
-          {room.roomType && (
+          {room.roomType?.name && (
             <span className="px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-xs font-semibold uppercase tracking-widest">
-              {room.roomType}
+              {room.roomType.name}
             </span>
           )}
         </div>
@@ -62,8 +58,7 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
         <div className="flex items-center gap-4 mt-2 flex-wrap">
           <span className="flex items-center gap-1.5 text-white/90 text-sm font-medium">
             <MapPin size={14} />
-            {room.building}
-            {room.floor && `, ${room.floor}`}
+            {locationLine}
           </span>
           <span className="flex items-center gap-1.5 text-white/90 text-sm font-medium">
             <Users size={14} />

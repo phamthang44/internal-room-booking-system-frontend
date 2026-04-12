@@ -63,7 +63,7 @@ export const RoomDetailPage = () => {
 
             {/* Right column: Booking sidebar (5/12, sticky) */}
             <aside className="lg:col-span-5 lg:sticky lg:top-24">
-              <BookingSidebar roomId={room.id} roomName={room.name} />
+              <BookingSidebar room={room} />
             </aside>
           </div>
         )}

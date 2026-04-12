@@ -35,7 +35,8 @@ export const useClassrooms = (page = 1) => {
     ...(equipmentId > 0 && { equipmentId }),
     ...(roomStatus && { roomStatus }),
     ...(sort && { sort }),
-    page,
+    // API expects 0-based page index; page state from UI is 1-based
+    page: page - 1,
     size: PAGE_SIZE,
   };
 

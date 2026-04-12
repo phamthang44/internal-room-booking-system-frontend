@@ -11,7 +11,10 @@ export type {
   RoomSearchParams,
   RoomAvailabilityUI,
   RoomUI,
+  RoomScheduleSlotUI,
   RoomsPageUI,
+  ClassroomScheduleSlotResponse,
+  DailyScheduleResponse,
 } from "./types/classroom.api.types";
 
 // ── Room Detail UI types ──────────────────────────────────────────────────────
@@ -23,6 +26,13 @@ export type {
   RoomDetail,
   BookingSubmitPayload,
   BookingConfirmation,
+  RoomDetailDataDto,
+  RoomDetailApiResponse,
+  RoomScheduleDto,
+  DayAvailabilityDto,
+  RoomSlotDto,
+  BuildingDto,
+  RoomTypeDto,
 } from "./types/roomDetail.types";
 
 // ── Legacy UI types (still used by mock api and Zustand store) ────────────────

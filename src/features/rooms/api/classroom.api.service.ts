@@ -13,6 +13,8 @@ import type {
   RoomUI,
   RoomsPageUI,
   EquipmentResponse,
+  ClassroomScheduleSlotResponse,
+  RoomScheduleSlotUI,
 } from "../types/classroom.api.types";
 
 // ── Deterministic gradient (client-side only, no API field) ──────────────────
@@ -42,6 +44,15 @@ const STATUS_MAP: Record<RoomStatusApi, RoomAvailabilityUI> = {
 const mapStatus = (status?: RoomStatusApi): RoomAvailabilityUI =>
   status ? (STATUS_MAP[status] ?? "occupied") : "occupied";
 
+const adaptSlot = (s: ClassroomScheduleSlotResponse): RoomScheduleSlotUI => ({
+  slotId: s.slotId ?? 0,
+  slotName: s.slotName ?? "",
+  startTime: s.startTime ?? "",
+  endTime: s.endTime ?? "",
+  isAvailable: Boolean(s.isAvailable),
+  status: s.status != null ? String(s.status) : "",
+});
+
 // ── Response adapter ──────────────────────────────────────────────────────────
 // Converts the raw API wire type into the UI model consumed by components.
 // This is the ONLY place that touches ClassroomListResponse fields.
@@ -56,6 +67,13 @@ const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): Ro
   equipments: raw.equipments ?? [],
   roomType: raw.roomType ?? "",
   imageGradient: buildGradient(raw.classroomId ?? 0),
+  dailySchedule: raw.dailySchedule
+    ? {
+        date: raw.dailySchedule.date ?? "",
+        slots: (raw.dailySchedule.slots ?? []).map(adaptSlot),
+      }
+    : undefined,
+  availableForQuery: raw.availableForQuery,
 });
 
 // ── API service ───────────────────────────────────────────────────────────────
@@ -86,12 +104,16 @@ export const classroomApiService = {
 
     const { data: rooms = [], meta = {} } = response.data;
 
+    // API uses 0-based page index; UI uses 1-based page numbers.
+    const apiPage = meta.page ?? 0;
+    const totalPages = meta.totalPages ?? 1;
+
     return {
       rooms: rooms.map(adaptRoom),
       total: meta.totalElements ?? 0,
-      page: meta.page ?? 1,
-      totalPages: meta.totalPages ?? 1,
-      hasNextPage: meta.hasNextPage ?? false,
+      page: apiPage + 1,
+      totalPages,
+      hasNextPage: meta.hasNextPage ?? apiPage + 1 < totalPages,
     };
   },
 };

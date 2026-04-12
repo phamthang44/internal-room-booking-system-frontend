@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "@shared/i18n/useI18n";
 import { StatusChip } from "@shared/components/StatusChip";
+import { cn } from "@shared/utils/cn";
 import type { RoomUI } from "../types/classroom.api.types";
 
 // ── Grid card (3-col default) ─────────────────────────────────────────────────
@@ -8,6 +9,8 @@ import type { RoomUI } from "../types/classroom.api.types";
 interface RoomCardProps {
   room: RoomUI;
 }
+
+const formatClock = (t: string) => (t.length >= 5 ? t.slice(0, 5) : t);
 
 export const RoomCard = ({ room }: RoomCardProps) => {
   const { t } = useI18n();
@@ -84,6 +87,37 @@ export const RoomCard = ({ room }: RoomCardProps) => {
               </span>
             )}
           </div>
+        )}
+
+        {room.dailySchedule && room.dailySchedule.slots.length > 0 && (
+          <div className="space-y-1.5 border-t border-outline-variant/40 pt-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+              {t("rooms.card.schedule")}
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {room.dailySchedule.slots.map((slot) => (
+                <span
+                  key={slot.slotId}
+                  title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
+                  className={cn(
+                    "max-w-full truncate rounded-lg px-2 py-0.5 text-[10px] font-medium",
+                    slot.isAvailable
+                      ? "bg-primary/12 text-primary"
+                      : "bg-surface-container text-on-surface-variant opacity-80"
+                  )}
+                >
+                  {slot.slotName}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {room.availableForQuery === false && (
+          <p className="flex items-start gap-1 text-[10px] leading-snug text-amber-700 dark:text-amber-400">
+            <span className="material-symbols-outlined shrink-0 text-[14px]">info</span>
+            {t("rooms.card.notMatchingFilters")}
+          </p>
         )}
 
         {/* Actions */}
@@ -167,6 +201,35 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
             </span>
           )}
         </div>
+
+        {room.dailySchedule && room.dailySchedule.slots.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-outline-variant/30 pt-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+              {t("rooms.card.schedule")}
+            </span>
+            {room.dailySchedule.slots.map((slot) => (
+              <span
+                key={slot.slotId}
+                title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
+                className={cn(
+                  "truncate rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                  slot.isAvailable
+                    ? "bg-primary/12 text-primary"
+                    : "bg-surface-container text-on-surface-variant opacity-80"
+                )}
+              >
+                {slot.slotName}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {room.availableForQuery === false && (
+          <p className="mt-1 flex items-start gap-1 text-[10px] text-amber-700 dark:text-amber-400">
+            <span className="material-symbols-outlined shrink-0 text-[14px]">info</span>
+            {t("rooms.card.notMatchingFilters")}
+          </p>
+        )}
       </div>
 
       {/* Actions */}
