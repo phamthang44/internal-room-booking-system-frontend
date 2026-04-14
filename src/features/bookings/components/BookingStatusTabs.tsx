@@ -1,4 +1,5 @@
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "@shared/i18n/useI18n";
 import type { MyBookingsFilter } from "../hooks/useMyBookings";
 
 export interface BookingStatusTabsProps {
@@ -7,18 +8,19 @@ export interface BookingStatusTabsProps {
   readonly className?: string;
 }
 
-const TABS: ReadonlyArray<{ readonly value: MyBookingsFilter; readonly label: string }> =
-  [
-    { value: "all", label: "All Bookings" },
-    { value: "pending", label: "Pending" },
-    { value: "completed", label: "Completed" },
-  ];
-
 export function BookingStatusTabs({
   value,
   onChange,
   className,
 }: Readonly<BookingStatusTabsProps>) {
+  const { t } = useI18n();
+  const TABS: ReadonlyArray<{ readonly value: MyBookingsFilter; readonly label: string }> =
+    [
+      { value: "all", label: t("bookings.tabs.all") },
+      { value: "pending", label: t("bookings.tabs.pending") },
+      { value: "completed", label: t("bookings.tabs.completed") },
+    ];
+
   return (
     <div className={cn("flex gap-2 rounded-xl bg-surface-container-low p-1", className)}>
       {TABS.map((tab) => {

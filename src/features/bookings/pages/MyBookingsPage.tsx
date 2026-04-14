@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@shared/components/AppLayout";
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "@shared/i18n/useI18n";
 import { useMyBookings, type MyBookingsFilter } from "../hooks/useMyBookings";
 import { BookingStatusTabs } from "../components/BookingStatusTabs";
 import { ActiveReservoirCard } from "../components/ActiveReservoirCard";
@@ -14,16 +15,16 @@ export interface MyBookingsPageProps {
 
 export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [filter, setFilter] = useState<MyBookingsFilter>("all");
   const { data, isLoading, isError, filteredRecentActivityItems } = useMyBookings(filter);
 
   const header = useMemo(() => {
     return {
-      title: "My Bookings",
-      subtitle:
-        "Manage your current reservations and review your academic activity history in the Scholarly Sanctuary.",
+      title: t("bookings.pageTitle"),
+      subtitle: t("bookings.pageSubtitle"),
     };
-  }, []);
+  }, [t]);
 
   return (
     <AppLayout>
@@ -42,11 +43,11 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
         {/* States (API-ready) */}
         {isLoading ? (
           <div className="rounded-2xl bg-surface-container-lowest p-8 text-on-surface-variant">
-            Loading bookings…
+            {t("bookings.loading")}
           </div>
         ) : isError || !data ? (
           <div className="rounded-2xl border border-error-container bg-error-container/20 p-8 text-error">
-            Unable to load bookings. Please try again.
+            {t("bookings.error.loadFailed")}
           </div>
         ) : (
           <div className="grid grid-cols-12 gap-6">

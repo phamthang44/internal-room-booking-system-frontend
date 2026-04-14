@@ -335,4 +335,50 @@ export const vi = {
     info: "Lời mời đã được gửi đến email học vụ của bạn. Bạn có thể thay đổi đặt phòng này tối đa 24 giờ trước giờ bắt đầu.",
     statusLabel: "Chờ phê duyệt",
   },
+  bookings: {
+    pageTitle: "Đặt phòng của tôi",
+    pageSubtitle:
+      "Quản lý các đặt chỗ hiện tại và xem lại lịch sử hoạt động đặt phòng của bạn trong Scholarly Sanctuary.",
+    tabs: {
+      all: "Tất cả",
+      pending: "Đang chờ",
+      completed: "Hoàn tất",
+    },
+    loading: "Đang tải danh sách đặt phòng…",
+    error: {
+      loadFailed: "Không thể tải đặt phòng. Vui lòng thử lại.",
+    },
+    detail: {
+      loading: "Đang tải chi tiết đặt phòng…",
+      retry: "Thử lại",
+      backToList: "Quay lại Đặt phòng của tôi",
+      error: {
+        title: "Không thể tải chi tiết đặt phòng.",
+        subtitle: "Đặt phòng có thể chưa tồn tại.",
+      },
+      labels: {
+        location: "Vị trí",
+        dateTime: "Ngày & Giờ",
+      },
+      sections: {
+        purpose: "Mục đích đặt phòng",
+        attendees: "Người tham dự",
+        history: "Lịch sử đặt phòng",
+        actions: "Thao tác",
+      },
+      attendeesCount: "{{count}} người",
+      attendeesHidden: "Phiên bản này không hiển thị chi tiết người tham dự.",
+      map: {
+        alt: "Bản đồ vị trí",
+        viewFloorMap: "Xem sơ đồ tầng",
+      },
+      actions: {
+        addToCalendar: "Thêm vào lịch",
+        contactSupport: "Liên hệ hỗ trợ",
+        cancelBooking: "Hủy đặt phòng",
+        cancelHint:
+          "Việc hủy phải được thực hiện ít nhất 24 giờ trước thời gian bắt đầu.",
+      },
+    },
+  },
 } as const;

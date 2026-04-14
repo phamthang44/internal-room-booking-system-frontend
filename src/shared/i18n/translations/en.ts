@@ -334,4 +334,50 @@ export const en = {
     info: "A calendar invite has been sent to your academic email address. You can modify this booking up to 24 hours before the start time.",
     statusLabel: "Pending Approval",
   },
+  bookings: {
+    pageTitle: "My Bookings",
+    pageSubtitle:
+      "Manage your current reservations and review your academic activity history in the Scholarly Sanctuary.",
+    tabs: {
+      all: "All Bookings",
+      pending: "Pending",
+      completed: "Completed",
+    },
+    loading: "Loading bookings…",
+    error: {
+      loadFailed: "Unable to load bookings. Please try again.",
+    },
+    detail: {
+      loading: "Loading booking…",
+      retry: "Retry",
+      backToList: "Back to My Bookings",
+      error: {
+        title: "Unable to load booking details.",
+        subtitle: "The booking may not exist yet.",
+      },
+      labels: {
+        location: "Location",
+        dateTime: "Date & Time",
+      },
+      sections: {
+        purpose: "Booking Purpose",
+        attendees: "Attendees",
+        history: "Booking History",
+        actions: "Actions",
+      },
+      attendeesCount: "{{count}} People",
+      attendeesHidden: "Attendee details are hidden in this version.",
+      map: {
+        alt: "Map of location",
+        viewFloorMap: "View Floor Map",
+      },
+      actions: {
+        addToCalendar: "Add to Calendar",
+        contactSupport: "Contact Support",
+        cancelBooking: "Cancel Booking",
+        cancelHint:
+          "Cancellations must be made at least 24 hours prior to the start time.",
+      },
+    },
+  },
 } as const;
