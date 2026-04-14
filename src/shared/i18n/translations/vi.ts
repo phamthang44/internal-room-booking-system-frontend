@@ -50,6 +50,9 @@ export const vi = {
   },
   common: {
     appName: "Scholarly Sanctuary",
+    toast: {
+      successTitle: "Thành công",
+    },
     layout: {
       leftPanel: {
         title: "Các không gian yên tĩnh cho tập trung sâu.",
@@ -130,6 +133,7 @@ export const vi = {
     header: {
       rooms: "Phòng học",
       roomDetail: "Chi tiết phòng",
+      bookingDetail: "Chi tiết đặt phòng",
       bookingSuccess: "Yêu cầu đặt phòng",
       back: "Quay lại",
       fallback: "Trang chủ",
@@ -348,6 +352,7 @@ export const vi = {
     recentActivity: {
       title: "Hoạt động gần đây",
       downloadReport: "Tải báo cáo",
+      empty: "Chưa có hoạt động gần đây.",
     },
     history: {
       bookNew: "Đặt buổi mới",
@@ -397,6 +402,8 @@ export const vi = {
         addToCalendar: "Thêm vào lịch",
         contactSupport: "Liên hệ hỗ trợ",
         cancelBooking: "Hủy đặt phòng",
+        cancelling: "Đang hủy...",
+        cancelSuccessFallback: "Đã hủy thành công.",
         cancelHint:
           "Việc hủy phải được thực hiện ít nhất 24 giờ trước thời gian bắt đầu.",
       },

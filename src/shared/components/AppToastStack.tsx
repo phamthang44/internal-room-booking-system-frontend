@@ -15,6 +15,23 @@ const ToastRow = ({
   stackIndex: number;
 }) => {
   const { t } = useI18n();
+  const tone = toast.tone ?? "error";
+  const toneClasses =
+    tone === "success"
+      ? {
+          border: "border-tertiary-fixed/30 ring-1 ring-tertiary-fixed/15",
+          side: "bg-tertiary-fixed",
+          iconWrap: "bg-tertiary-fixed/25",
+          icon: "text-on-tertiary-fixed-variant",
+          progress: "bg-tertiary-fixed",
+        }
+      : {
+          border: "border-error/25 ring-1 ring-error/10",
+          side: "bg-error",
+          iconWrap: "bg-error-container",
+          icon: "text-on-error-container",
+          progress: "bg-error",
+        };
 
   useEffect(() => {
     const tmr = window.setTimeout(() => onDismiss(toast.id), DISMISS_MS);
@@ -24,14 +41,14 @@ const ToastRow = ({
   return (
     <div
       role="alert"
-      className="app-toast-enter relative flex min-w-[320px] max-w-[400px] items-start gap-4 rounded-2xl border border-error/25 bg-surface-container-lowest px-5 py-4 shadow-[0_10px_40px_-10px_rgba(24,28,30,0.18)] ring-1 ring-error/10"
+      className={`app-toast-enter relative flex min-w-[320px] max-w-[400px] items-start gap-4 rounded-2xl border bg-surface-container-lowest px-5 py-4 shadow-[0_10px_40px_-10px_rgba(24,28,30,0.18)] ${toneClasses.border}`}
       style={{
         animationDelay: `${Math.min(stackIndex, 4) * 60}ms`,
       }}
     >
       <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden rounded-b-2xl bg-surface-container">
         <div
-          className="h-full rounded-r-full bg-error"
+          className={`h-full rounded-r-full ${toneClasses.progress}`}
           style={{
             animation: "app-toast-shrink 6s linear forwards",
             transformOrigin: "left",
@@ -39,11 +56,14 @@ const ToastRow = ({
         />
       </div>
 
-      <div className="absolute bottom-3 left-0 top-3 w-1 rounded-full bg-error" aria-hidden />
+      <div
+        className={`absolute bottom-3 left-0 top-3 w-1 rounded-full ${toneClasses.side}`}
+        aria-hidden
+      />
 
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-error-container">
-        <span className="material-symbols-outlined text-[22px] text-on-error-container">
-          error
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${toneClasses.iconWrap}`}>
+        <span className={`material-symbols-outlined text-[22px] ${toneClasses.icon}`}>
+          {tone === "success" ? "check_circle" : "error"}
         </span>
       </div>
 

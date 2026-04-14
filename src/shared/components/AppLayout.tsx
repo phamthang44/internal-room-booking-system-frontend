@@ -21,7 +21,7 @@ function useRouteHeader(pathname: string) {
   }
   if (matchPath({ path: "/bookings/:bookingId", end: true }, pathname)) {
     return {
-      titleKey: "nav.myBookings" as const,
+      titleKey: "nav.header.bookingDetail" as const,
       showBack: true,
       backTo: "/bookings",
     };

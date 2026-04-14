@@ -49,6 +49,9 @@ export const en = {
   },
   common: {
     appName: "Scholarly Sanctuary",
+    toast: {
+      successTitle: "Success",
+    },
     layout: {
       leftPanel: {
         title: "Quiet spaces for deep focus.",
@@ -129,6 +132,7 @@ export const en = {
     header: {
       rooms: "Rooms",
       roomDetail: "Room details",
+      bookingDetail: "Booking details",
       bookingSuccess: "Booking requested",
       back: "Back",
       fallback: "Home",
@@ -347,6 +351,7 @@ export const en = {
     recentActivity: {
       title: "Recent Activity",
       downloadReport: "Download Report",
+      empty: "No recent activity yet.",
     },
     history: {
       bookNew: "Book a New Session",
@@ -396,6 +401,8 @@ export const en = {
         addToCalendar: "Add to Calendar",
         contactSupport: "Contact Support",
         cancelBooking: "Cancel Booking",
+        cancelling: "Cancelling...",
+        cancelSuccessFallback: "Cancelled successfully.",
         cancelHint:
           "Cancellations must be made at least 24 hours prior to the start time.",
       },

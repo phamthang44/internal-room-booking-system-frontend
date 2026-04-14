@@ -1,11 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@shared/components/AppLayout";
 import { StatusChip } from "@shared/components/StatusChip";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
+import { normalizeApiError } from "@shared/errors/normalizeApiError";
+import { presentAppSuccess } from "@shared/errors/presentAppSuccess";
 import { useBookingDetail } from "../hooks/useBookingDetail";
 import { BookingTimeline } from "../components/BookingTimeline";
+import { bookingsApiService } from "../api/bookings.api.service";
 
 export interface BookingDetailPageProps {
   readonly className?: string;
@@ -15,8 +19,36 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
   const navigate = useNavigate();
   const { t } = useI18n();
   const { bookingId } = useParams<{ bookingId: string }>();
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isError, refetch } = useBookingDetail(bookingId ?? "");
+  const [cancelSuccessMessage, setCancelSuccessMessage] = useState<string | null>(null);
+  const [cancelErrorMessage, setCancelErrorMessage] = useState<string | null>(null);
+
+  const cancelMutation = useMutation({
+    mutationFn: async () => {
+      const id = Number(bookingId);
+      if (!Number.isFinite(id)) {
+        throw new Error("Invalid booking id");
+      }
+      return await bookingsApiService.cancelBooking(id);
+    },
+    onMutate: () => {
+      setCancelSuccessMessage(null);
+      setCancelErrorMessage(null);
+    },
+    onSuccess: async (message) => {
+      const msg = message ?? t("bookings.detail.actions.cancelSuccessFallback");
+      setCancelSuccessMessage(msg);
+      presentAppSuccess(msg);
+      await queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      await refetch();
+    },
+    onError: (err) => {
+      const normalized = normalizeApiError(err);
+      setCancelErrorMessage(normalized.message);
+    },
+  });
 
   const chipStatus = useMemo(() => {
     if (!data) return null;
@@ -208,20 +240,40 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                   <div className="pt-4 mt-4 border-t border-outline-variant/10">
                     <button
                       type="button"
-                      disabled={!data.canCancel}
+                      disabled={!data.canCancel || cancelMutation.isPending}
+                      onClick={() => {
+                        // Extra guard: prevent accidental double submit
+                        if (cancelMutation.isPending) return;
+                        void cancelMutation.mutateAsync();
+                      }}
                       className={cn(
                         "w-full h-12 font-bold rounded-xl transition-all flex items-center justify-center gap-2",
-                        data.canCancel
+                        data.canCancel && !cancelMutation.isPending
                           ? "text-error hover:bg-error-container/10"
                           : "text-on-surface-variant/50 cursor-not-allowed"
                       )}
                     >
-                      <span className="material-symbols-outlined">cancel</span>
-                      {t("bookings.detail.actions.cancelBooking")}
+                      <span className="material-symbols-outlined">
+                        {cancelMutation.isPending ? "progress_activity" : "cancel"}
+                      </span>
+                      {cancelMutation.isPending
+                        ? t("bookings.detail.actions.cancelling")
+                        : t("bookings.detail.actions.cancelBooking")}
                     </button>
                     <p className="text-[10px] text-on-surface-variant text-center mt-2 px-4 leading-normal">
                       {t("bookings.detail.actions.cancelHint")}
                     </p>
+
+                    {cancelSuccessMessage ? (
+                      <div className="mt-3 rounded-xl border border-tertiary-fixed/30 bg-tertiary-fixed/15 px-4 py-3 text-xs text-on-surface">
+                        {cancelSuccessMessage}
+                      </div>
+                    ) : null}
+                    {cancelErrorMessage ? (
+                      <div className="mt-3 rounded-xl border border-error-container bg-error-container/20 px-4 py-3 text-xs text-error">
+                        {cancelErrorMessage}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </section>

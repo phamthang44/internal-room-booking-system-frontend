@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 export interface AppToastItem {
   id: number;
+  tone?: "error" | "success";
   titleI18nKey: string;
   message: string;
   traceId?: string;

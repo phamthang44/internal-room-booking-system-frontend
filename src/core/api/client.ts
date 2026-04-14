@@ -6,6 +6,17 @@ import type {
 } from "axios";
 import { ENV } from "@core/config/env";
 
+const makeIdempotencyKey = (): string => {
+  // Prefer Web Crypto UUID when available (modern browsers)
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return (crypto as Crypto).randomUUID();
+  }
+  // Fallback: pseudo-random (still good enough for client-side dedupe)
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random()
+    .toString(16)
+    .slice(2)}`;
+};
+
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({
   baseURL: ENV.API_URL,
@@ -120,6 +131,20 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const language = localStorage.getItem("language") || "en";
     config.headers["Accept-Language"] = language;
+
+    // Idempotency: attach a unique key for non-GET requests if none provided.
+    // Backend uses this to dedupe duplicate submits (e.g., double click, retry).
+    const method = (config.method ?? "get").toLowerCase();
+    const isIdempotencyEligible =
+      method !== "get" && method !== "head" && method !== "options";
+    if (isIdempotencyEligible) {
+      const existing =
+        (config.headers["X-Idempotency-Key"] as string | undefined) ??
+        (config.headers["x-idempotency-key"] as string | undefined);
+      if (!existing) {
+        config.headers["X-Idempotency-Key"] = makeIdempotencyKey();
+      }
+    }
 
     const token = getStoredToken();
     if (token) {

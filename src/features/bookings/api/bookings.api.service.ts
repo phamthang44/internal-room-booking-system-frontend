@@ -12,9 +12,7 @@ import type {
 } from "../types/bookings.api.types";
 import type { BookingActivityItem, BookingDetail, BookingHistoryItem, BookingStatus } from "@/data/mockData";
 
-const BASE = "/api/v1/bookings";
-
-const pad2 = (n: number) => String(n).padStart(2, "0");
+const BASE = import.meta.env.VITE_API_URL + "/bookings";
 
 const toTimeRange = (slots: { startTime?: string; endTime?: string }[]) => {
   const s = slots?.[0]?.startTime?.slice(0, 5) ?? "00:00";
@@ -57,6 +55,21 @@ const iconForStatus = (status: BookingStatus): string => {
   if (status === "completed") return "task_alt";
   if (status === "cancelled") return "cancel";
   return "block";
+};
+
+const formatInstantLabel = (iso?: string | null): string => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const lang = localStorage.getItem("language");
+  const locale = lang === "vi" ? "vi-VN" : lang === "en" ? "en-US" : undefined;
+  return d.toLocaleString(locale, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
 const unwrapApiResult = <T,>(body: unknown): { data: T | null; meta?: unknown } => {
@@ -114,7 +127,7 @@ const adaptMyBookings = (rows: BookingDetailResponse[]): MyBookingsUiData => {
         id,
         roomLabel: [roomName, buildingName].filter(Boolean).join(" - "),
         dateTimeLabel: [bookingDate, timeSummary ? `• ${timeSummary}` : ""].filter(Boolean).join(" "),
-        status: uiStatus === "pending" || uiStatus === "confirmed" ? "completed" : uiStatus,
+        status: uiStatus,
       });
     }
   }
@@ -142,7 +155,7 @@ const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
 
   const primaryLocation = [raw.roomName, raw.buildingName].filter(Boolean).join(" - ");
   const secondaryLocation = raw.buildingAddress ?? undefined;
-
+  let performedBy = localStorage.getItem("language") === "vi" ? "Bởi: " : "By: ";
   return {
     id: bookingId,
     bookingCode,
@@ -172,13 +185,13 @@ const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
       cancelHint: "",
     },
     proTip: undefined,
-    timeline: (raw.approvalHistory ?? []).map((h, idx) => ({
-      id: String(h.approvalId ?? idx),
-      title: h.approvalStatus ?? "APPROVED",
-      atLabel: h.decidedAt ?? "",
-      note: h.note ?? undefined,
+    timeline: (raw.bookingHistorySummaryResponses ?? raw.bookingHistorySummary ?? []).map((h, idx) => ({
+      id: String(h.timestamp ?? idx),
+      title: [h.action, h.statusAfter ? `→ ${h.statusAfter}` : ""].filter(Boolean).join(" "),
+      atLabel: formatInstantLabel(h.timestamp),
+      note: [h.performedBy ? `${performedBy} ${h.performedBy}` : "", h.note ?? ""].filter(Boolean).join(" — ") || undefined,
       icon: "history",
-      tone: h.approvalStatus === "APPROVED" ? "primary" : "neutral",
+      tone: h.statusAfter === "APPROVED" ? "primary" : "neutral",
     })),
   };
 };
@@ -219,13 +232,18 @@ export const bookingsApiService = {
     return unwrapped.data ?? {};
   },
 
-  cancelBooking: async (bookingId: number): Promise<void> => {
+  cancelBooking: async (bookingId: number): Promise<string | null> => {
     const { token } = useAuthStore.getState();
     const payload: CancelBookingRequest = {
       bookingId,
       cancelTime: new Date().toISOString(),
     };
-    await apiClient.patch(`${BASE}/cancel`, payload, { ...getAuthConfig(token ?? null) });
+    const response = await apiClient.patch<ApiResult<unknown>>(
+      `${BASE}/cancel`,
+      payload,
+      { ...getAuthConfig(token ?? null) }
+    );
+    return response.data?.meta?.message ?? null;
   },
 
   checkInBooking: async (bookingId: number): Promise<void> => {

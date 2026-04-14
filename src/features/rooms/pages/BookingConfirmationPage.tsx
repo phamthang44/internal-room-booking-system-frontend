@@ -106,7 +106,7 @@ export const BookingConfirmationPage = () => {
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate(`/bookings/${encodeURIComponent(String(booking.bookingId))}`)}
                 className={cn(
                   "flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl",
                   "bg-gradient-to-r from-primary to-primary-container text-white",

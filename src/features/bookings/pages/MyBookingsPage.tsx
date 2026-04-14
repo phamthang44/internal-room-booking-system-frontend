@@ -65,6 +65,7 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
               className="col-span-12 lg:col-span-8"
               title={t("bookings.recentActivity.title")}
               downloadLabel={t("bookings.recentActivity.downloadReport")}
+              emptyLabel={t("bookings.recentActivity.empty")}
               items={filteredRecentActivityItems}
               onOpenBooking={(bookingId) => navigate(`/bookings/${bookingId}`)}
               onCancelBooking={(bookingId) => navigate(`/bookings/${bookingId}`)}

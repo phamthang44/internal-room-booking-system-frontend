@@ -48,12 +48,14 @@ export interface BookingTimeSlotDto {
   slotName?: string;
 }
 
-export interface ApprovalHistoryDto {
-  approvalId?: number;
-  approverName?: string;
-  approvalStatus?: BookingStatusApi | string;
+export interface BookingHistorySummaryResponse {
+  bookingId?: number;
+  classroomName?: string;
+  action?: string; // CHECK_IN, CANCEL, ...
+  statusAfter?: string;
+  timestamp?: string; // Instant ISO-8601
   note?: string;
-  decidedAt?: string; // ISO-8601
+  performedBy?: string;
 }
 
 export interface BookingDetailResponse {
@@ -66,7 +68,10 @@ export interface BookingDetailResponse {
   purpose?: string;
   attendees?: number;
   status?: BookingStatusApi;
-  approvalHistory?: ApprovalHistoryDto[];
+  // Backend currently returns `bookingHistorySummaryResponses`
+  bookingHistorySummaryResponses?: BookingHistorySummaryResponse[];
+  // Fallback for older/alternate naming (safe to keep optional)
+  bookingHistorySummary?: BookingHistorySummaryResponse[];
 }
 
 export interface CreateBookingRequest {

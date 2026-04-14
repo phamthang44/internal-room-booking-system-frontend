@@ -4,6 +4,7 @@ import { BookingActivityRow } from "./BookingActivityRow";
 export interface RecentActivityCardProps {
   readonly title: string;
   readonly downloadLabel: string;
+  readonly emptyLabel?: string;
   readonly items: readonly BookingActivityItem[];
   readonly onOpenBooking: (bookingId: string) => void;
   readonly onDownloadReport?: () => void;
@@ -14,6 +15,7 @@ export interface RecentActivityCardProps {
 export function RecentActivityCard({
   title,
   downloadLabel,
+  emptyLabel,
   items,
   onOpenBooking,
   onDownloadReport,
@@ -34,16 +36,22 @@ export function RecentActivityCard({
         </button>
       </div>
 
-      <div className="space-y-4">
-        {items.map((item) => (
-          <BookingActivityRow
-            key={item.id}
-            item={item}
-            onOpen={onOpenBooking}
-            onCancel={onCancelBooking}
-          />
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <div className="rounded-xl bg-surface-container-lowest p-6 text-sm text-on-surface-variant">
+          {emptyLabel ?? "No recent activity."}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {items.map((item) => (
+            <BookingActivityRow
+              key={item.id}
+              item={item}
+              onOpen={onOpenBooking}
+              onCancel={onCancelBooking}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
