@@ -19,6 +19,20 @@ function useRouteHeader(pathname: string) {
       backTo: "/rooms",
     };
   }
+  if (matchPath({ path: "/bookings/:bookingId", end: true }, pathname)) {
+    return {
+      titleKey: "nav.myBookings" as const,
+      showBack: true,
+      backTo: "/bookings",
+    };
+  }
+  if (matchPath({ path: "/bookings", end: true }, pathname)) {
+    return {
+      titleKey: "nav.myBookings" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
   if (matchPath({ path: "/rooms/:roomId", end: true }, pathname)) {
     return {
       titleKey: "nav.header.roomDetail" as const,

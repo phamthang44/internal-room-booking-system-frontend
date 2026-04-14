@@ -3,6 +3,7 @@ import { LoginPage, useAuthStore, useInitAuth } from "@features/auth";
 import { HomePage, LoadingScreen } from "@features/home";
 import { StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
+import { MyBookingsPage, BookingDetailPage } from "@features/bookings";
 import { NotFoundPage } from "@features/error";
 import { AppToastStack } from "@shared/components/AppToastStack";
 
@@ -85,6 +86,24 @@ const RouterContent = () => {
           element={
             <ProtectedRoute>
               <RoomDetailPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/bookings"
+          element={
+            <ProtectedRoute>
+              <MyBookingsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/bookings/:bookingId"
+          element={
+            <ProtectedRoute>
+              <BookingDetailPage />
             </ProtectedRoute>
           }
         />
