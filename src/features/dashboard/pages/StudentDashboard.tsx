@@ -21,7 +21,7 @@ export const StudentDashboard = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-7xl p-6 md:p-8 space-y-8">
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         <HeroSection name={firstName} />
 
         {error ? (

@@ -62,7 +62,7 @@ export const BookingConfirmationPage = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto min-h-[calc(100vh-8rem)] flex items-center">
+      <div className="max-w-5xl mx-auto min-h-[calc(100vh-8rem)] flex items-center px-4 py-8 sm:px-6 lg:px-8">
         <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
 
           {/* ── Left: Hero success section (7/12) ── */}

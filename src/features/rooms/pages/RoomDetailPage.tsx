@@ -2,7 +2,7 @@
 // RoomDetailPage — Main page: 7/12 + 5/12 asymmetric layout
 // Route: /rooms/:roomId
 // ─────────────────────────────────────────────────────────────────────────────
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { RefreshCw } from "lucide-react";
 import { AppLayout } from "@shared/components/AppLayout";
 import { useI18n } from "@shared/i18n/useI18n";
@@ -14,14 +14,13 @@ import { RoomDetailSkeleton } from "../components/detail/RoomDetailSkeleton";
 
 export const RoomDetailPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
-  const navigate = useNavigate();
   const { t } = useI18n();
 
   const { data: room, isLoading, isError, refetch } = useRoomDetail(roomId ?? "");
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         {/* ── Loading skeleton ── */}
         {isLoading && <RoomDetailSkeleton />}
 

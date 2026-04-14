@@ -19,7 +19,7 @@ export const RoomListPage = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         {/* ── Page header ── */}
         <div className="mb-6">
           <h1 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
@@ -34,7 +34,7 @@ export const RoomListPage = () => {
         <SearchBar className="mb-6" />
 
         {/* ── Layout: filter sidebar + room grid ── */}
-        <div className="flex gap-6">
+        <div className="flex flex-col gap-6 lg:flex-row">
           {/* Desktop sidebar */}
           <div className="hidden w-64 shrink-0 lg:block">
             <div className="sticky top-24 rounded-2xl bg-surface-container-lowest p-5 shadow-[0_2px_12px_rgba(24,28,30,0.06)]">

@@ -98,9 +98,9 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
 
   return (
     <AppLayout>
-      <div className={cn("mx-auto max-w-6xl", className)}>
+      <div className={cn("mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-8 lg:px-8", className)}>
         {/* Header Section */}
-        <div className="mb-10 space-y-6">
+        <div className="mb-8 space-y-6 md:mb-10">
           <div className="flex flex-col gap-6 md:flex-row md:justify-between md:items-end">
             <div>
               <h2 className="text-4xl font-extrabold tracking-tight text-on-surface mb-2 font-headline">
@@ -112,7 +112,7 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
           </div>
 
           {/* Search / Filters */}
-          <section className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-5">
+          <section className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 sm:p-5">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
               <div className="md:col-span-4">
                 <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
@@ -216,11 +216,11 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="any">{t("bookings.search.anyStatus")}</SelectItem>
-                    <SelectItem value="PENDING">PENDING</SelectItem>
-                    <SelectItem value="APPROVED">APPROVED</SelectItem>
-                    <SelectItem value="REJECTED">REJECTED</SelectItem>
-                    <SelectItem value="CANCELLED">CANCELLED</SelectItem>
-                    <SelectItem value="CHECKED_IN">CHECKED_IN</SelectItem>
+                    <SelectItem value="PENDING">{t("bookings.search.statusOptions.pending")}</SelectItem>
+                    <SelectItem value="APPROVED">{t("bookings.search.statusOptions.approved")}</SelectItem>
+                    <SelectItem value="REJECTED">{t("bookings.search.statusOptions.rejected")}</SelectItem>
+                    <SelectItem value="CANCELLED">{t("bookings.search.statusOptions.cancelled")}</SelectItem>
+                    <SelectItem value="CHECKED_IN">{t("bookings.search.statusOptions.checkedIn")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

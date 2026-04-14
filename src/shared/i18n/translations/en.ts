@@ -349,6 +349,13 @@ export const en = {
       bookingDate: "Booking date",
       status: "Status",
       anyStatus: "Any status",
+      statusOptions: {
+        pending: "Pending",
+        approved: "Approved",
+        rejected: "Rejected",
+        cancelled: "Cancelled",
+        checkedIn: "Checked-in",
+      },
       timeSlotId: "Slot",
       attendees: "Attendees",
       sort: "Sort",

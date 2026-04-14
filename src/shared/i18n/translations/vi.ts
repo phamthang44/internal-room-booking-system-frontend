@@ -350,6 +350,13 @@ export const vi = {
       bookingDate: "Ngày đặt",
       status: "Trạng thái",
       anyStatus: "Tất cả trạng thái",
+      statusOptions: {
+        pending: "Đang chờ",
+        approved: "Đã duyệt",
+        rejected: "Từ chối",
+        cancelled: "Đã hủy",
+        checkedIn: "Đã điểm danh",
+      },
       timeSlotId: "Ca",
       attendees: "Số người",
       sort: "Sắp xếp",

@@ -60,7 +60,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
 
   return (
     <AppLayout>
-      <div className={cn("mx-auto max-w-5xl", className)}>
+      <div className={cn("mx-auto max-w-5xl px-4 py-6 sm:px-6 md:py-8 lg:px-8", className)}>
         {/* Loading / error */}
         {isLoading ? (
           <div className="rounded-2xl bg-surface-container-lowest p-8 text-on-surface-variant">
@@ -96,7 +96,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
             {/* Left column */}
             <div className="lg:col-span-2 space-y-8">
               {/* Title & Status Card */}
-              <section className="bg-surface-container-lowest p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
+              <section className="bg-surface-container-lowest p-5 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
                 <div className="flex flex-col gap-4">
                   <div className="flex items-start justify-between">
                     {chipStatus ? (
@@ -160,7 +160,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
               </section>
 
               {/* Booking Purpose */}
-              <section className="bg-surface-container-lowest p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
+              <section className="bg-surface-container-lowest p-5 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
                 <h3 className="text-lg font-bold mb-4 text-on-surface font-headline">
                   {t("bookings.detail.sections.purpose")}
                 </h3>
@@ -170,7 +170,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
               </section>
 
               {/* Attendees (simple count only) */}
-              <section className="bg-surface-container-lowest p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
+              <section className="bg-surface-container-lowest p-5 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-lg font-bold text-on-surface font-headline">
                     {t("bookings.detail.sections.attendees")}
@@ -217,7 +217,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
               </section>
 
               {/* Actions */}
-              <section className="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
+              <section className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
                 <h3 className="text-sm font-bold text-on-surface mb-4 uppercase tracking-widest font-headline">
                   {t("bookings.detail.sections.actions")}
                 </h3>
