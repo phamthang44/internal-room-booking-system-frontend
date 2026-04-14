@@ -1,3 +1,5 @@
+import { useI18n } from "@shared/i18n/useI18n";
+
 export interface ActiveReservoirCardProps {
   readonly title: string;
   readonly description: string;
@@ -11,6 +13,8 @@ export function ActiveReservoirCard({
   reservedSlots,
   className,
 }: Readonly<ActiveReservoirCardProps>) {
+  const { t } = useI18n();
+
   return (
     <section
       className={[
@@ -36,7 +40,7 @@ export function ActiveReservoirCard({
           {String(reservedSlots).padStart(2, "0")}
         </div>
         <div className="text-xs uppercase tracking-widest opacity-60">
-          Reserved Slots
+          {t("bookings.summary.reservedSlotsLabel")}
         </div>
       </div>
     </section>

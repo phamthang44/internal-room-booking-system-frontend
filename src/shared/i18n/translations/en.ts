@@ -276,6 +276,7 @@ export const en = {
       available: "Available",
       occupied: "Occupied",
       maintenance: "Maintenance",
+      rejected: "Rejected",
     },
   },
   roomDetail: {
@@ -338,6 +339,26 @@ export const en = {
     pageTitle: "My Bookings",
     pageSubtitle:
       "Manage your current reservations and review your academic activity history in the Scholarly Sanctuary.",
+    summary: {
+      title: "Active Reservoir",
+      description: "You have {{count}} upcoming study sessions this week.",
+      reservedSlotsLabel: "Reserved Slots",
+    },
+    recentActivity: {
+      title: "Recent Activity",
+      downloadReport: "Download Report",
+    },
+    history: {
+      bookNew: "Book a New Session",
+    },
+    status: {
+      confirmed: "Confirmed",
+      pending: "Pending",
+      rejected: "Rejected",
+      cancelled: "Cancelled",
+      completed: "Completed",
+    },
+    viewDetails: "View Details",
     tabs: {
       all: "All Bookings",
       pending: "Pending",

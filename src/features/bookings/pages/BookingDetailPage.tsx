@@ -74,7 +74,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                       />
                     ) : (
                       <span className="px-3 py-1 text-xs font-bold tracking-wider rounded-full bg-surface-container-high text-on-surface-variant uppercase">
-                        {data.status}
+                        {t(`bookings.status.${data.status}`)}
                       </span>
                     )}
                   </div>

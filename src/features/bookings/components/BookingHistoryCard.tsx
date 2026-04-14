@@ -1,15 +1,10 @@
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "@shared/i18n/useI18n";
 import type { BookingHistoryItem } from "@/data/mockData";
 
 export interface BookingHistoryCardProps {
   readonly item: BookingHistoryItem;
   readonly onOpen: (bookingId: string) => void;
-}
-
-function statusLabel(status: BookingHistoryItem["status"]) {
-  if (status === "cancelled") return "CANCELLED";
-  if (status === "completed") return "COMPLETED";
-  return "REJECTED";
 }
 
 function statusClassName(status: BookingHistoryItem["status"]) {
@@ -21,6 +16,8 @@ function statusClassName(status: BookingHistoryItem["status"]) {
 }
 
 export function BookingHistoryCard({ item, onOpen }: Readonly<BookingHistoryCardProps>) {
+  const { t } = useI18n();
+
   return (
     <button
       type="button"
@@ -42,7 +39,7 @@ export function BookingHistoryCard({ item, onOpen }: Readonly<BookingHistoryCard
             statusClassName(item.status)
           )}
         >
-          {statusLabel(item.status)}
+          {t(`bookings.status.${item.status}`)}
         </span>
       </div>
 
@@ -51,7 +48,7 @@ export function BookingHistoryCard({ item, onOpen }: Readonly<BookingHistoryCard
 
       <div className="mt-4 pt-4 border-t border-outline-variant/10">
         <span className="text-xs font-bold text-primary inline-flex items-center gap-1">
-          View Details
+          {t("bookings.viewDetails")}
           <span className="material-symbols-outlined text-xs">arrow_forward</span>
         </span>
       </div>

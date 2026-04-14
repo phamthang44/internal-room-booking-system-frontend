@@ -54,15 +54,17 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
             {/* Summary Stats (Top Row Asymmetric) */}
             <ActiveReservoirCard
               className="col-span-12 lg:col-span-4"
-              title={data.summary.title}
-              description={data.summary.description}
+              title={t("bookings.summary.title")}
+              description={t("bookings.summary.description", {
+                count: data.summary.reservedSlots,
+              })}
               reservedSlots={data.summary.reservedSlots}
             />
 
             <RecentActivityCard
               className="col-span-12 lg:col-span-8"
-              title={data.recentActivity.title}
-              downloadLabel={data.recentActivity.downloadLabel}
+              title={t("bookings.recentActivity.title")}
+              downloadLabel={t("bookings.recentActivity.downloadReport")}
               items={filteredRecentActivityItems}
               onOpenBooking={(bookingId) => navigate(`/bookings/${bookingId}`)}
               onCancelBooking={(bookingId) => navigate(`/bookings/${bookingId}`)}
@@ -75,7 +77,7 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
             <div className="col-span-12">
               <BookingHistoryGrid
                 items={data.history.items}
-                ctaLabel={data.history.cta.label}
+                ctaLabel={t("bookings.history.bookNew")}
                 onOpenBooking={(bookingId) => navigate(`/bookings/${bookingId}`)}
                 onCreateNew={() => navigate("/rooms")}
               />

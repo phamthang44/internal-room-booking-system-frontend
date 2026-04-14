@@ -1,5 +1,7 @@
-import { useCallback, useMemo } from "react";
-import { bookingDetailsById, type BookingDetail } from "@/data/mockData";
+import { useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
+import type { BookingDetail } from "@/data/mockData";
+import { bookingsApiService } from "../api/bookings.api.service";
 
 export interface UseBookingDetailResult {
   readonly data: BookingDetail | null;
@@ -9,17 +11,20 @@ export interface UseBookingDetailResult {
 }
 
 export function useBookingDetail(bookingId: string): UseBookingDetailResult {
-  const data = useMemo(() => {
-    if (!bookingId) return null;
-    return bookingDetailsById[bookingId] ?? null;
-  }, [bookingId]);
+  const query = useQuery({
+    queryKey: ["bookings", "detail", bookingId],
+    queryFn: () => bookingsApiService.getBookingDetail(bookingId),
+    enabled: Boolean(bookingId),
+    staleTime: 1000 * 30,
+  });
 
-  const isLoading = false;
-  const isError = Boolean(bookingId) && !data;
+  const data = query.data ?? null;
+  const isLoading = query.isLoading;
+  const isError = query.isError;
 
   const refetch = useCallback(async () => {
-    // Mock-first: no-op. Later, wire react-query refetch here.
-  }, []);
+    await query.refetch();
+  }, [query]);
 
   return { data, isLoading, isError, refetch };
 }

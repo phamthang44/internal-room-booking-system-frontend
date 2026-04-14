@@ -277,6 +277,7 @@ export const vi = {
       available: "Còn trống",
       occupied: "Đang sử dụng",
       maintenance: "Bảo trì",
+      rejected: "Đã từ chối",
     },
   },
   roomDetail: {
@@ -339,6 +340,26 @@ export const vi = {
     pageTitle: "Đặt phòng của tôi",
     pageSubtitle:
       "Quản lý các đặt chỗ hiện tại và xem lại lịch sử hoạt động đặt phòng của bạn trong Scholarly Sanctuary.",
+    summary: {
+      title: "Hoạt động đang diễn ra",
+      description: "Bạn có {{count}} buổi học sắp tới trong tuần này.",
+      reservedSlotsLabel: "Suất đã giữ",
+    },
+    recentActivity: {
+      title: "Hoạt động gần đây",
+      downloadReport: "Tải báo cáo",
+    },
+    history: {
+      bookNew: "Đặt buổi mới",
+    },
+    status: {
+      confirmed: "Đã xác nhận",
+      pending: "Đang chờ",
+      rejected: "Bị từ chối",
+      cancelled: "Đã hủy",
+      completed: "Hoàn tất",
+    },
+    viewDetails: "Xem chi tiết",
     tabs: {
       all: "Tất cả",
       pending: "Đang chờ",

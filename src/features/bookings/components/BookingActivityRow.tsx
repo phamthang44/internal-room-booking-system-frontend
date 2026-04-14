@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { StatusChip } from "@shared/components/StatusChip";
+import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
 import type { BookingActivityItem, BookingStatus } from "@/data/mockData";
 
@@ -16,15 +17,6 @@ function mapToChipStatus(status: BookingStatus) {
   return null;
 }
 
-function fallbackLabel(status: BookingStatus) {
-  if (status === "rejected") return "REJECTED";
-  if (status === "completed") return "COMPLETED";
-  if (status === "cancelled") return "CANCELLED";
-  if (status === "confirmed") return "CONFIRMED";
-  if (status === "pending") return "PENDING";
-  return status.toUpperCase();
-}
-
 function fallbackStyles(status: BookingStatus) {
   if (status === "rejected") return "bg-error-container text-on-error-container";
   if (status === "completed")
@@ -37,6 +29,7 @@ export function BookingActivityRow({
   onOpen,
   onCancel,
 }: Readonly<BookingActivityRowProps>) {
+  const { t } = useI18n();
   const chipStatus = useMemo(() => mapToChipStatus(item.status), [item.status]);
 
   return (
@@ -86,7 +79,7 @@ export function BookingActivityRow({
               fallbackStyles(item.status)
             )}
           >
-            {fallbackLabel(item.status)}
+            {t(`bookings.status.${item.status}`)}
           </span>
         )}
 
@@ -99,7 +92,7 @@ export function BookingActivityRow({
             }}
             className="text-error font-bold text-xs opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            Cancel Booking
+            {t("bookings.detail.actions.cancelBooking")}
           </button>
         ) : (
           <span className="w-[88px]" aria-hidden="true" />
