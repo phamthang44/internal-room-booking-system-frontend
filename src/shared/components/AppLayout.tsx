@@ -12,6 +12,41 @@ interface AppLayoutProps {
 }
 
 function useRouteHeader(pathname: string) {
+  if (matchPath({ path: "/admin/rooms", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.rooms" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
+  if (matchPath({ path: "/admin/rooms/new", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.roomsNew" as const,
+      showBack: true,
+      backTo: "/admin/rooms",
+    };
+  }
+  if (matchPath({ path: "/admin/rooms/:id/edit", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.roomsEdit" as const,
+      showBack: true,
+      backTo: "/admin/rooms",
+    };
+  }
+  if (matchPath({ path: "/admin/rooms/:id/audit", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.roomsAudit" as const,
+      showBack: true,
+      backTo: "/admin/rooms",
+    };
+  }
+  if (matchPath({ path: "/admin/equipment", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.equipment" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
   if (matchPath({ path: "/booking/success", end: true }, pathname)) {
     return {
       titleKey: "nav.header.bookingSuccess" as const,
@@ -71,6 +106,8 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const isAdmin = (profile?.roleName ?? user?.roleName) === "ADMIN";
+
   // Close drawer on mobile when route changes
   useEffect(() => {
     if (window.innerWidth < 1024) close();
@@ -111,6 +148,11 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
     { icon: "event_note", label: t("nav.myBookings"), to: "/bookings" },
     { icon: "verified_user", label: t("nav.approvals"), to: "/approvals" },
     { icon: "settings", label: t("nav.settings"), to: "/settings" },
+  ];
+
+  const ADMIN_NAV_ITEMS = [
+    { icon: "meeting_room", label: t("nav.admin.rooms"), to: "/admin/rooms" },
+    { icon: "inventory_2", label: t("nav.admin.equipment"), to: "/admin/equipment" },
   ];
 
   return (
@@ -170,10 +212,41 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
               </li>
             ))}
           </ul>
+
+          {isAdmin ? (
+            <>
+              <div className="my-4 h-px bg-outline-variant/20" />
+              <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+                {t("nav.admin.section")}
+              </p>
+              <ul className="space-y-1">
+                {ADMIN_NAV_ITEMS.map((item) => (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                          isActive
+                            ? "bg-primary text-on-primary shadow-sm"
+                            : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface",
+                        )
+                      }
+                    >
+                      <span className="material-symbols-outlined text-[20px]">
+                        {item.icon}
+                      </span>
+                      {item.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
         </nav>
 
         {/* User profile footer */}
-        <div className="border-t border-outline-variant/20 p-4">
+        <div className="border-t border-outline-variant/20 p-4 select-none">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed">
               {(profile?.fullName || user?.fullName)?.charAt(0) ?? "U"}

@@ -13,8 +13,15 @@ interface CustomSelectProps {
   onChange: (val: any) => void;
   icon?: string;
   className?: string;
+  triggerClassName?: string;
   placeholder?: string;
   menuClassName?: string;
+  /** When true, show error border on trigger. */
+  isError?: boolean;
+  /** Optional hook for scroll/focus-to-field. */
+  dataField?: string;
+  /** When true, the trigger is non-interactive and the menu cannot open. */
+  disabled?: boolean;
 }
 
 export function CustomSelect({
@@ -23,8 +30,12 @@ export function CustomSelect({
   onChange,
   icon,
   className,
+  triggerClassName,
   placeholder,
-  menuClassName
+  menuClassName,
+  isError = false,
+  dataField,
+  disabled = false,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -42,18 +53,34 @@ export function CustomSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (disabled) setIsOpen(false);
+  }, [disabled]);
+
   return (
-    <div ref={wrapperRef} className={cn("relative", className)}>
+    <div
+      ref={wrapperRef}
+      className={cn("relative", className)}
+      data-field={dataField}
+    >
       <button
         type="button"
+        disabled={disabled}
+        aria-disabled={disabled}
         onMouseDown={(e) => {
-          e.preventDefault(); 
+          if (disabled) return;
+          e.preventDefault();
           setIsOpen(!isOpen);
         }}
         className={cn(
-          "flex w-full items-center justify-between rounded-xl border py-2 text-sm text-on-surface transition-all focus:outline-none focus:ring-2 focus:ring-primary/20",
-          isOpen ? "border-primary bg-surface" : "border-outline-variant bg-surface hover:border-primary/40",
-          icon ? "pl-8 pr-3" : "px-3"
+          "flex w-full items-center justify-between rounded-xl border py-2 text-sm text-on-surface transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50",
+          isError
+            ? "border-error bg-error/5"
+            : isOpen
+              ? "border-primary bg-surface"
+              : "border-outline-variant bg-surface hover:border-primary/40",
+          icon ? "pl-8 pr-3" : "px-3",
+          triggerClassName,
         )}
       >
         {icon && (

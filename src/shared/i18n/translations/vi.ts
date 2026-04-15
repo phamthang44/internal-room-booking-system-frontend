@@ -127,6 +127,14 @@ export const vi = {
     myBookings: "Đặt phòng của tôi",
     approvals: "Phê duyệt",
     settings: "Cài đặt",
+    admin: {
+      section: "Quản trị",
+      rooms: "Phòng (Quản trị)",
+      roomsNew: "Tạo phòng",
+      roomsEdit: "Sửa phòng",
+      roomsAudit: "Kiểm toán phòng",
+      equipment: "Thiết bị (Quản trị)",
+    },
     langEn: "EN",
     langVi: "VI",
     logout: "Đăng xuất",
@@ -435,6 +443,219 @@ export const vi = {
         cancelSuccessFallback: "Đã hủy thành công.",
         cancelHint:
           "Việc hủy phải được thực hiện ít nhất 24 giờ trước thời gian bắt đầu.",
+      },
+    },
+  },
+  adminRooms: {
+    common: {
+      placeholder: "Màn hình này đang được triển khai.",
+    },
+    list: {
+      title: "Danh sách phòng học",
+      subtitle:
+        "Quản lý tài sản, cập nhật lịch trống và cấu hình thông tin phòng học cho kỳ học sắp tới.",
+      addNew: "Thêm phòng mới",
+      searchPlaceholder: "Tìm theo tên phòng hoặc tòa nhà...",
+      stats: {
+        totalRooms: "Tổng số phòng",
+        activeNow: "Đang hoạt động",
+        underRepair: "Đang sửa chữa",
+        avgCapacity: "Sức chứa TB",
+        seats: "chỗ",
+        pageScopeNote: "Theo trang hiện tại",
+      },
+      loadError: "Không tải được danh sách phòng. Vui lòng thử lại.",
+      loading: "Đang tải danh sách phòng…",
+      empty: "Không có phòng phù hợp với tìm kiếm.",
+      status: {
+        AVAILABLE: "Còn trống",
+        INACTIVE: "Ngưng hoạt động",
+        MAINTENANCE: "Bảo trì",
+        DELETED: "Đã xóa",
+      },
+      toasts: {
+        statusUpdated: "Đã cập nhật trạng thái phòng.",
+        markedDeleted: "Đã đánh dấu phòng là đã xóa.",
+      },
+      statusDialog: {
+        title: "Đổi trạng thái phòng",
+        selectLabel: "Trạng thái mới",
+        bookingWarning:
+          "Nếu phòng còn lịch đặt sắp tới, máy chủ có thể từ chối chuyển sang ngưng hoạt động hoặc bảo trì.",
+        cancel: "Hủy",
+        confirm: "Xác nhận",
+        saving: "Đang lưu…",
+      },
+      confirmDelete: {
+        message:
+          "Đánh dấu “{{name}}” là đã xóa? Có thể thất bại nếu còn lịch đặt sắp tới.",
+      },
+      filters: {
+        building: "Tòa nhà",
+        capacity: "Sức chứa",
+      },
+      table: {
+        classroom: "Phòng học",
+        location: "Vị trí",
+        capacity: "Sức chứa",
+        amenities: "Tiện ích",
+        status: "Trạng thái",
+        actions: "Thao tác",
+      },
+      pagination: {
+        showing: "Hiển thị {{from}} đến {{to}} trên {{total}} mục",
+        pageOf: "Trang {{page}} / {{totalPages}}",
+      },
+      actions: {
+        audit: "Kiểm toán",
+        edit: "Chỉnh sửa",
+        changeStatus: "Đổi trạng thái",
+        delete: "Xóa",
+      },
+    },
+    upsert: {
+      title: "Thiết lập phòng học",
+      subtitle: "Cấu hình thông số kỹ thuật và sức chứa cho một không gian học tập mới.",
+      validationFix: "Vui lòng kiểm tra và sửa các trường bị lỗi trước khi lưu.",
+      status: {
+        label: "Trạng thái phòng",
+        active: "Hoạt động",
+        inactive: "Không hoạt động",
+      },
+      core: {
+        title: "Thông tin cơ bản",
+        roomName: "Tên / Mã phòng",
+        building: "Tòa nhà / Khu",
+        capacity: "Sức chứa (chỗ ngồi)",
+        roomType: "Loại phòng",
+      },
+      equipment: {
+        title: "Danh sách thiết bị",
+        quantity: "Số lượng",
+        decreaseQty: "Giảm số lượng",
+        increaseQty: "Tăng số lượng",
+      },
+      media: {
+        title: "Hình ảnh phòng",
+        addUrl: "Thêm URL hình ảnh",
+        previewAlt: "Xem trước phòng",
+      },
+      actions: {
+        save: "Lưu thông tin phòng",
+        cancel: "Hủy & quay lại",
+      },
+      toasts: {
+        created: "Đã tạo phòng học.",
+        updated: "Đã cập nhật phòng học.",
+      },
+      loadError: "Không tải được phòng học. Thử lại hoặc quay về danh sách.",
+      loading: "Đang tải phòng học…",
+    },
+    errors: {
+      codes: {
+        CANNOT_DEACTIVATE_ROOM_WITH_UPCOMING_BOOKINGS:
+          "Phòng còn lịch đặt sắp tới nên chưa thể vô hiệu hóa.",
+      },
+    },
+    reference: {
+      buildings: {
+        blockA: "Block A",
+        blockB: "Block B",
+      },
+      roomTypes: {
+        lectureHall: "Giảng đường",
+        seminarRoom: "Phòng seminar",
+        computerLab: "Phòng máy",
+        workshop: "Phòng thực hành",
+      },
+    },
+    audit: {
+      invalidId: "Liên kết phòng không hợp lệ. Hãy mở phòng từ danh sách quản trị.",
+      title: "Bảng kiểm toán & quản lý",
+      subtitle: "Xem lịch trống, ca học, thiết bị và thông tin kiểm toán.",
+      capacityLabel: "Sức chứa: {{value}} chỗ",
+      typeLabel: "Loại: {{value}}",
+      actions: {
+        edit: "Chỉnh sửa",
+        changeStatus: "Đổi trạng thái",
+        delete: "Xóa",
+      },
+      availability: {
+        title: "Lịch trống",
+      },
+      timeSlots: {
+        title: "Ca học • {{dateLabel}}",
+        available: "Còn trống",
+        booked: "Đã đặt: {{label}}",
+        pendingAudit: "Chờ kiểm toán",
+      },
+      equipmentInventory: {
+        title: "Thiết bị",
+        manageAll: "Quản lý tất cả",
+        quantity: "Số lượng: {{value}}",
+      },
+      loadError: "Không tải được dữ liệu kiểm toán cho phòng này.",
+      loading: "Đang tải bảng kiểm toán…",
+      carousel: {
+        dotLabel: "Ảnh {{index}}",
+        prev: "Ảnh trước",
+        next: "Ảnh sau",
+      },
+      sidebar: {
+        auditAndMetadata: "Kiểm toán & thông tin",
+        createdAt: "Tạo lúc",
+        createdBy: "Tạo bởi",
+        lastUpdate: "Cập nhật lần cuối",
+        updatedBy: "Cập nhật bởi",
+        activityTimeline: "Dòng thời gian",
+        viewFullHistory: "Xem báo cáo lịch sử",
+        facilityInsights: {
+          title: "Thông tin vận hành",
+          hint:
+            "Phòng này đang đạt 85% hiệu suất sử dụng. Bảo trì dự kiến vào tháng tới.",
+          viewers: "{{count}} quản trị viên đang xem",
+        },
+      },
+    },
+  },
+  adminEquipment: {
+    list: {
+      title: "Kho thiết bị",
+      subtitle: "Quản lý tài sản thiết bị trên toàn bộ khoa/phòng và giảng đường.",
+      addType: "Thêm loại thiết bị",
+      metrics: {
+        totalItems: "Tổng số thiết bị",
+        deploymentRate: "Tỷ lệ triển khai",
+        inMaintenance: "Đang bảo trì",
+        activeRequests: "Yêu cầu đang mở",
+      },
+      tabs: {
+        all: "Tất cả",
+        av: "Thiết bị AV",
+        furniture: "Nội thất",
+        computing: "Máy tính",
+      },
+      advancedFilters: "Bộ lọc nâng cao",
+      table: {
+        name: "Tên thiết bị",
+        category: "Danh mục",
+        stock: "Tồn kho",
+        assignedTo: "Đã cấp cho",
+        health: "Tình trạng",
+        actions: "Thao tác",
+      },
+      pagination: {
+        showing: "Hiển thị {{from}}-{{to}} trên {{total}} loại thiết bị",
+      },
+      recent: {
+        title: "Nhật ký cấp phát gần đây",
+      },
+      quickStats: {
+        title: "Thống kê nhanh",
+        healthLabel: "Sức khỏe kho",
+        healthHint:
+          "Kho thiết bị đang hoạt động ổn định. Chỉ có 2 mục cần được xử lý ngay.",
+        runAudit: "Chạy kiểm kê",
       },
     },
   },

@@ -41,7 +41,7 @@ const ToastRow = ({
   return (
     <div
       role="alert"
-      className={`app-toast-enter relative flex min-w-[320px] max-w-[400px] items-start gap-4 rounded-2xl border bg-surface-container-lowest px-5 py-4 shadow-[0_10px_40px_-10px_rgba(24,28,30,0.18)] ${toneClasses.border}`}
+      className={`app-toast-enter relative flex min-w-[320px] max-w-[400px] items-start gap-4 rounded-2xl border bg-surface-container-lowest px-5 py-4 overflow-hidden shadow-[0_10px_40px_-10px_rgba(24,28,30,0.18)] ${toneClasses.border}`}
       style={{
         animationDelay: `${Math.min(stackIndex, 4) * 60}ms`,
       }}

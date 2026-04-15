@@ -126,6 +126,14 @@ export const en = {
     myBookings: "My Bookings",
     approvals: "Approvals",
     settings: "Settings",
+    admin: {
+      section: "Admin",
+      rooms: "Admin Rooms",
+      roomsNew: "New room",
+      roomsEdit: "Edit room",
+      roomsAudit: "Room audit",
+      equipment: "Admin Equipment",
+    },
     langEn: "EN",
     langVi: "VI",
     logout: "Logout",
@@ -434,6 +442,219 @@ export const en = {
         cancelSuccessFallback: "Cancelled successfully.",
         cancelHint:
           "Cancellations must be made at least 24 hours prior to the start time.",
+      },
+    },
+  },
+  adminRooms: {
+    common: {
+      placeholder: "This screen is being implemented.",
+    },
+    list: {
+      title: "Classroom Inventory",
+      subtitle:
+        "Manage university physical assets, update availability, and configure classroom specifications.",
+      addNew: "Add New Room",
+      searchPlaceholder: "Search by Room Number or Building...",
+      stats: {
+        totalRooms: "Total Rooms",
+        activeNow: "Active Now",
+        underRepair: "Under Repair",
+        avgCapacity: "Avg. Capacity",
+        seats: "seats",
+        pageScopeNote: "Based on current page",
+      },
+      loadError: "We could not load the classroom list. Please try again.",
+      loading: "Loading classrooms…",
+      empty: "No classrooms match your search.",
+      status: {
+        AVAILABLE: "Available",
+        INACTIVE: "Inactive",
+        MAINTENANCE: "Maintenance",
+        DELETED: "Deleted",
+      },
+      toasts: {
+        statusUpdated: "Room status was updated.",
+        markedDeleted: "Room was marked as deleted.",
+      },
+      statusDialog: {
+        title: "Change room status",
+        selectLabel: "New status",
+        bookingWarning:
+          "If this room has upcoming bookings, the server may reject inactive or maintenance changes.",
+        cancel: "Cancel",
+        confirm: "Confirm",
+        saving: "Saving…",
+      },
+      confirmDelete: {
+        message:
+          "Mark “{{name}}” as deleted? This may fail if there are upcoming bookings.",
+      },
+      filters: {
+        building: "Building",
+        capacity: "Capacity",
+      },
+      table: {
+        classroom: "Classroom",
+        location: "Location",
+        capacity: "Capacity",
+        amenities: "Amenities",
+        status: "Status",
+        actions: "Actions",
+      },
+      pagination: {
+        showing: "Showing {{from}} to {{to}} of {{total}} resources",
+        pageOf: "Page {{page}} / {{totalPages}}",
+      },
+      actions: {
+        audit: "Audit",
+        edit: "Edit",
+        changeStatus: "Change status",
+        delete: "Delete",
+      },
+    },
+    upsert: {
+      title: "Define Classroom",
+      subtitle: "Configure technical specifications and capacity for a new learning environment.",
+      validationFix: "Please fix the highlighted fields before saving.",
+      status: {
+        label: "Room Status",
+        active: "Active",
+        inactive: "Inactive",
+      },
+      core: {
+        title: "Core Identification",
+        roomName: "Room Name / ID",
+        building: "Building / Wing",
+        capacity: "Seating Capacity",
+        roomType: "Room Type",
+      },
+      equipment: {
+        title: "Equipment Checklist",
+        quantity: "Quantity",
+        decreaseQty: "Decrease quantity",
+        increaseQty: "Increase quantity",
+      },
+      media: {
+        title: "Room Visuals",
+        addUrl: "Add image URL",
+        previewAlt: "Room preview",
+      },
+      actions: {
+        save: "Save Room Details",
+        cancel: "Cancel & Return",
+      },
+      toasts: {
+        created: "Classroom was created.",
+        updated: "Classroom was updated.",
+      },
+      loadError: "We could not load this classroom. Try again or return to the list.",
+      loading: "Loading classroom…",
+    },
+    errors: {
+      codes: {
+        CANNOT_DEACTIVATE_ROOM_WITH_UPCOMING_BOOKINGS:
+          "This room has upcoming bookings and cannot be deactivated yet.",
+      },
+    },
+    reference: {
+      buildings: {
+        blockA: "Block A",
+        blockB: "Block B",
+      },
+      roomTypes: {
+        lectureHall: "Lecture Hall",
+        seminarRoom: "Seminar Room",
+        computerLab: "Computer Lab",
+        workshop: "Workshop Studio",
+      },
+    },
+    audit: {
+      invalidId: "Invalid room link. Open a room from the admin list.",
+      title: "Audit & Management Panel",
+      subtitle: "Review availability, time slots, equipment inventory, and audit metadata.",
+      capacityLabel: "Capacity: {{value}} Seats",
+      typeLabel: "Type: {{value}}",
+      actions: {
+        edit: "Edit",
+        changeStatus: "Change Status",
+        delete: "Delete",
+      },
+      availability: {
+        title: "Availability",
+      },
+      timeSlots: {
+        title: "Time Slots • {{dateLabel}}",
+        available: "Available",
+        booked: "Booked: {{label}}",
+        pendingAudit: "Pending Audit",
+      },
+      equipmentInventory: {
+        title: "Equipment Inventory",
+        manageAll: "Manage All",
+        quantity: "Quantity: {{value}}",
+      },
+      loadError: "We could not load this classroom for audit.",
+      loading: "Loading audit panel…",
+      carousel: {
+        dotLabel: "Image {{index}}",
+        prev: "Previous image",
+        next: "Next image",
+      },
+      sidebar: {
+        auditAndMetadata: "Audit & Metadata",
+        createdAt: "Created At",
+        createdBy: "Created By",
+        lastUpdate: "Last Update",
+        updatedBy: "Updated By",
+        activityTimeline: "Activity Timeline",
+        viewFullHistory: "View Full History Report",
+        facilityInsights: {
+          title: "Facility Insights",
+          hint:
+            "This room is currently performing at 85% occupancy efficiency. Maintenance is scheduled for next month.",
+          viewers: "{{count}} admins currently viewing",
+        },
+      },
+    },
+  },
+  adminEquipment: {
+    list: {
+      title: "Equipment Inventory",
+      subtitle: "Manage university assets across all departments and halls.",
+      addType: "Add Equipment Type",
+      metrics: {
+        totalItems: "Total Items",
+        deploymentRate: "Deployment Rate",
+        inMaintenance: "In Maintenance",
+        activeRequests: "Active Requests",
+      },
+      tabs: {
+        all: "All Assets",
+        av: "AV Systems",
+        furniture: "Furniture",
+        computing: "Computing",
+      },
+      advancedFilters: "Advanced Filters",
+      table: {
+        name: "Equipment Name",
+        category: "Category",
+        stock: "Global Stock",
+        assignedTo: "Assigned To",
+        health: "Health Status",
+        actions: "Actions",
+      },
+      pagination: {
+        showing: "Showing {{from}}-{{to}} of {{total}} equipment types",
+      },
+      recent: {
+        title: "Recent Logistics",
+      },
+      quickStats: {
+        title: "Quick Stats",
+        healthLabel: "Inventory Health",
+        healthHint:
+          "Your inventory is performing optimally. Only 2 items require immediate attention.",
+        runAudit: "Run Full Audit",
       },
     },
   },

@@ -1,9 +1,16 @@
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { LoginPage, useAuthStore, useInitAuth } from "@features/auth";
+import { LoginPage, useAuthStore, useInitAuth, useProfileStore } from "@features/auth";
 import { HomePage, LoadingScreen } from "@features/home";
 import { StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
 import { MyBookingsPage, BookingDetailPage } from "@features/bookings";
+import {
+  AdminRoomAuditPanelPage,
+  AdminRoomsListPage,
+  AdminRoomUpsertPage,
+} from "@features/adminRooms";
+import { AdminEquipmentListPage } from "@features/adminEquipment";
 import { NotFoundPage } from "@features/error";
 import { AppToastStack } from "@shared/components/AppToastStack";
 
@@ -26,6 +33,55 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Admin-only route wrapper (requires authenticated user with role ADMIN)
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { token, hasHydrated } = useAuthStore();
+  const { profile, isLoading, fetchProfile } = useProfileStore();
+
+  useEffect(() => {
+    if (token && !profile && !isLoading) {
+      void fetchProfile();
+    }
+  }, [token, profile, isLoading, fetchProfile]);
+
+  if (!hasHydrated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface">
+        <div className="flex items-center gap-3 text-on-surface-variant">
+          <span className="material-symbols-outlined animate-spin">
+            progress_activity
+          </span>
+          <span className="text-sm font-medium">Restoring session...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // While profile is loading, show a lightweight loading state.
+  if (!profile) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface">
+        <div className="flex items-center gap-3 text-on-surface-variant">
+          <span className="material-symbols-outlined animate-spin">
+            progress_activity
+          </span>
+          <span className="text-sm font-medium">Loading profile...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (profile.roleName !== "ADMIN") {
+    return <Navigate to="/404" replace />;
   }
 
   return <>{children}</>;
@@ -114,6 +170,48 @@ const RouterContent = () => {
             <ProtectedRoute>
               <BookingConfirmationPage />
             </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Routes */}
+        <Route
+          path="/admin/rooms"
+          element={
+            <AdminRoute>
+              <AdminRoomsListPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/rooms/new"
+          element={
+            <AdminRoute>
+              <AdminRoomUpsertPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/rooms/:id/edit"
+          element={
+            <AdminRoute>
+              <AdminRoomUpsertPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/rooms/:id/audit"
+          element={
+            <AdminRoute>
+              <AdminRoomAuditPanelPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/equipment"
+          element={
+            <AdminRoute>
+              <AdminEquipmentListPage />
+            </AdminRoute>
           }
         />
 
