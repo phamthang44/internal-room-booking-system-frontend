@@ -7,6 +7,7 @@ import { useState } from "react";
 import { FormField } from "@shared/components/FormField";
 import { Input } from "@shared/components/Input";
 import { Button } from "@shared/components/Button";
+import { extractApiErrorMessage } from "@shared/errors/extractApiErrorMessage";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +28,14 @@ export const LoginForm = () => {
   const onSubmit = (data: any) => {
     login(data);
   };
+
+  const friendlyErrorMessage = loginError
+    ? (() => {
+        const status = (loginError as any)?.response?.status as number | undefined;
+        if (status === 401) return t("auth.login.errors.invalidCredentials");
+        return extractApiErrorMessage(loginError);
+      })()
+    : null;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -84,12 +93,10 @@ export const LoginForm = () => {
       </div>
 
       {/* API Error */}
-      {loginError && (
+      {friendlyErrorMessage && (
         <div className="p-3 bg-error-container rounded-lg">
           <p className="text-sm text-on-error-container font-medium">
-            {loginError instanceof Error
-              ? loginError.message
-              : t("common.errors.unknown")}
+            {friendlyErrorMessage}
           </p>
         </div>
       )}

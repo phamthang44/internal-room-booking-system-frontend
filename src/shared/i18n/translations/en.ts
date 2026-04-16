@@ -43,6 +43,7 @@ export const en = {
       },
       footer: "Restricted access for University Staff and Students only.",
       errors: {
+        invalidCredentials: "Email/username or password is incorrect.",
         unknown: "An error occurred. Please try again.",
       },
     },

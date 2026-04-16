@@ -44,6 +44,7 @@ export const vi = {
       footer:
         "Quyền truy cập hạn chế cho nhân viên và sinh viên của Trường đại học.",
       errors: {
+        invalidCredentials: "Email/tên người dùng hoặc mật khẩu không đúng.",
         unknown: "Đã xảy ra lỗi. Vui lòng thử lại.",
       },
     },
