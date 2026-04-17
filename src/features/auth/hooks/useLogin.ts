@@ -21,7 +21,7 @@ export const useLogin = () => {
     },
     onSuccess: async (response) => {
       try {
-        const { accessToken, refreshToken, role } = response.data;
+        const { accessToken, role } = response.data;
 
         // NOTE: Do NOT store accessToken in localStorage (XSS vulnerability)
         // Keep in memory via Zustand store only

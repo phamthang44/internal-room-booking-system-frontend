@@ -3,6 +3,7 @@ export type BookingStatus =
   | "pending"
   | "rejected"
   | "cancelled"
+  | "inUse"
   | "completed";
 
 export interface BookingTimeRange {
@@ -25,7 +26,7 @@ export interface BookingHistoryItem {
   readonly id: string;
   readonly roomLabel: string; // e.g. "D-404 - Media Lab"
   readonly dateTimeLabel: string; // e.g. "Oct 12 • 15:00 - 17:00"
-  readonly status: Exclude<BookingStatus, "pending" | "confirmed">; // cancelled | completed | rejected
+  readonly status: Exclude<BookingStatus, "pending" | "confirmed" | "inUse">; // cancelled | completed | rejected
 }
 
 export interface MyBookingsMockData {
@@ -73,6 +74,10 @@ export interface BookingDetail {
   readonly title: string;
   readonly location: BookingLocationInfo;
   readonly schedule: BookingScheduleInfo;
+  readonly checkInWindow?: {
+    readonly opensAtIso: string;
+    readonly expiresAtIso: string;
+  };
   readonly purpose: string;
   readonly attendeesCount: number;
   readonly canCancel: boolean;
@@ -382,4 +387,94 @@ export const bookingDetailsById: Readonly<Record<string, BookingDetail>> = {
     ],
   },
 };
+
+export interface CheckInPageMockData {
+  readonly hero: {
+    readonly title: string;
+    readonly subtitle: string;
+  };
+  readonly countdownLabel: string;
+  readonly actions: {
+    readonly primaryLabel: string;
+    readonly secondaryLabel: string;
+  };
+  readonly policy: {
+    readonly title: string;
+    readonly defaultMessage: string;
+  };
+  readonly sections: {
+    readonly purposeTitle: string;
+    readonly attendeesTitle: string;
+    readonly equipmentTitle: string;
+  };
+  readonly equipmentTags: readonly { label: string; icon?: string }[];
+  readonly location: {
+    readonly imageAlt: string;
+    readonly ctaLabel: string;
+  };
+  readonly help: {
+    readonly title: string;
+    readonly subtitle: (roomTitle: string) => string;
+    readonly contactSupportLabel: string;
+    readonly faqLabel: string;
+  };
+  readonly postCheckInHint: string;
+  readonly loadingLabel: string;
+  readonly error: {
+    readonly title: string;
+    readonly subtitle: string;
+    readonly retryLabel: string;
+    readonly backToListLabel: string;
+  };
+  readonly attendeesLabel: (count: number) => string;
+}
+
+export const checkInPageMockData: CheckInPageMockData = {
+  hero: {
+    title: "Check-in for your Session",
+    subtitle:
+      "Welcome back. Please confirm your arrival at the venue to activate your booking and secure your reservation.",
+  },
+  countdownLabel: "Time Remaining",
+  actions: {
+    primaryLabel: "Check In Now",
+    secondaryLabel: "Scan QR Code",
+  },
+  policy: {
+    title: "Policy Notice:",
+    defaultMessage:
+      "Please check-in within the grace period to avoid automatic cancellation. Your space may be reallocated to the waitlist after 15 minutes of inactivity.",
+  },
+  sections: {
+    purposeTitle: "Purpose & Agenda",
+    attendeesTitle: "Attendees",
+    equipmentTitle: "Equipment & Resources",
+  },
+  equipmentTags: [
+    { label: "Projector", icon: "videocam" },
+    { label: "Smart Board", icon: "tv" },
+    { label: "High-speed LAN", icon: "wifi" },
+  ],
+  location: {
+    imageAlt: "Building preview image",
+    ctaLabel: "View Floor Plan",
+  },
+  help: {
+    title: "Need Help?",
+    subtitle: (roomTitle) =>
+      `Having trouble with the digital check-in or accessing the equipment in ${roomTitle}?`,
+    contactSupportLabel: "Contact IT Support",
+    faqLabel: "Read Check-in FAQ",
+  },
+  postCheckInHint: "Post-check-in status will appear here after confirmation.",
+  loadingLabel: "Loading booking…",
+  error: {
+    title: "Unable to load booking details.",
+    subtitle: "The booking may not exist yet.",
+    retryLabel: "Retry",
+    backToListLabel: "Back to My Bookings",
+  },
+  attendeesLabel: (count) => `${count} People`,
+};
+
 

@@ -5,7 +5,7 @@ type Slot = {
   slotName: string;
   startTime: string;
   endTime: string;
-  status: "AVAILABLE" | "PENDING";
+  status: string;
   isAvailable: boolean;
   currentBookingId?: number;
 };
@@ -13,10 +13,11 @@ type Slot = {
 type Availability = { date: string; slots: Slot[] };
 
 function slotStatusBadgeClass(
-  status: "AVAILABLE" | "PENDING" | undefined,
+  status: string | undefined,
   isAvailable: boolean | undefined,
 ) {
   if (status === "PENDING") return "bg-amber-50 text-amber-900";
+  if (status === "IN_USE") return "bg-primary-fixed text-primary";
   if (isAvailable === false) return "bg-error-container text-error";
   return "bg-tertiary-fixed text-on-tertiary-fixed-variant";
 }
@@ -213,6 +214,8 @@ export function AdminRoomAuditScheduleSection(props: {
                         >
                           {slot.status === "PENDING"
                             ? t("roomDetail.slots.pending")
+                            : slot.status === "IN_USE"
+                              ? t("roomDetail.slots.inUse")
                             : slot.isAvailable
                               ? t("roomDetail.slots.available")
                               : t("roomDetail.slots.occupied")}

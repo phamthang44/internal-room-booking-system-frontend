@@ -7,10 +7,12 @@ import type {
   BookingSearchParams,
   CancelBookingRequest,
   CheckInRequest,
+  CheckoutRequest,
   CreateBookingRequest,
   CreateBookingResponse,
 } from "../types/bookings.api.types";
 import type { BookingActivityItem, BookingDetail, BookingHistoryItem, BookingStatus } from "@/data/mockData";
+import { deriveCheckInWindow } from "../utils/checkInTime";
 
 const BASE = import.meta.env.VITE_API_URL + "/bookings";
 
@@ -28,7 +30,10 @@ const toTimeSummary = (slots: { startTime?: string; endTime?: string }[]) => {
     .join(", ");
 };
 
-const mapStatusApiToUi = (status?: string | null): BookingStatus => {
+const mapStatusApiToUi = (
+  status?: string | null,
+  checkoutTimeIso?: string | null,
+): BookingStatus => {
   switch (status) {
     case "PENDING":
       return "pending";
@@ -39,6 +44,8 @@ const mapStatusApiToUi = (status?: string | null): BookingStatus => {
     case "REJECTED":
       return "rejected";
     case "CHECKED_IN":
+      return checkoutTimeIso ? "completed" : "inUse";
+    case "COMPLETED":
       return "completed";
     default:
       // safest neutral outcome for unknown server values
@@ -52,6 +59,7 @@ const canCancelFromStatus = (status?: string | null): boolean =>
 const iconForStatus = (status: BookingStatus): string => {
   if (status === "pending") return "hourglass_top";
   if (status === "confirmed") return "event_available";
+  if (status === "inUse") return "meeting_room";
   if (status === "completed") return "task_alt";
   if (status === "cancelled") return "cancel";
   return "block";
@@ -99,7 +107,7 @@ const adaptMyBookings = (rows: BookingDetailResponse[]): MyBookingsUiData => {
 
   for (const r of rows) {
     const id = r.bookingId != null ? String(r.bookingId) : "";
-    const uiStatus = mapStatusApiToUi(r.status);
+    const uiStatus = mapStatusApiToUi(r.status, r.checkoutTime ?? null);
     const time = toTimeRange(r.timeSlots ?? []);
     const timeSummary = toTimeSummary(r.timeSlots ?? []);
     const bookingDate = r.bookingDate ?? "";
@@ -109,7 +117,7 @@ const adaptMyBookings = (rows: BookingDetailResponse[]): MyBookingsUiData => {
     // Use bookingId as roomCode fallback (design expects a compact code)
     const roomCode = id ? `#${id}` : "";
 
-    const isActivity = uiStatus === "pending" || uiStatus === "confirmed";
+    const isActivity = uiStatus === "pending" || uiStatus === "confirmed" || uiStatus === "inUse";
 
     if (isActivity) {
       activity.push({
@@ -148,10 +156,12 @@ const PLACEHOLDER_MAP_IMAGE =
 const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
   const bookingId = raw.bookingId != null ? String(raw.bookingId) : "";
   const bookingCode = bookingId ? `#${bookingId}` : "#";
-  const status = mapStatusApiToUi(raw.status);
+  const status = mapStatusApiToUi(raw.status, raw.checkoutTime ?? null);
 
   const timeSummary = toTimeSummary(raw.timeSlots ?? []);
   const bookingDate = raw.bookingDate ?? "";
+  const firstSlotStart = raw.timeSlots?.[0]?.startTime ?? null;
+  const checkInWindow = deriveCheckInWindow(bookingDate, firstSlotStart);
 
   const primaryLocation = [raw.roomName, raw.buildingName].filter(Boolean).join(" - ");
   const secondaryLocation = raw.buildingAddress ?? undefined;
@@ -169,6 +179,9 @@ const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
       dateLabel: bookingDate,
       timeLabel: timeSummary,
     },
+    checkInWindow: checkInWindow
+      ? { opensAtIso: checkInWindow.opensAt.toISOString(), expiresAtIso: checkInWindow.expiresAt.toISOString() }
+      : undefined,
     purpose: raw.purpose ?? "",
     attendeesCount: raw.attendees ?? 0,
     canCancel: canCancelFromStatus(raw.status),
@@ -246,13 +259,32 @@ export const bookingsApiService = {
     return response.data?.meta?.message ?? null;
   },
 
-  checkInBooking: async (bookingId: number): Promise<void> => {
+  checkInBooking: async (bookingId: number): Promise<string | null> => {
     const { token } = useAuthStore.getState();
     const payload: CheckInRequest = {
       bookingId,
       checkInTime: new Date().toISOString(),
     };
-    await apiClient.patch(`${BASE}/checkin`, payload, { ...getAuthConfig(token ?? null) });
+    const response = await apiClient.patch<ApiResult<unknown>>(
+      `${BASE}/checkin`,
+      payload,
+      { ...getAuthConfig(token ?? null) }
+    );
+    return response.data?.meta?.message ?? null;
+  },
+
+  checkoutBooking: async (bookingId: number): Promise<string | null> => {
+    const { token } = useAuthStore.getState();
+    const payload: CheckoutRequest = {
+      bookingId,
+      checkoutTime: new Date().toISOString(),
+    };
+    const response = await apiClient.patch<ApiResult<unknown>>(
+      `${BASE}/checkout`,
+      payload,
+      { ...getAuthConfig(token ?? null) }
+    );
+    return response.data?.meta?.message ?? null;
   },
 };
 
