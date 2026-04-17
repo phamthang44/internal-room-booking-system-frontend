@@ -17,6 +17,8 @@ export type AdminRoomStatus =
   | "MAINTENANCE"
   | "DELETED";
 
+export type AdminRoomSlotStatus = "AVAILABLE" | "PENDING";
+
 export interface AdminDetailClassroomResponse {
   /** Present when the backend includes it; required for update payloads. */
   classroomId?: number;
@@ -26,23 +28,37 @@ export interface AdminDetailClassroomResponse {
   imageUrls?: string[];
   roomName: string;
   capacity: number;
-  building: BasicRoomTypeResponse;
+  building: BasicRoomTypeResponse & { address?: string };
   addressBuildingLocation: string;
   roomType: BasicRoomTypeResponse;
   equipments: Array<{
     id: number;
     name: string;
-    quantity: number;
-    iconUrl?: string;
   }>;
-  availableDates: string[];
-  month: string;
-  timeSlots: Array<{
+  availableDates?: string[];
+  month?: string;
+  timeSlots?: Array<{
     id: number;
     startTime: string;
     endTime: string;
     slotName: string;
   }>;
+  schedule?: {
+    date: string;
+    isFull: boolean;
+    availabilities: Array<{
+      date: string;
+      slots: Array<{
+        slotId: number;
+        slotName: string;
+        startTime: string;
+        endTime: string;
+        status: AdminRoomSlotStatus;
+        isAvailable: boolean;
+        currentBookingId?: number;
+      }>;
+    }>;
+  };
   auditResponse: {
     createdAt: string;
     updatedAt: string;

@@ -82,9 +82,9 @@ export const AdminRoomUpsertPage = () => {
       capacity: d.capacity,
       roomTypeId: d.roomType.id,
       isActive: d.status ? d.status === "AVAILABLE" : true,
-      equipments: d.equipments.map((e) => ({
+      equipments: (d.equipments ?? []).map((e) => ({
         id: e.id,
-        quantity: e.quantity,
+        quantity: 1,
       })),
       imageUrls:
         d.imageUrls && d.imageUrls.length > 0
@@ -96,7 +96,7 @@ export const AdminRoomUpsertPage = () => {
   const equipmentCatalog = useMemo<readonly EquipmentCatalogItem[]>(() => {
     const d = detailQuery.data;
     const extra =
-      d?.equipments
+      (d?.equipments ?? [])
         .filter(
           (e) =>
             !STATIC_EQUIPMENT_CATALOG.some((s) => s.id === e.id),

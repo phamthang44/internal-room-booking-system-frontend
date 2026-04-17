@@ -587,7 +587,7 @@ export const en = {
         title: "Time Slots • {{dateLabel}}",
         available: "Available",
         booked: "Booked: {{label}}",
-        pendingAudit: "Pending Audit",
+        pendingAudit: "Pending Review",
       },
       equipmentInventory: {
         title: "Equipment Inventory",

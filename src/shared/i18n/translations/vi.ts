@@ -588,7 +588,7 @@ export const vi = {
         title: "Ca học • {{dateLabel}}",
         available: "Còn trống",
         booked: "Đã đặt: {{label}}",
-        pendingAudit: "Chờ kiểm toán",
+        pendingAudit: "Chờ kiểm duyệt",
       },
       equipmentInventory: {
         title: "Thiết bị",

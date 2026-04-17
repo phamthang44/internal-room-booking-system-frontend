@@ -11,6 +11,11 @@ import { presentAppSuccess } from "@shared/errors/presentAppSuccess";
 import { useAppToastStore } from "@shared/errors/appToastStore";
 import { messageForAdminRoomsError } from "../utils/adminRoomsErrors";
 import type { AdminRoomStatus } from "../types/adminRooms.api.types";
+import { AdminRoomAuditStatusModal } from "../components/AdminRoomAuditStatusModal";
+import { AdminRoomAuditImageCarousel } from "../components/AdminRoomAuditImageCarousel";
+import { AdminRoomAuditScheduleSection } from "../components/AdminRoomAuditScheduleSection";
+import { AdminRoomAuditEquipmentSection } from "../components/AdminRoomAuditEquipmentSection";
+import { AdminRoomAuditSidebar } from "../components/AdminRoomAuditSidebar";
 
 const STATUS_OPTIONS: AdminRoomStatus[] = [
   "AVAILABLE",
@@ -18,6 +23,11 @@ const STATUS_OPTIONS: AdminRoomStatus[] = [
   "MAINTENANCE",
   "DELETED",
 ];
+
+const STATUS_SELECT_OPTIONS = STATUS_OPTIONS.map((s) => ({
+  value: s,
+  label: `adminRooms.list.status.${s}`,
+}));
 
 function statusBadgeClass(status: AdminRoomStatus | undefined) {
   switch (status) {
@@ -35,11 +45,13 @@ function statusBadgeClass(status: AdminRoomStatus | undefined) {
 }
 
 export const AdminRoomAuditPanelPage = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id: string }>();
   const roomId = routeId ? Number.parseInt(routeId, 10) : NaN;
   const validId = Number.isFinite(roomId) && roomId > 0;
+
+  const locale = language === "vi" ? "vi-VN" : "en-US";
 
   const detailQuery = useAdminRoomDetailQuery(validId ? roomId : undefined);
   const d = detailQuery.data;
@@ -57,15 +69,72 @@ export const AdminRoomAuditPanelPage = () => {
     [d?.imageUrls],
   );
 
+  const availabilities = d?.schedule?.availabilities ?? [];
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
+  const selectedAvailability = useMemo(() => {
+    if (availabilities.length === 0) return null;
+    const fallback = availabilities[0] ?? null;
+    if (!selectedDay) return fallback;
+    return availabilities.find((a) => a.date === selectedDay) ?? fallback;
+  }, [availabilities, selectedDay]);
+
   const formatIsoDate = (iso: string) => {
     try {
-      return new Date(iso).toLocaleString(undefined, {
+      return new Date(iso).toLocaleString(locale, {
         dateStyle: "medium",
         timeStyle: "short",
       });
     } catch {
       return iso;
     }
+  };
+
+  const formatIsoDay = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleDateString(locale, {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  };
+
+  const formatIsoDayShort = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleDateString(locale, {
+        month: "short",
+        day: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  };
+
+  const formatTime = (time: string) => {
+    // Contract uses HH:mm:ss. Show a shorter HH:mm to reduce visual noise.
+    const m = /^(\d{2}):(\d{2})(?::\d{2})?$/.exec(time);
+    return m ? `${m[1]}:${m[2]}` : time;
+  };
+
+  const slotStatusLabel = (slot: {
+    status: "AVAILABLE" | "PENDING";
+    isAvailable: boolean;
+    currentBookingId?: number;
+  }) => {
+    if (slot.status === "PENDING") {
+      return t("adminRooms.audit.timeSlots.pendingAudit");
+    }
+    if (!slot.isAvailable) {
+      return t("adminRooms.audit.timeSlots.booked", {
+        label:
+          slot.currentBookingId != null ? `#${slot.currentBookingId}` : "—",
+      });
+    }
+    return t("adminRooms.audit.timeSlots.available");
   };
 
   const openStatusModal = () => {
@@ -100,10 +169,17 @@ export const AdminRoomAuditPanelPage = () => {
   if (!validId) {
     return (
       <AppLayout>
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
-          <div className="rounded-2xl border border-error/30 bg-error-container/20 p-4 text-sm text-error">
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+            <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+            <div className="absolute -right-32 top-40 h-[28rem] w-[28rem] rounded-full bg-tertiary-fixed/20 blur-3xl" />
+            <div className="absolute bottom-0 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-secondary-container/30 blur-3xl" />
+          </div>
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+          <div className="rounded-2xl border border-white/20 bg-white/10 p-4 text-sm text-error shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-xl">
             {t("adminRooms.audit.invalidId")}
           </div>
+        </div>
         </div>
       </AppLayout>
     );
@@ -111,22 +187,30 @@ export const AdminRoomAuditPanelPage = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+      <div className="relative">
+        {/* Strong glass backdrop */}
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-primary/25 blur-3xl" />
+          <div className="absolute -right-48 top-24 h-[36rem] w-[36rem] rounded-full bg-tertiary-fixed/25 blur-3xl" />
+          <div className="absolute bottom-[-8rem] left-1/2 h-[28rem] w-[52rem] -translate-x-1/2 rounded-full bg-secondary-container/30 blur-3xl" />
+        </div>
+
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         {err ? (
-          <div className="mb-6 rounded-2xl border border-error/30 bg-error-container/20 p-4 text-sm text-error">
+          <div className="mb-6 rounded-2xl border border-white/20 bg-white/10 p-4 text-sm text-error shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-xl">
             {t("adminRooms.audit.loadError")}
           </div>
         ) : null}
 
         {loading ? (
-          <div className="mb-6 rounded-2xl bg-surface-container-low p-6 text-sm text-on-surface-variant">
+          <div className="mb-6 rounded-2xl border border-white/15 bg-white/10 p-6 text-sm text-on-surface-variant shadow-[0_12px_36px_rgba(0,0,0,0.10)] backdrop-blur-xl">
             {t("adminRooms.audit.loading")}
           </div>
         ) : null}
 
         {!loading && !err && d ? (
           <>
-            <div className="mb-8 rounded-2xl bg-white/70 p-8 shadow-[0_2px_12px_rgba(24,28,30,0.06)] backdrop-blur-md">
+            <div className="mb-8 rounded-2xl border border-white/20 bg-white/10 p-8 shadow-[0_16px_48px_rgba(0,0,0,0.12)] backdrop-blur-xl">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-3">
@@ -154,7 +238,7 @@ export const AdminRoomAuditPanelPage = () => {
                       : ""}
                   </p>
                   <div className="flex flex-wrap gap-3 pt-2">
-                    <div className="flex items-center gap-2 rounded-xl bg-surface-container-low px-4 py-2">
+                    <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-md">
                       <span className="material-symbols-outlined text-primary">
                         groups
                       </span>
@@ -164,7 +248,7 @@ export const AdminRoomAuditPanelPage = () => {
                         })}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 rounded-xl bg-surface-container-low px-4 py-2">
+                    <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-md">
                       <span className="material-symbols-outlined text-primary">
                         category
                       </span>
@@ -181,7 +265,7 @@ export const AdminRoomAuditPanelPage = () => {
                   <button
                     type="button"
                     onClick={() => navigate(`/admin/rooms/${roomId}/edit`)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-surface-container-high px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container transition-colors"
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-on-surface shadow-[0_8px_20px_rgba(0,0,0,0.10)] backdrop-blur-md transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                   >
                     <span className="material-symbols-outlined text-[18px]">
                       edit
@@ -192,7 +276,7 @@ export const AdminRoomAuditPanelPage = () => {
                     type="button"
                     onClick={openStatusModal}
                     disabled={statusMutation.isPending}
-                    className="inline-flex items-center gap-2 rounded-xl bg-surface-container-high px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-on-surface shadow-[0_8px_20px_rgba(0,0,0,0.10)] backdrop-blur-md transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-50"
                   >
                     <span className="material-symbols-outlined text-[18px]">
                       swap_horiz
@@ -233,7 +317,7 @@ export const AdminRoomAuditPanelPage = () => {
                       }
                     }}
                     disabled={statusMutation.isPending}
-                    className="inline-flex items-center gap-2 rounded-xl bg-error-container px-4 py-2 text-sm font-semibold text-error hover:bg-red-100 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-error-container/80 px-4 py-2 text-sm font-semibold text-error shadow-[0_8px_20px_rgba(0,0,0,0.10)] backdrop-blur-md transition-colors hover:bg-error-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 disabled:opacity-50"
                   >
                     <span className="material-symbols-outlined text-[18px]">
                       delete
@@ -244,277 +328,64 @@ export const AdminRoomAuditPanelPage = () => {
               </div>
 
               {/* Image carousel */}
-              <div className="mt-8 overflow-hidden rounded-2xl border border-outline-variant/10">
-                <div className="relative aspect-[21/9] w-full bg-surface-container-low">
-                  <img
-                    src={images[carouselIdx % images.length]}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
-                    {images.map((_, i) => (
-                      <button
-                        key={String(i)}
-                        type="button"
-                        onClick={() => setCarouselIdx(i)}
-                        className={cn(
-                          "h-2 w-2 rounded-full transition-colors",
-                          i === carouselIdx % images.length
-                            ? "bg-white"
-                            : "bg-white/40 hover:bg-white/70",
-                        )}
-                        aria-label={t("adminRooms.audit.carousel.dotLabel", {
-                          index: i + 1,
-                        })}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white hover:bg-black/50"
-                    onClick={() =>
-                      setCarouselIdx(
-                        (carouselIdx - 1 + images.length) % images.length,
-                      )
-                    }
-                    aria-label={t("adminRooms.audit.carousel.prev")}
-                  >
-                    <span className="material-symbols-outlined text-[20px]">
-                      chevron_left
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white hover:bg-black/50"
-                    onClick={() =>
-                      setCarouselIdx((carouselIdx + 1) % images.length)
-                    }
-                    aria-label={t("adminRooms.audit.carousel.next")}
-                  >
-                    <span className="material-symbols-outlined text-[20px]">
-                      chevron_right
-                    </span>
-                  </button>
-                </div>
-              </div>
+              <AdminRoomAuditImageCarousel
+                images={images}
+                idx={carouselIdx}
+                setIdx={setCarouselIdx}
+                t={t}
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_24rem]">
               <div className="space-y-8">
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                  <section className="rounded-2xl bg-surface-container-lowest p-6 shadow-[0_2px_12px_rgba(24,28,30,0.06)] lg:col-span-5">
-                    <div className="mb-6 flex items-center justify-between">
-                      <h2 className="flex items-center gap-2 font-headline text-lg font-bold text-on-surface">
-                        <span className="material-symbols-outlined text-primary">
-                          calendar_month
-                        </span>
-                        {t("adminRooms.audit.availability.title")}
-                      </h2>
-                    </div>
-                    <p className="mb-3 text-xs font-medium text-on-surface-variant">
-                      {d.month}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {(d.availableDates ?? []).slice(0, 12).map((iso) => (
-                        <span
-                          key={iso}
-                          className="rounded-lg bg-surface-container-low px-2 py-1 text-[10px] font-semibold text-on-surface-variant"
-                        >
-                          {formatIsoDate(iso)}
-                        </span>
-                      ))}
-                    </div>
-                  </section>
+                <AdminRoomAuditScheduleSection
+                  availabilities={availabilities as any}
+                  selectedAvailability={selectedAvailability as any}
+                  onSelectDay={setSelectedDay}
+                  t={t}
+                  formatIsoDay={formatIsoDay}
+                  formatIsoDayShort={formatIsoDayShort}
+                  formatTime={formatTime}
+                  slotStatusLabel={slotStatusLabel as any}
+                  scheduleDateLabel={
+                    d.schedule?.date ? formatIsoDay(d.schedule.date) : "—"
+                  }
+                />
 
-                  <section className="rounded-2xl bg-surface-container-lowest p-6 shadow-[0_2px_12px_rgba(24,28,30,0.06)] lg:col-span-7">
-                    <h2 className="mb-6 flex items-center gap-2 font-headline text-lg font-bold text-on-surface">
-                      <span className="material-symbols-outlined text-primary">
-                        schedule
-                      </span>
-                      {t("adminRooms.audit.timeSlots.title", {
-                        dateLabel: d.month || "—",
-                      })}
-                    </h2>
-
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      {(d.timeSlots ?? []).map((slot) => (
-                        <div
-                          key={slot.id}
-                          className="flex items-center justify-between rounded-xl bg-surface-container-low p-4"
-                        >
-                          <div>
-                            <p className="text-sm font-bold">
-                              {slot.startTime} – {slot.endTime}
-                            </p>
-                            <p className="text-xs font-medium text-on-surface-variant">
-                              {slot.slotName}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-
-                <section className="rounded-2xl bg-surface-container-lowest p-8 shadow-[0_2px_12px_rgba(24,28,30,0.06)]">
-                  <div className="mb-8 flex items-center justify-between">
-                    <h2 className="flex items-center gap-3 font-headline text-xl font-bold text-on-surface">
-                      <span className="material-symbols-outlined text-primary">
-                        inventory_2
-                      </span>
-                      {t("adminRooms.audit.equipmentInventory.title")}
-                    </h2>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {(d.equipments ?? []).map((it) => (
-                      <div
-                        key={it.id}
-                        className="flex flex-col items-center gap-3 rounded-2xl bg-surface p-5 text-center transition-shadow hover:shadow-md"
-                      >
-                        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary-container/20">
-                          {it.iconUrl ? (
-                            <img
-                              src={it.iconUrl}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <span className="material-symbols-outlined text-2xl text-primary">
-                              precision_manufacturing
-                            </span>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-bold text-on-surface">{it.name}</p>
-                          <p className="text-xs font-medium text-on-surface-variant">
-                            {t("adminRooms.audit.equipmentInventory.quantity", {
-                              value: String(it.quantity).padStart(2, "0"),
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                <AdminRoomAuditEquipmentSection
+                  equipments={d.equipments ?? []}
+                  t={t}
+                />
               </div>
 
-              <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
-                <section className="overflow-hidden rounded-2xl bg-surface-container-low shadow-[0_2px_12px_rgba(24,28,30,0.06)]">
-                  <div className="border-b border-outline-variant/10 bg-surface-container-lowest p-6">
-                    <h2 className="font-headline text-lg font-bold text-on-surface">
-                      {t("adminRooms.audit.sidebar.auditAndMetadata")}
-                    </h2>
-                  </div>
-
-                  <div className="p-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                          {t("adminRooms.audit.sidebar.createdAt")}
-                        </p>
-                        <p className="text-xs font-semibold">
-                          {formatIsoDate(d.auditResponse.createdAt)}
-                        </p>
-                      </div>
-                      <div className="space-y-1 text-right">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                          {t("adminRooms.audit.sidebar.createdBy")}
-                        </p>
-                        <p className="text-xs font-semibold">
-                          {d.auditResponse.createdBy}
-                        </p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                          {t("adminRooms.audit.sidebar.lastUpdate")}
-                        </p>
-                        <p className="text-xs font-semibold">
-                          {formatIsoDate(d.auditResponse.updatedAt)}
-                        </p>
-                      </div>
-                      <div className="space-y-1 text-right">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                          {t("adminRooms.audit.sidebar.updatedBy")}
-                        </p>
-                        <p className="text-xs font-semibold">
-                          {d.auditResponse.updatedBy}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </aside>
+              <AdminRoomAuditSidebar
+                createdAt={d.auditResponse.createdAt}
+                createdBy={d.auditResponse.createdBy}
+                updatedAt={d.auditResponse.updatedAt}
+                updatedBy={d.auditResponse.updatedBy}
+                formatIsoDateTime={formatIsoDate}
+                t={t}
+              />
             </div>
           </>
         ) : null}
       </div>
 
-      {statusOpen && d ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
-          role="presentation"
-          onClick={() => !statusMutation.isPending && setStatusOpen(false)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            className="w-full max-w-md rounded-2xl bg-white/90 p-6 shadow-2xl backdrop-blur-md"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-headline text-lg font-bold text-on-surface">
-              {t("adminRooms.list.statusDialog.title")}
-            </h2>
-            <div className="mt-4 space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">
-                {t("adminRooms.list.statusDialog.selectLabel")}
-              </label>
-              <select
-                className="w-full rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-sm"
-                value={nextStatus}
-                onChange={(e) =>
-                  setNextStatus(e.target.value as AdminRoomStatus)
-                }
-                disabled={statusMutation.isPending}
-              >
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`adminRooms.list.status.${s}` as "adminRooms.list.status.AVAILABLE")}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {(nextStatus === "INACTIVE" || nextStatus === "MAINTENANCE") ? (
-              <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                {t("adminRooms.list.statusDialog.bookingWarning")}
-              </p>
-            ) : null}
-            <div className="mt-6 flex justify-end gap-2">
-              <button
-                type="button"
-                className="rounded-xl px-4 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high"
-                onClick={() => setStatusOpen(false)}
-                disabled={statusMutation.isPending}
-              >
-                {t("adminRooms.list.statusDialog.cancel")}
-              </button>
-              <button
-                type="button"
-                className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-on-primary hover:opacity-95 disabled:opacity-50"
-                disabled={
-                  statusMutation.isPending ||
-                  nextStatus === (d.status as AdminRoomStatus)
-                }
-                onClick={confirmStatus}
-              >
-                {statusMutation.isPending
-                  ? t("adminRooms.list.statusDialog.saving")
-                  : t("adminRooms.list.statusDialog.confirm")}
-              </button>
-            </div>
-          </div>
-        </div>
+      {d ? (
+        <AdminRoomAuditStatusModal
+          open={statusOpen}
+          roomName={d.roomName}
+          nextStatus={nextStatus}
+          statusOptions={STATUS_SELECT_OPTIONS}
+          isPending={statusMutation.isPending}
+          t={t}
+          onClose={() => setStatusOpen(false)}
+          onChangeStatus={(s) => setNextStatus(s)}
+          onConfirm={confirmStatus}
+          confirmDisabled={nextStatus === (d.status as AdminRoomStatus)}
+        />
       ) : null}
+      </div>
     </AppLayout>
   );
 };
