@@ -20,6 +20,9 @@ const mapApiSlotToBookingSlot = (s: RoomSlotDto): BookingSlot => {
     return { id: String(s.slotId), label, status: "available" };
   }
   const st = (s.status ?? "").toUpperCase();
+  if (st.includes("IN_USE")) {
+    return { id: String(s.slotId), label, status: "inUse" };
+  }
   const looksPendingApproval = st.includes("PENDING") || st.includes("AWAITING");
   if (looksPendingApproval) {
     return { id: String(s.slotId), label, status: "pendingApproval" };
@@ -41,20 +44,25 @@ const SlotRow = ({
   onSelect: () => void;
   t: (key: string) => string;
 }) => {
-  if (slot.status === "occupied" || slot.status === "pendingApproval") {
+  if (slot.status === "occupied" || slot.status === "inUse" || slot.status === "pendingApproval") {
     const pending = slot.status === "pendingApproval";
+    const inUse = slot.status === "inUse";
     return (
       <div
         className={cn(
           "flex items-center justify-between p-4 rounded-xl opacity-60 cursor-not-allowed select-none",
-          pending ? "bg-amber-500/5 border border-amber-500/15" : "bg-surface-container-low/50"
+          pending
+            ? "bg-amber-500/5 border border-amber-500/15"
+            : inUse
+              ? "bg-primary/5 border border-primary/15"
+              : "bg-surface-container-low/50"
         )}
       >
         <div className="flex items-center gap-3">
           <span
             className={cn(
               "w-2.5 h-2.5 rounded-full shrink-0",
-              pending ? "bg-amber-500" : "bg-error"
+              pending ? "bg-amber-500" : inUse ? "bg-primary" : "bg-error"
             )}
           />
           <span className="font-headline font-bold text-on-surface-variant text-sm">
@@ -66,10 +74,16 @@ const SlotRow = ({
             "text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full",
             pending
               ? "text-amber-800 bg-amber-100"
-              : "text-on-error-container bg-error-container/50"
+              : inUse
+                ? "text-primary bg-primary-fixed"
+                : "text-on-error-container bg-error-container/50"
           )}
         >
-          {pending ? t("roomDetail.slots.pending") : t("roomDetail.slots.occupied")}
+          {pending
+            ? t("roomDetail.slots.pending")
+            : inUse
+              ? t("roomDetail.slots.inUse")
+              : t("roomDetail.slots.occupied")}
         </span>
       </div>
     );

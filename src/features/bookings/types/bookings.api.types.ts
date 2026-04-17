@@ -32,7 +32,8 @@ export type BookingStatusApi =
   | "APPROVED"
   | "REJECTED"
   | "CANCELLED"
-  | "CHECKED_IN";
+  | "CHECKED_IN"
+  | "COMPLETED";
 
 export type BookingSortApi =
   | "newest"
@@ -68,6 +69,8 @@ export interface BookingDetailResponse {
   purpose?: string;
   attendees?: number;
   status?: BookingStatusApi;
+  checkinTime?: string; // Instant ISO-8601
+  checkoutTime?: string; // Instant ISO-8601
   // Backend currently returns `bookingHistorySummaryResponses`
   bookingHistorySummaryResponses?: BookingHistorySummaryResponse[];
   // Fallback for older/alternate naming (safe to keep optional)
@@ -104,6 +107,11 @@ export interface CancelBookingRequest {
 export interface CheckInRequest {
   bookingId: number;
   checkInTime: string; // Instant ISO-8601
+}
+
+export interface CheckoutRequest {
+  bookingId: number;
+  checkoutTime: string; // Instant ISO-8601
 }
 
 export interface BookingSearchParams {

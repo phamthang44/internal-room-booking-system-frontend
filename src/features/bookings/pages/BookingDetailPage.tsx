@@ -10,6 +10,7 @@ import { presentAppSuccess } from "@shared/errors/presentAppSuccess";
 import { useBookingDetail } from "../hooks/useBookingDetail";
 import { BookingTimeline } from "../components/BookingTimeline";
 import { bookingsApiService } from "../api/bookings.api.service";
+import { useBookingCheckout } from "../hooks/useBookingCheckout";
 
 export interface BookingDetailPageProps {
   readonly className?: string;
@@ -22,6 +23,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError, refetch } = useBookingDetail(bookingId ?? "");
+  const checkout = useBookingCheckout(bookingId ?? "");
   const [cancelSuccessMessage, setCancelSuccessMessage] = useState<string | null>(null);
   const [cancelErrorMessage, setCancelErrorMessage] = useState<string | null>(null);
 
@@ -157,6 +159,43 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                     </div>
                   </div>
                 </div>
+
+                {data.status === "confirmed" ? (
+                  <div className="mt-6">
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/bookings/${data.id}/checkin`)}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:opacity-90 active:scale-95 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">location_on</span>
+                      {t("bookings.checkin.actions.primary")}
+                    </button>
+                  </div>
+                ) : null}
+
+                {data.status === "inUse" ? (
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      disabled={checkout.isPending}
+                      onClick={() => void checkout.checkout()}
+                      className={cn(
+                        "w-full inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container",
+                        checkout.isPending ? "opacity-70 cursor-not-allowed" : "",
+                      )}
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        {checkout.isPending ? "progress_activity" : "logout"}
+                      </span>
+                      {t("bookings.checkout.actions.primary")}
+                    </button>
+                    {checkout.errorMessage ? (
+                      <div className="mt-3 rounded-xl border border-error-container bg-error-container/20 px-4 py-3 text-xs text-error">
+                        {checkout.errorMessage}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
               </section>
 
               {/* Booking Purpose */}
