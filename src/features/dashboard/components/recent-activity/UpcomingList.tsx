@@ -2,6 +2,10 @@ import { useI18n } from "@shared/i18n/useI18n";
 import type { UpcomingBookingItem } from "../../api/student-dashboard.api";
 import { RoomIdentifier } from "@shared/components/RoomIdentifier";
 import { formatDisplayDate } from "@shared/utils/date";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { bookingsApiService } from "@features/bookings/api/bookings.api.service";
+import { normalizeApiError } from "@shared/errors/normalizeApiError";
 
 interface UpcomingListProps {
   upcomingList?: UpcomingBookingItem[];
@@ -9,6 +13,18 @@ interface UpcomingListProps {
 
 export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
   const { t, language } = useI18n();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const checkoutMutation = useMutation({
+    mutationFn: async (bookingId: number) => {
+      return await bookingsApiService.checkoutBooking(bookingId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      await queryClient.invalidateQueries({ queryKey: ["bookings"] });
+    },
+  });
 
   if (!upcomingList || upcomingList.length === 0) {
     return (
@@ -54,6 +70,11 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
             const { statusClass, statusLabel } = getStatusStyle(booking.status, t);
             const iconConfig = getIconConfig(booking.status);
             const dateLabel = formatDisplayDate(booking.bookingDate, t, language);
+            const statusUpper = (booking.status ?? "").toUpperCase();
+            const canCheckIn = statusUpper === "APPROVED" || statusUpper === "CONFIRMED";
+            // With checkout support, CHECKED_IN is only actionable for checkout while still in-use.
+            // If backend starts returning checkoutTime in summary later, we can refine this.
+            const canCheckout = statusUpper === "CHECKED_IN";
 
             return (
               <div
@@ -101,6 +122,40 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                   </div>
                 </div>
                 <div className="flex items-center justify-between md:justify-end gap-6">
+                  {canCheckIn ? (
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/bookings/${booking.bookingId}/checkin`)}
+                      className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-on-primary hover:opacity-90 active:scale-95 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">location_on</span>
+                      {t("bookings.checkin.actions.primary")}
+                    </button>
+                  ) : null}
+
+                  {canCheckout ? (
+                    <button
+                      type="button"
+                      disabled={checkoutMutation.isPending}
+                      onClick={() => {
+                        const id = Number(booking.bookingId);
+                        if (!Number.isFinite(id)) return;
+                        void checkoutMutation.mutateAsync(id).catch(() => undefined);
+                      }}
+                      className="hidden md:inline-flex items-center gap-2 rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                      title={
+                        checkoutMutation.isError
+                          ? normalizeApiError(checkoutMutation.error).message
+                          : undefined
+                      }
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        {checkoutMutation.isPending ? "progress_activity" : "logout"}
+                      </span>
+                      {t("bookings.checkout.actions.primary")}
+                    </button>
+                  ) : null}
+
                   <span
                     className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${statusClass}`}
                   >

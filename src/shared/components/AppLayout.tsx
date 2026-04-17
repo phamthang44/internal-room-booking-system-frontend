@@ -54,6 +54,13 @@ function useRouteHeader(pathname: string) {
       backTo: "/rooms",
     };
   }
+  if (matchPath({ path: "/bookings/:bookingId/checkin", end: true }, pathname)) {
+    return {
+      titleKey: "nav.header.bookingCheckIn" as const,
+      showBack: true,
+      backTo: "/bookings",
+    };
+  }
   if (matchPath({ path: "/bookings/:bookingId", end: true }, pathname)) {
     return {
       titleKey: "nav.header.bookingDetail" as const,

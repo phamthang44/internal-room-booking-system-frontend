@@ -91,6 +91,8 @@ export interface ClassroomListResponse {
   status?: RoomStatusApi;
   equipments?: EquipmentResponse[];
   roomType?: string;
+  /** Primary room image URL (if available) */
+  imageUrl?: string;
   /** Present when the API returns per-day slot availability for the query */
   dailySchedule?: DailyScheduleResponse;
   /** When false, listing row may not satisfy the active filter query */
@@ -155,6 +157,8 @@ export interface RoomUI {
   roomType: string;
   /** CSS gradient — generated client-side, NOT from API */
   imageGradient?: string;
+  /** Primary image URL from API (optional) */
+  imageUrl?: string;
   /** Per-day slots when returned by list endpoint */
   dailySchedule?: {
     date: string;

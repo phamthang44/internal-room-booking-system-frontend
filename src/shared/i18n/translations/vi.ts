@@ -143,6 +143,7 @@ export const vi = {
       rooms: "Phòng học",
       roomDetail: "Chi tiết phòng",
       bookingDetail: "Chi tiết đặt phòng",
+      bookingCheckIn: "Điểm danh đặt phòng",
       bookingSuccess: "Yêu cầu đặt phòng",
       back: "Quay lại",
       fallback: "Trang chủ",
@@ -320,6 +321,7 @@ export const vi = {
     slots: {
       available: "Còn trống",
       occupied: "Đã đặt",
+      inUse: "Đang sử dụng",
       pending: "Chờ phê duyệt",
     },
     error: {
@@ -446,6 +448,57 @@ export const vi = {
           "Việc hủy phải được thực hiện ít nhất 24 giờ trước thời gian bắt đầu.",
       },
     },
+    checkin: {
+      hero: {
+        title: "Điểm danh cho buổi đặt phòng",
+        subtitle:
+          "Chào mừng quay lại. Vui lòng xác nhận bạn đã đến địa điểm để kích hoạt đặt phòng và giữ chỗ.",
+      },
+      countdownLabel: "Thời gian còn lại",
+      actions: {
+        primary: "Điểm danh ngay",
+        secondary: "Quét mã QR",
+      },
+      policy: {
+        title: "Lưu ý quy định:",
+        defaultMessage:
+          "Vui lòng điểm danh trong thời gian ân hạn để tránh bị hủy tự động. Chỗ của bạn có thể được chuyển cho danh sách chờ sau 15 phút không hoạt động.",
+      },
+      sections: {
+        purpose: "Mục đích & Nội dung",
+        attendees: "Người tham dự",
+        equipment: "Thiết bị & Tài nguyên",
+      },
+      equipment: {
+        projector: "Máy chiếu",
+        smartBoard: "Bảng thông minh",
+        highSpeedLan: "LAN tốc độ cao",
+      },
+      location: {
+        imageAlt: "Hình ảnh tòa nhà",
+        cta: "Xem sơ đồ tầng",
+      },
+      help: {
+        title: "Cần hỗ trợ?",
+        subtitle:
+          "Bạn gặp vấn đề khi điểm danh hoặc sử dụng thiết bị tại {{roomTitle}}?",
+        contactSupport: "Liên hệ hỗ trợ CNTT",
+        faq: "Xem FAQ điểm danh",
+      },
+      postCheckInHint: "Trạng thái sau khi điểm danh sẽ hiển thị tại đây sau khi xác nhận.",
+      loading: "Đang tải đặt phòng…",
+      toast: {
+        successFallback: "Điểm danh thành công.",
+      },
+    },
+    checkout: {
+      actions: {
+        primary: "Trả phòng",
+      },
+      toast: {
+        successFallback: "Trả phòng thành công.",
+      },
+    },
   },
   adminRooms: {
     common: {
@@ -538,6 +591,12 @@ export const vi = {
       },
       media: {
         title: "Hình ảnh phòng",
+        upload: {
+          label: "Tải ảnh lên",
+          hint: "Tối đa 5 ảnh. Ảnh sẽ được tải lên ngay và lưu dưới dạng URL.",
+          maxReached: "Bạn chỉ có thể tải lên tối đa 5 ảnh.",
+          failed: "Tải ảnh lên thất bại. Vui lòng thử lại.",
+        },
         addUrl: "Thêm URL hình ảnh",
         previewAlt: "Xem trước phòng",
       },

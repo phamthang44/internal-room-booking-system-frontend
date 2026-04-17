@@ -52,6 +52,8 @@ export interface RoomDetailDataDto {
   equipments: EquipmentDto[];
   addressBuildingLocation: string;
   roomType: RoomTypeDto;
+  /** Backward-compatible list of image URLs for this room */
+  imageUrls?: string[];
 }
 
 export interface RoomDetailApiMeta {
@@ -69,7 +71,7 @@ export interface RoomDetailApiResponse {
 // ── UI types (components) ───────────────────────────────────────────────────
 
 /** `pendingApproval` = locked (not selectable), same as occupied but different label. */
-export type SlotStatus = "available" | "occupied" | "pendingApproval";
+export type SlotStatus = "available" | "occupied" | "inUse" | "pendingApproval";
 
 export interface BookingSlot {
   id: string;
@@ -99,6 +101,8 @@ export interface RoomDetail {
   addressBuildingLocation: string;
   capacity: number;
   roomType: RoomTypeDto;
+  /** Gallery images (0-5). When present, `imageUrl` is typically the first. */
+  imageUrls?: string[];
   imageUrl?: string;
   imageGradient?: string;
   equipments: EquipmentDetail[];

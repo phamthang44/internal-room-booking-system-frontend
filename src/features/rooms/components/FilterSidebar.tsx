@@ -46,15 +46,6 @@ const CAPACITY_PRESETS = [
   { label: "60+", min: 60, max: "" as const },
 ];
 
-// Today's date in yyyy-MM-dd for the min attribute on the date input
-const todayISO = () => {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 interface FilterSidebarProps {
   className?: string;
 }

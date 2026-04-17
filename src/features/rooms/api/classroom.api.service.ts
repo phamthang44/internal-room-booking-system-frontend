@@ -67,6 +67,7 @@ const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): Ro
   equipments: raw.equipments ?? [],
   roomType: raw.roomType ?? "",
   imageGradient: buildGradient(raw.classroomId ?? 0),
+  imageUrl: raw.imageUrl ?? undefined,
   dailySchedule: raw.dailySchedule
     ? {
         date: raw.dailySchedule.date ?? "",

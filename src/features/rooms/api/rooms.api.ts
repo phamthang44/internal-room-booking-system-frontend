@@ -1,4 +1,4 @@
-import type { Room, RoomFilters, RoomsResponse } from "../types/room.types";
+import type { Room, RoomAvailability, RoomFilters, RoomsResponse } from "../types/room.types";
 
 // ─── Mock Data ──────────────────────────────────────────────────────────────
 
@@ -15,7 +15,7 @@ const GRADIENTS = [
 const getGradient = (id: string) =>
   GRADIENTS[id.charCodeAt(id.length - 1) % GRADIENTS.length];
 
-const MOCK_ROOMS: Room[] = [
+const MOCK_ROOMS_BASE: Omit<Room, "imageGradient">[] = [
   {
     id: "rm-101",
     code: "A-102",
@@ -23,7 +23,7 @@ const MOCK_ROOMS: Room[] = [
     building: "Academic Block A",
     floor: "Level 1",
     capacity: 120,
-    availability: "available",
+    availability: "available" satisfies RoomAvailability,
     equipment: ["projector", "audio_system", "air_conditioning"],
   },
   {
@@ -33,7 +33,7 @@ const MOCK_ROOMS: Room[] = [
     building: "Arts & Media Block",
     floor: "Level 2",
     capacity: 30,
-    availability: "available",
+    availability: "available" satisfies RoomAvailability,
     equipment: ["whiteboard", "smart_board", "air_conditioning"],
   },
   {
@@ -43,7 +43,7 @@ const MOCK_ROOMS: Room[] = [
     building: "Main Admin Building",
     floor: "Ground Floor",
     capacity: 20,
-    availability: "occupied",
+    availability: "occupied" satisfies RoomAvailability,
     equipment: ["projector", "video_conference", "audio_system"],
   },
   {
@@ -53,7 +53,7 @@ const MOCK_ROOMS: Room[] = [
     building: "Science Block",
     floor: "Level 3",
     capacity: 40,
-    availability: "maintenance",
+    availability: "maintenance" satisfies RoomAvailability,
     equipment: ["whiteboard"],
   },
   {
@@ -63,7 +63,7 @@ const MOCK_ROOMS: Room[] = [
     building: "Arts & Media Block",
     floor: "Level 4",
     capacity: 24,
-    availability: "available",
+    availability: "available" satisfies RoomAvailability,
     equipment: ["computer_lab", "smart_board", "air_conditioning"],
   },
   {
@@ -73,7 +73,7 @@ const MOCK_ROOMS: Room[] = [
     building: "Main Library",
     floor: "Ground Floor",
     capacity: 8,
-    availability: "available",
+    availability: "available" satisfies RoomAvailability,
     equipment: ["whiteboard", "video_conference"],
   },
   {
@@ -83,7 +83,7 @@ const MOCK_ROOMS: Room[] = [
     building: "Science Block",
     floor: "Level 1",
     capacity: 35,
-    availability: "available",
+    availability: "available" satisfies RoomAvailability,
     equipment: ["projector", "whiteboard", "air_conditioning"],
   },
   {
@@ -93,10 +93,12 @@ const MOCK_ROOMS: Room[] = [
     building: "Technology Block",
     floor: "Level 2",
     capacity: 50,
-    availability: "available",
+    availability: "available" satisfies RoomAvailability,
     equipment: ["computer_lab", "projector", "air_conditioning"],
   },
-].map((r) => ({ ...r, imageGradient: getGradient(r.id) }));
+];
+
+const MOCK_ROOMS: Room[] = MOCK_ROOMS_BASE.map((r) => ({ ...r, imageGradient: getGradient(r.id) }));
 
 // ─── API Functions ───────────────────────────────────────────────────────────
 

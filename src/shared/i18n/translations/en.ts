@@ -142,6 +142,7 @@ export const en = {
       rooms: "Rooms",
       roomDetail: "Room details",
       bookingDetail: "Booking details",
+      bookingCheckIn: "Booking check-in",
       bookingSuccess: "Booking requested",
       back: "Back",
       fallback: "Home",
@@ -319,6 +320,7 @@ export const en = {
     slots: {
       available: "Available",
       occupied: "Occupied",
+      inUse: "In use",
       pending: "Pending Approval",
     },
     error: {
@@ -445,6 +447,57 @@ export const en = {
           "Cancellations must be made at least 24 hours prior to the start time.",
       },
     },
+    checkin: {
+      hero: {
+        title: "Check-in for your Session",
+        subtitle:
+          "Welcome back. Please confirm your arrival at the venue to activate your booking and secure your reservation.",
+      },
+      countdownLabel: "Time Remaining",
+      actions: {
+        primary: "Check In Now",
+        secondary: "Scan QR Code",
+      },
+      policy: {
+        title: "Policy Notice:",
+        defaultMessage:
+          "Please check-in within the grace period to avoid automatic cancellation. Your space may be reallocated to the waitlist after 15 minutes of inactivity.",
+      },
+      sections: {
+        purpose: "Purpose & Agenda",
+        attendees: "Attendees",
+        equipment: "Equipment & Resources",
+      },
+      equipment: {
+        projector: "Projector",
+        smartBoard: "Smart Board",
+        highSpeedLan: "High-speed LAN",
+      },
+      location: {
+        imageAlt: "Building preview image",
+        cta: "View Floor Plan",
+      },
+      help: {
+        title: "Need Help?",
+        subtitle:
+          "Having trouble with the digital check-in or accessing the equipment in {{roomTitle}}?",
+        contactSupport: "Contact IT Support",
+        faq: "Read Check-in FAQ",
+      },
+      postCheckInHint: "Post-check-in status will appear here after confirmation.",
+      loading: "Loading booking…",
+      toast: {
+        successFallback: "Check-in confirmed.",
+      },
+    },
+    checkout: {
+      actions: {
+        primary: "Checkout",
+      },
+      toast: {
+        successFallback: "Checked out successfully.",
+      },
+    },
   },
   adminRooms: {
     common: {
@@ -537,6 +590,12 @@ export const en = {
       },
       media: {
         title: "Room Visuals",
+        upload: {
+          label: "Upload images",
+          hint: "Up to 5 images. Images are uploaded immediately and saved as URLs.",
+          maxReached: "You can upload up to 5 images.",
+          failed: "Upload failed. Please try again.",
+        },
         addUrl: "Add image URL",
         previewAlt: "Room preview",
       },

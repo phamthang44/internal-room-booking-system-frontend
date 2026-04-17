@@ -7,11 +7,11 @@ export const useRooms = (page = 1) => {
   // Subscribe to filter store
   const filters: RoomFilters = useRoomFilterStore((s) => ({
     search: s.search,
-    availability: s.availability,
+    availability: "",
     minCapacity: s.minCapacity,
     maxCapacity: s.maxCapacity,
-    equipment: s.equipment,
-    building: s.building,
+    equipment: [],
+    building: "",
   }));
 
   return useQuery({

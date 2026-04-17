@@ -62,7 +62,9 @@ const adaptRoomDetail = (raw: RoomDetailDataDto): RoomDetail => ({
   addressBuildingLocation: raw.addressBuildingLocation,
   capacity: raw.capacity,
   roomType: raw.roomType,
-  imageUrl: undefined,
+  imageUrls: raw.imageUrls ?? [],
+  imageUrl:
+    raw.imageUrls && raw.imageUrls.length > 0 ? raw.imageUrls[0] : undefined,
   imageGradient:
     "linear-gradient(135deg, #002045 0%, #1a365d 60%, #003f21 100%)",
   equipments: (raw.equipments ?? []).map(

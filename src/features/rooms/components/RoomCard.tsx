@@ -25,6 +25,13 @@ export const RoomCard = ({ room }: RoomCardProps) => {
         className="relative h-44 w-full overflow-hidden"
         style={{ background: room.imageGradient }}
       >
+        {room.imageUrl ? (
+          <img
+            src={room.imageUrl}
+            alt={room.name}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        ) : null}
         {/* Building badge — top-left */}
         {room.building && (
           <span className="absolute left-3 top-3 rounded-full bg-surface-container-lowest/85 px-2.5 py-0.5 font-headline text-[10px] font-bold uppercase tracking-wider text-on-surface backdrop-blur-sm">
@@ -154,7 +161,15 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
       <div
         className="h-20 w-28 shrink-0 rounded-xl overflow-hidden"
         style={{ background: room.imageGradient }}
-      />
+      >
+        {room.imageUrl ? (
+          <img
+            src={room.imageUrl}
+            alt={room.name}
+            className="h-full w-full object-cover"
+          />
+        ) : null}
+      </div>
 
       {/* Info */}
       <div className="min-w-0 flex-1">
