@@ -188,6 +188,11 @@ function getStatusStyle(status: string, t: any) {
       statusClass: "bg-emerald-50 text-emerald-700",
       statusLabel: t("dashboard.upcomingBookings.status.confirmed"),
     };
+  } else if (statusUpper === "CHECKED_IN") {
+    return {
+      statusClass: "bg-sky-50 text-sky-700",
+      statusLabel: t("dashboard.upcomingBookings.status.inUse"),
+    };
   } else if (statusUpper === "PENDING" || statusUpper === "SUBMITTED") {
     return {
       statusClass: "bg-amber-50 text-amber-700",
@@ -213,6 +218,11 @@ function getIconConfig(status: string) {
     return {
       icon: "groups",
       bgClass: "bg-primary-container",
+    };
+  } else if (statusUpper === "CHECKED_IN") {
+    return {
+      icon: "meeting_room",
+      bgClass: "bg-sky-100 text-sky-700",
     };
   } else if (statusUpper === "PENDING") {
     return {

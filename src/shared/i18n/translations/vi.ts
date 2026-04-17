@@ -198,6 +198,7 @@ export const vi = {
       status: {
         confirmed: "ĐÃ XÁC NHẬN",
         pending: "CHỜ DUYỆT",
+        inUse: "ĐANG SỬ DỤNG",
         cancelled: "ĐÃ HỦY",
       },
     },
@@ -402,6 +403,7 @@ export const vi = {
       pending: "Đang chờ",
       rejected: "Bị từ chối",
       cancelled: "Đã hủy",
+      inUse: "Đang sử dụng",
       completed: "Hoàn tất",
     },
     viewDetails: "Xem chi tiết",

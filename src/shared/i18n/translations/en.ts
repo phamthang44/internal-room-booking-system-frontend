@@ -197,6 +197,7 @@ export const en = {
       status: {
         confirmed: "CONFIRMED",
         pending: "PENDING",
+        inUse: "IN USE",
         cancelled: "CANCELLED",
       },
     },
@@ -401,6 +402,7 @@ export const en = {
       pending: "Pending",
       rejected: "Rejected",
       cancelled: "Cancelled",
+      inUse: "In use",
       completed: "Completed",
     },
     viewDetails: "View Details",
