@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "@shared/i18n/useI18n";
-import { StatusChip } from "@shared/components/StatusChip";
 import { cn } from "@shared/utils/cn";
 import type { RoomUI } from "../types/classroom.api.types";
+import { RoomStatusChip, roomStatusCardClasses } from "./RoomStatusChip";
 
 // ── Grid card (3-col default) ─────────────────────────────────────────────────
 
@@ -18,7 +18,10 @@ export const RoomCard = ({ room }: RoomCardProps) => {
   return (
     <div
       id={`room-card-${room.id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_2px_12px_rgba(24,28,30,0.06)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(24,28,30,0.10)]"
+      className={cn(
+        "group flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_2px_12px_rgba(24,28,30,0.06)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(24,28,30,0.10)]",
+        roomStatusCardClasses[room.availability],
+      )}
     >
       {/* ── Image / gradient ─────────────────────────────────────────── */}
       <div
@@ -40,7 +43,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
         )}
         {/* Status badge — top-right */}
         <div className="absolute right-3 top-3">
-          <StatusChip status={room.availability} />
+          <RoomStatusChip status={room.availability} />
         </div>
         {/* Decorative room-type overlay (bottom strip) */}
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent px-3 pb-2 pt-6">
@@ -155,7 +158,10 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
   return (
     <div
       id={`room-list-${room.id}`}
-      className="group flex items-center gap-4 rounded-2xl bg-surface-container-lowest p-4 shadow-[0_1px_6px_rgba(24,28,30,0.05)] transition-all hover:shadow-[0_4px_20px_rgba(24,28,30,0.08)]"
+      className={cn(
+        "group flex items-center gap-4 rounded-2xl bg-surface-container-lowest p-4 shadow-[0_1px_6px_rgba(24,28,30,0.05)] transition-all hover:shadow-[0_4px_20px_rgba(24,28,30,0.08)]",
+        roomStatusCardClasses[room.availability],
+      )}
     >
       {/* Thumbnail */}
       <div
@@ -184,7 +190,7 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
               </p>
             )}
           </div>
-          <StatusChip status={room.availability} className="shrink-0" />
+          <RoomStatusChip status={room.availability} className="shrink-0" />
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-on-surface-variant">

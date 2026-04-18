@@ -3,6 +3,8 @@
 // GET BASE_URL/rooms/:id → { data: RoomDetailDataDto, meta?: ... }
 // ─────────────────────────────────────────────────────────────────────────────
 
+import type { RoomAvailabilityUI, RoomStatusApi } from "./classroom.api.types";
+
 /** Backend slot status (extend as new values appear). */
 export type RoomSlotStatusApi = string;
 
@@ -54,6 +56,15 @@ export interface RoomDetailDataDto {
   roomType: RoomTypeDto;
   /** Backward-compatible list of image URLs for this room */
   imageUrls?: string[];
+  /**
+   * Same enum as list items (`ClassroomListResponse.status` on `GET /rooms`).
+   * Detail payloads often use this field name; prefer it when `roomStatus` is absent.
+   */
+  status?: RoomStatusApi;
+  /** Same enum as room listing; some APIs use this instead of `status`. */
+  roomStatus?: RoomStatusApi;
+  /** Alternate wire name used by some API gateways (same enum as `roomStatus`). */
+  RoomStatus?: RoomStatusApi;
 }
 
 export interface RoomDetailApiMeta {
@@ -70,8 +81,17 @@ export interface RoomDetailApiResponse {
 
 // ── UI types (components) ───────────────────────────────────────────────────
 
-/** `pendingApproval` = locked (not selectable), same as occupied but different label. */
-export type SlotStatus = "available" | "occupied" | "inUse" | "pendingApproval";
+/**
+ * Slot row state in the booking sidebar.
+ * `roomMaintenance` / `roomUnavailable` = room-level closure (matches `RoomStatus` on listing), not a booking.
+ */
+export type SlotStatus =
+  | "available"
+  | "occupied"
+  | "inUse"
+  | "pendingApproval"
+  | "roomMaintenance"
+  | "roomUnavailable";
 
 export interface BookingSlot {
   id: string;
@@ -101,6 +121,8 @@ export interface RoomDetail {
   addressBuildingLocation: string;
   capacity: number;
   roomType: RoomTypeDto;
+  /** Same mapping as room listing cards (`RoomStatusChip`). */
+  availability: RoomAvailabilityUI;
   /** Gallery images (0-5). When present, `imageUrl` is typically the first. */
   imageUrls?: string[];
   imageUrl?: string;

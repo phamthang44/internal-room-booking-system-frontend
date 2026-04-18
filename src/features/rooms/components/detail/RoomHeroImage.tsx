@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, MapPin } from "lucide-react";
 import { cn } from "@shared/utils/cn";
 import type { RoomDetail } from "../../types/roomDetail.types";
+import { RoomStatusChip, roomStatusCardClasses } from "../RoomStatusChip";
 
 interface RoomHeroImageProps {
   room: RoomDetail;
@@ -43,7 +44,13 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
   };
 
   return (
-    <div className={cn("relative group overflow-hidden rounded-2xl", className)}>
+    <div
+      className={cn(
+        "relative group overflow-hidden rounded-2xl",
+        roomStatusCardClasses[room.availability],
+        className,
+      )}
+    >
       {activeUrl ? (
         <img
           src={activeUrl}
@@ -105,6 +112,10 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
         <ArrowLeft size={15} strokeWidth={2.5} />
         <span className="hidden sm:inline">Rooms</span>
       </button>
+
+      <div className="absolute top-5 right-5 z-10">
+        <RoomStatusChip status={room.availability} />
+      </div>
 
       <div className="absolute bottom-6 left-6 right-6 text-white z-10">
         <div className="flex items-center gap-2 mb-2 flex-wrap">

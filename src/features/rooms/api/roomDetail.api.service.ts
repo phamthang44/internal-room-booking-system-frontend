@@ -16,6 +16,10 @@ import type {
   CreateBookingResponseDataDto,
   BookingCreatedTimeSlotDto,
 } from "../types/roomDetail.types";
+import {
+  mapRoomStatusApiToAvailability,
+  normalizeScheduleForRoomStatus,
+} from "../utils/roomStatusMapping";
 
 const EQUIPMENT_ICON_MAP: Record<string, string> = {
   projector: "Projector",
@@ -55,28 +59,39 @@ const unwrapData = (body: unknown): RoomDetailDataDto => {
   throw new Error("roomDetail: unexpected API response shape");
 };
 
-const adaptRoomDetail = (raw: RoomDetailDataDto): RoomDetail => ({
-  id: String(raw.classroomId),
-  name: raw.roomName,
-  building: raw.building,
-  addressBuildingLocation: raw.addressBuildingLocation,
-  capacity: raw.capacity,
-  roomType: raw.roomType,
-  imageUrls: raw.imageUrls ?? [],
-  imageUrl:
-    raw.imageUrls && raw.imageUrls.length > 0 ? raw.imageUrls[0] : undefined,
-  imageGradient:
-    "linear-gradient(135deg, #002045 0%, #1a365d 60%, #003f21 100%)",
-  equipments: (raw.equipments ?? []).map(
-    (e, idx): EquipmentDetail => ({
-      id: e.id ?? idx,
-      name: e.name ?? "",
-      description: undefined,
-      icon: resolveIcon(e.name ?? ""),
-    })
-  ),
-  schedule: sortSchedule(raw.schedule),
-});
+/** Same wire precedence as list: `GET /rooms` items use `status`; detail may also use `roomStatus`. */
+const pickRoomStatus = (raw: RoomDetailDataDto) =>
+  raw.status ?? raw.roomStatus ?? raw.RoomStatus;
+
+const adaptRoomDetail = (raw: RoomDetailDataDto): RoomDetail => {
+  const roomStatusWire = pickRoomStatus(raw);
+  const scheduleSorted = sortSchedule(raw.schedule);
+  const schedule = normalizeScheduleForRoomStatus(scheduleSorted, roomStatusWire);
+
+  return {
+    id: String(raw.classroomId),
+    name: raw.roomName,
+    building: raw.building,
+    addressBuildingLocation: raw.addressBuildingLocation,
+    capacity: raw.capacity,
+    roomType: raw.roomType,
+    availability: mapRoomStatusApiToAvailability(roomStatusWire),
+    imageUrls: raw.imageUrls ?? [],
+    imageUrl:
+      raw.imageUrls && raw.imageUrls.length > 0 ? raw.imageUrls[0] : undefined,
+    imageGradient:
+      "linear-gradient(135deg, #002045 0%, #1a365d 60%, #003f21 100%)",
+    equipments: (raw.equipments ?? []).map(
+      (e, idx): EquipmentDetail => ({
+        id: e.id ?? idx,
+        name: e.name ?? "",
+        description: undefined,
+        icon: resolveIcon(e.name ?? ""),
+      })
+    ),
+    schedule,
+  };
+};
 
 const BASE = import.meta.env.VITE_API_URL;
 

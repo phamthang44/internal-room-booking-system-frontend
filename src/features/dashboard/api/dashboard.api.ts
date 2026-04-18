@@ -72,7 +72,11 @@ const MOCK_RECENT_ROOMS: RecentRoom[] = [
 const USE_MOCK = false;
 const toUpcomingStatus = (status: string): UpcomingBooking["status"] => {
   const normalized = status.toUpperCase();
-  if (normalized === "APPROVED" || normalized === "CONFIRMED") {
+  if (
+    normalized === "APPROVED" ||
+    normalized === "CONFIRMED" ||
+    normalized === "CHECKED_IN"
+  ) {
     return "confirmed";
   }
   if (normalized === "CANCELLED" || normalized === "REJECTED") {
@@ -100,6 +104,8 @@ const mapUpcomingBookings = (
     bookingDate: string;
     timeSlotRange: string;
     status: string;
+    classroomName?: string;
+    buildingName?: string;
   }>,
 ): UpcomingBooking[] => {
   return items.slice(0, limit).map((item) => {
@@ -108,8 +114,8 @@ const mapUpcomingBookings = (
     return {
       id: String(item.bookingId),
       title: `Booking #${item.bookingId}`,
-      roomName: "Room details pending",
-      building: "TBD",
+      roomName: item.classroomName ?? "Room details pending",
+      building: item.buildingName ?? "TBD",
       date: item.bookingDate,
       startTime,
       endTime,

@@ -176,6 +176,7 @@ export const en = {
         confirmed: "Booking Confirmed",
         submitted: "Request Submitted",
         checkIn: "Check-in Successful",
+        checkOut: "Check-out Successful",
         cancelled: "Booking Cancelled",
         rejected: "Booking Rejected",
         unknown: "Unknown Activity",
@@ -323,6 +324,8 @@ export const en = {
       occupied: "Occupied",
       inUse: "In use",
       pending: "Pending Approval",
+      roomMaintenance: "Under maintenance",
+      roomUnavailable: "Unavailable",
     },
     error: {
       loadFailed: "Failed to load room details. Please try again.",

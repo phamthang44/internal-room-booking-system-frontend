@@ -2,32 +2,71 @@
 // BookingSidebar — Date scrubber + slot selection + purpose + submit
 // Data: room.schedule.availabilities from GET /rooms/:id
 // ─────────────────────────────────────────────────────────────────────────────
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { CheckCircle, CircleAlert } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import { useSubmitBooking } from "../../hooks/useRoomDetail";
-import type { BookingSlot, DateOption, RoomDetail, RoomSlotDto } from "../../types/roomDetail.types";
+import type {
+  BookingSlot,
+  DateOption,
+  RoomDetail,
+  RoomSlotDto,
+  SlotStatus,
+} from "../../types/roomDetail.types";
+import type { RoomAvailabilityUI } from "../../types/classroom.api.types";
 
 const MAX_SLOT_SELECTION = 2;
 
 const formatTimeShort = (time: string) => time.slice(0, 5);
 
-const mapApiSlotToBookingSlot = (s: RoomSlotDto): BookingSlot => {
+/**
+ * When the classroom is not AVAILABLE, every slot is non-bookable — label by room status,
+ * not as "booked" (`occupied`). Otherwise derive status from the slot payload.
+ */
+const mapApiSlotToBookingSlot = (
+  s: RoomSlotDto,
+  roomAvailability: RoomAvailabilityUI,
+): BookingSlot => {
   const label = `${formatTimeShort(s.startTime)} — ${formatTimeShort(s.endTime)}`;
-  if (s.isAvailable && s.status === "AVAILABLE") {
-    return { id: String(s.slotId), label, status: "available" };
+  const id = String(s.slotId);
+
+  if (roomAvailability === "maintenance") {
+    return { id, label, status: "roomMaintenance" };
   }
+  if (roomAvailability !== "available") {
+    return { id, label, status: "roomUnavailable" };
+  }
+
   const st = (s.status ?? "").toUpperCase();
+  if (s.isAvailable && st === "AVAILABLE") {
+    return { id, label, status: "available" };
+  }
   if (st.includes("IN_USE")) {
-    return { id: String(s.slotId), label, status: "inUse" };
+    return { id, label, status: "inUse" };
   }
   const looksPendingApproval = st.includes("PENDING") || st.includes("AWAITING");
   if (looksPendingApproval) {
-    return { id: String(s.slotId), label, status: "pendingApproval" };
+    return { id, label, status: "pendingApproval" };
   }
-  return { id: String(s.slotId), label, status: "occupied" };
+  return { id, label, status: "occupied" };
+};
+
+const disabledSlotBadgeKey = (status: SlotStatus): string => {
+  switch (status) {
+    case "roomMaintenance":
+      return "roomDetail.slots.roomMaintenance";
+    case "roomUnavailable":
+      return "roomDetail.slots.roomUnavailable";
+    case "pendingApproval":
+      return "roomDetail.slots.pending";
+    case "inUse":
+      return "roomDetail.slots.inUse";
+    case "occupied":
+    default:
+      return "roomDetail.slots.occupied";
+  }
 };
 
 const SlotRow = ({
@@ -44,26 +83,48 @@ const SlotRow = ({
   onSelect: () => void;
   t: (key: string) => string;
 }) => {
-  if (slot.status === "occupied" || slot.status === "inUse" || slot.status === "pendingApproval") {
-    const pending = slot.status === "pendingApproval";
-    const inUse = slot.status === "inUse";
+  if (slot.status !== "available") {
+    const rowStyle =
+      slot.status === "roomMaintenance"
+        ? {
+            box: "bg-amber-500/5 border border-amber-500/15",
+            dot: "bg-amber-500",
+            badge: "text-amber-900 bg-amber-100 dark:text-amber-950",
+          }
+        : slot.status === "roomUnavailable"
+          ? {
+              box: "bg-surface-container-low/80 border border-outline-variant/40",
+              dot: "bg-on-surface-variant/70",
+              badge: "text-on-surface-variant bg-surface-container-high",
+            }
+          : slot.status === "pendingApproval"
+            ? {
+                box: "bg-amber-500/5 border border-amber-500/15",
+                dot: "bg-amber-500",
+                badge: "text-amber-800 bg-amber-100",
+              }
+            : slot.status === "inUse"
+              ? {
+                  box: "bg-primary/5 border border-primary/15",
+                  dot: "bg-primary",
+                  badge: "text-primary bg-primary-fixed",
+                }
+              : {
+                  box: "bg-surface-container-low/50 border border-outline-variant/30",
+                  dot: "bg-error",
+                  badge: "text-on-error-container bg-error-container/50",
+                };
+
     return (
       <div
         className={cn(
-          "flex items-center justify-between p-4 rounded-xl opacity-60 cursor-not-allowed select-none",
-          pending
-            ? "bg-amber-500/5 border border-amber-500/15"
-            : inUse
-              ? "bg-primary/5 border border-primary/15"
-              : "bg-surface-container-low/50"
+          "flex items-center justify-between p-4 rounded-xl opacity-90 cursor-not-allowed select-none",
+          rowStyle.box,
         )}
       >
         <div className="flex items-center gap-3">
           <span
-            className={cn(
-              "w-2.5 h-2.5 rounded-full shrink-0",
-              pending ? "bg-amber-500" : inUse ? "bg-primary" : "bg-error"
-            )}
+            className={cn("w-2.5 h-2.5 rounded-full shrink-0", rowStyle.dot)}
           />
           <span className="font-headline font-bold text-on-surface-variant text-sm">
             {slot.label}
@@ -72,18 +133,10 @@ const SlotRow = ({
         <span
           className={cn(
             "text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full",
-            pending
-              ? "text-amber-800 bg-amber-100"
-              : inUse
-                ? "text-primary bg-primary-fixed"
-                : "text-on-error-container bg-error-container/50"
+            rowStyle.badge,
           )}
         >
-          {pending
-            ? t("roomDetail.slots.pending")
-            : inUse
-              ? t("roomDetail.slots.inUse")
-              : t("roomDetail.slots.occupied")}
+          {t(disabledSlotBadgeKey(slot.status))}
         </span>
       </div>
     );
@@ -144,6 +197,7 @@ interface BookingSidebarProps {
 export const BookingSidebar = ({ room }: BookingSidebarProps) => {
   const { t } = useI18n();
   const availabilities = room.schedule.availabilities;
+  const dateStripRef = useRef<HTMLDivElement>(null);
 
   const dateOptions = useMemo((): DateOption[] => {
     return availabilities.map((a) => {
@@ -172,11 +226,25 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
     setAttendeesInput("");
   }, [room.id]);
 
+  /** Horizontal strip: vertical wheel scrolls sideways; needs non-passive listener. */
+  useEffect(() => {
+    const el = dateStripRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (el.scrollWidth <= el.clientWidth + 2) return;
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [dateOptions.length, room.id]);
+
   const slots = useMemo((): BookingSlot[] => {
     const day = availabilities.find((a) => a.date === selectedDate);
     if (!day) return [];
-    return day.slots.map(mapApiSlotToBookingSlot);
-  }, [availabilities, selectedDate]);
+    return day.slots.map((s) => mapApiSlotToBookingSlot(s, room.availability));
+  }, [availabilities, selectedDate, room.availability]);
 
   /** Selected ids in day order (chronological) for API and display. */
   const orderedSelectedSlotIds = useMemo(() => {
@@ -257,29 +325,34 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
           {dateOptions.length === 0 ? (
             <p className="text-sm text-on-surface-variant">{t("roomDetail.booking.noSchedule")}</p>
           ) : (
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
-              {dateOptions.map((d) => {
-                const isActive = selectedDate === d.date;
-                return (
-                  <button
-                    key={d.date}
-                    type="button"
-                    onClick={() => {
-                      setSelectedDate(d.date);
-                      setSelectedSlotIds([]);
-                    }}
-                    className={cn(
-                      "flex flex-col items-center justify-center min-w-[60px] h-[72px] rounded-xl flex-shrink-0 transition-all duration-200",
-                      isActive
-                        ? "bg-primary text-white shadow-lg shadow-primary/25 ring-4 ring-primary-fixed/50 scale-105"
-                        : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
-                    )}
-                  >
-                    <span className="text-[10px] font-bold uppercase tracking-wider">{d.day}</span>
-                    <span className="text-xl font-black leading-tight">{d.dayNum}</span>
-                  </button>
-                );
-              })}
+            <div
+              ref={dateStripRef}
+              className="-mx-1 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 py-2 scroll-smooth [scrollbar-width:thin]"
+            >
+              <div className="flex w-max gap-2 pr-4">
+                {dateOptions.map((d) => {
+                  const isActive = selectedDate === d.date;
+                  return (
+                    <button
+                      key={d.date}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDate(d.date);
+                        setSelectedSlotIds([]);
+                      }}
+                      className={cn(
+                        "flex flex-col items-center justify-center min-w-[60px] h-[72px] rounded-xl shrink-0 transition-all duration-200",
+                        isActive
+                          ? "bg-primary text-white shadow-lg shadow-primary/25 ring-4 ring-primary-fixed/50 scale-105"
+                          : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                      )}
+                    >
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{d.day}</span>
+                      <span className="text-xl font-black leading-tight">{d.dayNum}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

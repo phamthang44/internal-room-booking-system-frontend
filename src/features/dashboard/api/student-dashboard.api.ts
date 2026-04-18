@@ -13,6 +13,8 @@ export interface UpcomingBookingItem {
   bookingDate: string;
   timeSlotRange: string;
   status: string;
+  /** CHECK_IN when approved, CHECK_OUT when checked in; omitted when no primary action. */
+  nextAction?: string | null;
   classroomName?: string;
   buildingName?: string;
   title?: string;
@@ -56,6 +58,7 @@ const MOCK_RESPONSE: StudentDashboardResponse = {
         bookingDate: "2026-04-13",
         timeSlotRange: "07:00 - 11:30",
         status: "APPROVED",
+        nextAction: "CHECK_IN",
       },
       {
         bookingId: 102,
@@ -81,7 +84,8 @@ const MOCK_RESPONSE: StudentDashboardResponse = {
         bookingId: 19,
         classroomName: "A.101",
         buildingName: "Tòa nhà A",
-        action: "APPROVED",
+        action: "APPROVE_BOOKING",
+        statusAfter: "APPROVED",
         timestamp: "2026-04-01T03:28:24.851531Z",
         message: "Đơn đặt phòng đã được phê duyệt.",
       },

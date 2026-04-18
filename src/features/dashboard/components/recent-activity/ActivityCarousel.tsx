@@ -2,6 +2,7 @@ import { useI18n } from "@shared/i18n/useI18n";
 import type { HistoryItem } from "../../api/student-dashboard.api";
 import { RoomIdentifier } from "@shared/components/RoomIdentifier";
 import { getRelativeTime } from "@shared/utils/date";
+import { useNavigate } from "react-router-dom";
 
 interface ActivityCarouselProps {
   historyList?: HistoryItem[];
@@ -9,6 +10,7 @@ interface ActivityCarouselProps {
 
 export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
   const { t, language } = useI18n();
+  const navigate = useNavigate();
 
   if (!historyList || historyList.length === 0) {
     return (
@@ -46,7 +48,11 @@ export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
             {t("dashboard.recentActivity.subtitle")}
           </p>
         </div>
-        <button className="text-primary font-bold font-body text-sm hover:underline">
+        <button
+          type="button"
+          onClick={() => navigate("/bookings")}
+          className="text-primary font-bold font-body text-sm hover:underline"
+        >
           {t("dashboard.recentActivity.viewHistory")}
         </button>
       </div>
@@ -64,7 +70,22 @@ export const ActivityCarousel = ({ historyList }: ActivityCarouselProps) => {
           return (
             <div
               key={`${item.bookingId}-${item.timestamp}`}
-              className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-slate-100/50 flex flex-col gap-4"
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                navigate(
+                  `/bookings/${encodeURIComponent(String(item.bookingId))}`,
+                )
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate(
+                    `/bookings/${encodeURIComponent(String(item.bookingId))}`,
+                  );
+                }
+              }}
+              className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-slate-100/50 flex flex-col gap-4 cursor-pointer text-left hover:border-primary/30 transition-colors"
             >
               <div className="flex justify-between items-start">
                 <div
@@ -134,9 +155,22 @@ function getActivityStyle(action: string, t: any, statusAfter?: string) {
   const statusUpper = statusAfter?.toUpperCase() || "";
 
   if (
+    actionUpper === "CHECK_OUT" ||
+    statusUpper === "COMPLETED" ||
+    actionUpper === "COMPLETED"
+  ) {
+    return {
+      icon: "logout",
+      colorTheme: "emerald" as const,
+      statusText: t("dashboard.recentActivity.status.checkOut"),
+    };
+  }
+
+  if (
     actionUpper === "APPROVED" ||
     actionUpper === "CONFIRMED" ||
     actionUpper === "CONFIRM_BOOKING" ||
+    actionUpper === "APPROVE_BOOKING" ||
     statusUpper === "CONFIRMED" ||
     statusUpper === "APPROVED"
   ) {
@@ -149,6 +183,7 @@ function getActivityStyle(action: string, t: any, statusAfter?: string) {
     actionUpper === "PENDING" ||
     actionUpper === "SUBMITTED" ||
     actionUpper === "SUBMIT_BOOKING" ||
+    actionUpper === "CREATE_BOOKING" ||
     statusUpper === "PENDING"
   ) {
     return {
@@ -157,9 +192,9 @@ function getActivityStyle(action: string, t: any, statusAfter?: string) {
       statusText: t("dashboard.recentActivity.status.submitted"),
     };
   } else if (
-    actionUpper === "COMPLETED" ||
+    actionUpper === "CHECK_IN" ||
     actionUpper === "CHECKED_IN" ||
-    statusUpper === "COMPLETED"
+    statusUpper === "CHECKED_IN"
   ) {
     return {
       icon: "login",
@@ -170,6 +205,7 @@ function getActivityStyle(action: string, t: any, statusAfter?: string) {
     actionUpper === "CANCELLED" ||
     actionUpper === "REJECTED" ||
     actionUpper === "CANCEL_BOOKING" ||
+    actionUpper === "REJECT_BOOKING" ||
     statusUpper === "CANCELLED" ||
     statusUpper === "REJECTED"
   ) {
@@ -194,12 +230,16 @@ function getActionTranslation(action: string, t: any) {
   const actionUpper = action.toUpperCase();
   if (actionUpper.includes("CANCEL"))
     return t("dashboard.recentActivity.status.cancelled");
-  if (actionUpper.includes("CONFIRM"))
+  if (actionUpper.includes("CONFIRM") || actionUpper.includes("APPROVE_BOOKING"))
     return t("dashboard.recentActivity.status.confirmed");
-  if (actionUpper.includes("SUBMIT"))
+  if (actionUpper.includes("SUBMIT") || actionUpper === "CREATE_BOOKING")
     return t("dashboard.recentActivity.status.submitted");
+  if (actionUpper.includes("CHECK_OUT"))
+    return t("dashboard.recentActivity.status.checkOut");
   if (actionUpper.includes("CHECK_IN"))
     return t("dashboard.recentActivity.status.checkIn");
+  if (actionUpper.includes("REJECT"))
+    return t("dashboard.recentActivity.status.rejected");
 
   return action.replace(/_/g, " ");
 }

@@ -21,7 +21,9 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
       return await bookingsApiService.checkoutBooking(bookingId);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["student-dashboard-recent-activity"],
+      });
       await queryClient.invalidateQueries({ queryKey: ["bookings"] });
     },
   });
@@ -71,15 +73,31 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
             const iconConfig = getIconConfig(booking.status);
             const dateLabel = formatDisplayDate(booking.bookingDate, t, language);
             const statusUpper = (booking.status ?? "").toUpperCase();
-            const canCheckIn = statusUpper === "APPROVED" || statusUpper === "CONFIRMED";
-            // With checkout support, CHECKED_IN is only actionable for checkout while still in-use.
-            // If backend starts returning checkoutTime in summary later, we can refine this.
-            const canCheckout = statusUpper === "CHECKED_IN";
+            const nextUpper = (booking.nextAction ?? "").toUpperCase();
+            const canCheckIn =
+              nextUpper === "CHECK_IN" ||
+              statusUpper === "APPROVED" ||
+              statusUpper === "CONFIRMED";
+            const canCheckout =
+              nextUpper === "CHECK_OUT" || statusUpper === "CHECKED_IN";
 
             return (
               <div
                 key={booking.bookingId}
-                className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                role="button"
+                tabIndex={0}
+                onClick={() =>
+                  navigate(`/bookings/${encodeURIComponent(String(booking.bookingId))}`)
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(
+                      `/bookings/${encodeURIComponent(String(booking.bookingId))}`,
+                    );
+                  }
+                }}
+                className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors cursor-pointer text-left"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -125,7 +143,12 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                   {canCheckIn ? (
                     <button
                       type="button"
-                      onClick={() => navigate(`/bookings/${booking.bookingId}/checkin`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(
+                          `/bookings/${encodeURIComponent(String(booking.bookingId))}/checkin`,
+                        );
+                      }}
                       className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-on-primary hover:opacity-90 active:scale-95 transition-all"
                     >
                       <span className="material-symbols-outlined text-[16px]">location_on</span>
@@ -137,7 +160,8 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                     <button
                       type="button"
                       disabled={checkoutMutation.isPending}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         const id = Number(booking.bookingId);
                         if (!Number.isFinite(id)) return;
                         void checkoutMutation.mutateAsync(id).catch(() => undefined);
@@ -161,7 +185,11 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                   >
                     {statusLabel}
                   </span>
-                  <button className="p-2 text-on-surface-variant hover:bg-slate-100 rounded-full transition-colors">
+                  <button
+                    type="button"
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 text-on-surface-variant hover:bg-slate-100 rounded-full transition-colors"
+                  >
                     <span
                       className="material-symbols-outlined"
                       data-icon="more_vert"

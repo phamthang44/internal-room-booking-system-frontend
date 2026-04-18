@@ -8,14 +8,13 @@ import { useAuthStore } from "@features/auth";
 import type {
   ApiResultClassroomList,
   RoomSearchParams,
-  RoomStatusApi,
-  RoomAvailabilityUI,
   RoomUI,
   RoomsPageUI,
   EquipmentResponse,
   ClassroomScheduleSlotResponse,
   RoomScheduleSlotUI,
 } from "../types/classroom.api.types";
+import { mapRoomStatusApiToAvailability } from "../utils/roomStatusMapping";
 
 // ── Deterministic gradient (client-side only, no API field) ──────────────────
 
@@ -30,19 +29,6 @@ const GRADIENTS = [
 
 const buildGradient = (id: number): string =>
   GRADIENTS[id % GRADIENTS.length];
-
-// ── Status adapter ────────────────────────────────────────────────────────────
-// Maps backend ALL_CAPS enum → UI lowercase variant used by StatusChip
-
-const STATUS_MAP: Record<RoomStatusApi, RoomAvailabilityUI> = {
-  AVAILABLE: "available",
-  INACTIVE: "occupied",    // closest visual meaning
-  MAINTENANCE: "maintenance",
-  DELETED: "occupied",     // should never appear in public listing
-};
-
-const mapStatus = (status?: RoomStatusApi): RoomAvailabilityUI =>
-  status ? (STATUS_MAP[status] ?? "occupied") : "occupied";
 
 const adaptSlot = (s: ClassroomScheduleSlotResponse): RoomScheduleSlotUI => ({
   slotId: s.slotId ?? 0,
@@ -62,7 +48,7 @@ const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): Ro
   name: raw.roomName ?? "",
   building: raw.buildingName ?? "",
   capacity: raw.capacity ?? 0,
-  availability: mapStatus(raw.status),
+  availability: mapRoomStatusApiToAvailability(raw.status),
   equipmentNames: (raw.equipments ?? []).map((e: EquipmentResponse) => e.name ?? "").filter(Boolean),
   equipments: raw.equipments ?? [],
   roomType: raw.roomType ?? "",

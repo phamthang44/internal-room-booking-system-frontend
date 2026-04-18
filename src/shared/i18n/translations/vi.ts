@@ -177,6 +177,7 @@ export const vi = {
         confirmed: "Đã xác nhận",
         submitted: "Đã gửi yêu cầu",
         checkIn: "Điểm danh thành công",
+        checkOut: "Đã trả phòng thành công",
         cancelled: "Đã hủy",
         rejected: "Đã từ chối",
         unknown: "Hoạt động không xác định",
@@ -324,6 +325,8 @@ export const vi = {
       occupied: "Đã đặt",
       inUse: "Đang sử dụng",
       pending: "Chờ phê duyệt",
+      roomMaintenance: "Bảo trì",
+      roomUnavailable: "Không khả dụng",
     },
     error: {
       loadFailed: "Không thể tải chi tiết phòng. Vui lòng thử lại.",
