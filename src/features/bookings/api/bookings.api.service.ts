@@ -178,6 +178,7 @@ const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
     schedule: {
       dateLabel: bookingDate,
       timeLabel: timeSummary,
+      ...(bookingDate ? { dateIso: bookingDate } : {}),
     },
     checkInWindow: checkInWindow
       ? { opensAtIso: checkInWindow.opensAt.toISOString(), expiresAtIso: checkInWindow.expiresAt.toISOString() }

@@ -1,7 +1,7 @@
 import { useI18n } from "@shared/i18n/useI18n";
 import type { UpcomingBookingItem } from "../../api/student-dashboard.api";
 import { RoomIdentifier } from "@shared/components/RoomIdentifier";
-import { formatDisplayDate } from "@shared/utils/date";
+import { formatDisplayDate, isBookingDateToday } from "@shared/utils/date";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bookingsApiService } from "@features/bookings/api/bookings.api.service";
@@ -80,6 +80,9 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
               statusUpper === "CONFIRMED";
             const canCheckout =
               nextUpper === "CHECK_OUT" || statusUpper === "CHECKED_IN";
+            const bookingIsToday = isBookingDateToday(booking.bookingDate);
+            const showCheckInAction = canCheckIn && bookingIsToday;
+            const showCheckoutAction = canCheckout && bookingIsToday;
 
             return (
               <div
@@ -140,7 +143,7 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                   </div>
                 </div>
                 <div className="flex items-center justify-between md:justify-end gap-6">
-                  {canCheckIn ? (
+                  {showCheckInAction ? (
                     <button
                       type="button"
                       onClick={(e) => {
@@ -156,7 +159,7 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                     </button>
                   ) : null}
 
-                  {canCheckout ? (
+                  {showCheckoutAction ? (
                     <button
                       type="button"
                       disabled={checkoutMutation.isPending}

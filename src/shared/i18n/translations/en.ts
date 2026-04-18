@@ -105,6 +105,8 @@ export const en = {
     support: "IT Support",
     date: {
       justNow: "Just now",
+      minuteAgo: "1 minute ago",
+      minutesAgo: "{{count}} minutes ago",
       hourAgo: "1 hour ago",
       hoursAgo: "{{count}} hours ago",
       yesterday: "Yesterday",
@@ -430,6 +432,7 @@ export const en = {
         location: "Location",
         dateTime: "Date & Time",
       },
+      sameDayOnlyHint: "Check-in and checkout are only available on the day of your booking.",
       sections: {
         purpose: "Booking Purpose",
         attendees: "Attendees",

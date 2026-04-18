@@ -1,8 +1,69 @@
 import { useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { useI18n } from "@shared/i18n/useI18n";
-import { useAppToastStore, type AppToastItem } from "@shared/errors/appToastStore";
+import { useAppToastStore, type AppToastItem, type AppToastTone } from "@shared/errors/appToastStore";
 
 const DISMISS_MS = 6000;
+
+type ToneClasses = {
+  border: string;
+  side: string;
+  iconWrap: string;
+  icon: string;
+  progress: string;
+};
+
+function getToneClasses(tone: AppToastTone): ToneClasses {
+  switch (tone) {
+    case "success":
+      return {
+        border: "border-tertiary-fixed/30 ring-1 ring-tertiary-fixed/15",
+        side: "bg-tertiary-fixed",
+        iconWrap: "bg-tertiary-fixed/25",
+        icon: "text-on-tertiary-fixed-variant",
+        progress: "bg-tertiary-fixed",
+      };
+    case "info":
+      return {
+        border: "border-primary-fixed/40 ring-1 ring-primary/10",
+        side: "bg-primary",
+        iconWrap: "bg-primary-fixed/50",
+        icon: "text-primary",
+        progress: "bg-primary-fixed-dim",
+      };
+    case "warning":
+      return {
+        border: "border-amber-500/30 ring-1 ring-amber-500/10",
+        side: "bg-amber-600",
+        iconWrap: "bg-amber-100",
+        icon: "text-amber-900",
+        progress: "bg-amber-500",
+      };
+    case "error":
+    default:
+      return {
+        border: "border-error/25 ring-1 ring-error/10",
+        side: "bg-error",
+        iconWrap: "bg-error-container",
+        icon: "text-on-error-container",
+        progress: "bg-error",
+      };
+  }
+}
+
+function defaultIconForTone(tone: AppToastTone): string {
+  switch (tone) {
+    case "success":
+      return "check_circle";
+    case "info":
+      return "info";
+    case "warning":
+      return "warning";
+    case "error":
+    default:
+      return "error";
+  }
+}
 
 const ToastRow = ({
   toast,
@@ -16,27 +77,30 @@ const ToastRow = ({
 }) => {
   const { t } = useI18n();
   const tone = toast.tone ?? "error";
-  const toneClasses =
-    tone === "success"
-      ? {
-          border: "border-tertiary-fixed/30 ring-1 ring-tertiary-fixed/15",
-          side: "bg-tertiary-fixed",
-          iconWrap: "bg-tertiary-fixed/25",
-          icon: "text-on-tertiary-fixed-variant",
-          progress: "bg-tertiary-fixed",
-        }
-      : {
-          border: "border-error/25 ring-1 ring-error/10",
-          side: "bg-error",
-          iconWrap: "bg-error-container",
-          icon: "text-on-error-container",
-          progress: "bg-error",
-        };
+  const toneClasses = getToneClasses(tone);
+  const iconName = toast.materialIcon ?? defaultIconForTone(tone);
 
   useEffect(() => {
     const tmr = window.setTimeout(() => onDismiss(toast.id), DISMISS_MS);
     return () => clearTimeout(tmr);
   }, [toast.id, onDismiss]);
+
+  const titleText = toast.plainTitle ?? t(toast.titleI18nKey);
+
+  const bodyInner = (
+    <>
+      <p className="mb-1 text-sm font-semibold leading-snug text-on-surface">{titleText}</p>
+      <p className="text-sm leading-relaxed text-on-surface-variant">{toast.message}</p>
+      {toast.caption && (
+        <p className="mt-1 text-xs text-on-surface-variant/85">{toast.caption}</p>
+      )}
+      {toast.traceId && (
+        <p className="mt-2 font-mono text-[10px] text-on-surface-variant/80">
+          {t("common.errors.toast.traceId")}: {toast.traceId}
+        </p>
+      )}
+    </>
+  );
 
   return (
     <div
@@ -61,21 +125,22 @@ const ToastRow = ({
         aria-hidden
       />
 
-      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${toneClasses.iconWrap}`}>
-        <span className={`material-symbols-outlined text-[22px] ${toneClasses.icon}`}>
-          {tone === "success" ? "check_circle" : "error"}
-        </span>
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${toneClasses.iconWrap} ${toast.pulseAccent ? "app-toast-icon-pulse" : ""}`}
+      >
+        <span className={`material-symbols-outlined text-[22px] ${toneClasses.icon}`}>{iconName}</span>
       </div>
 
       <div className="min-w-0 flex-1 pt-0.5">
-        <p className="mb-1 text-sm font-semibold leading-snug text-on-surface">
-          {t(toast.titleI18nKey)}
-        </p>
-        <p className="text-sm leading-relaxed text-on-surface-variant">{toast.message}</p>
-        {toast.traceId && (
-          <p className="mt-2 font-mono text-[10px] text-on-surface-variant/80">
-            {t("common.errors.toast.traceId")}: {toast.traceId}
-          </p>
+        {toast.bookingId != null ? (
+          <Link
+            to={`/bookings/${toast.bookingId}`}
+            className="-m-1 block rounded-xl p-1 text-left outline-none transition-colors hover:bg-surface-container/80 focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
+            {bodyInner}
+          </Link>
+        ) : (
+          bodyInner
         )}
       </div>
 
@@ -138,8 +203,15 @@ export const AppToastStack = () => {
             transform: translateX(0) scale(1);
           }
         }
+        @keyframes app-toast-icon-pulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.06); opacity: 0.92; }
+        }
         .app-toast-enter {
           animation: app-toast-enter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .app-toast-icon-pulse {
+          animation: app-toast-icon-pulse 1.4s ease-in-out 2;
         }
       `}</style>
     </div>

@@ -106,7 +106,7 @@ function useRouteHeader(pathname: string) {
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const { isOpen, toggle, close } = useSidebarStore();
   const { user, isAuthenticated, clearAuth } = useAuthStore();
-  const { profile, fetchProfile } = useProfileStore();
+  const { profile, fetchProfile, clearProfile } = useProfileStore();
   const { pathname } = useLocation();
   const routeHeader = useRouteHeader(pathname);
   const { t, language, setLanguage } = useI18n();
@@ -138,6 +138,8 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
     try {
       await authApi.logout();
       clearAuth();
+      clearProfile();
+      queryClient.clear();
       navigate("/login");
     } catch (error) {
       if (import.meta.env.DEV) {
@@ -145,6 +147,8 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       }
       // Still clear auth and redirect even if API call fails
       clearAuth();
+      clearProfile();
+      queryClient.clear();
       navigate("/login");
     }
   };

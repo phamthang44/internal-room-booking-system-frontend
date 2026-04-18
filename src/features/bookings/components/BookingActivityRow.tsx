@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type KeyboardEvent } from "react";
 import { StatusChip } from "@shared/components/StatusChip";
 import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
@@ -32,14 +32,31 @@ export function BookingActivityRow({
   const { t } = useI18n();
   const chipStatus = useMemo(() => mapToChipStatus(item.status), [item.status]);
 
+  const rowLabel = `${item.roomCode} — ${item.roomName}`;
+
+  const openRow = () => {
+    onOpen(item.id);
+  };
+
+  const handleRowKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openRow();
+    }
+  };
+
   return (
-    <button
-      type="button"
-      onClick={() => onOpen(item.id)}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={openRow}
+      onKeyDown={handleRowKeyDown}
+      aria-label={rowLabel}
       className={cn(
         "w-full text-left bg-surface-container-lowest p-5 rounded-2xl",
         "shadow-[0px_8px_24px_rgba(24,28,30,0.04)]",
-        "flex items-center justify-between gap-4 group transition-all hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-primary/20"
+        "flex items-center justify-between gap-4 group transition-all hover:scale-[1.01] cursor-pointer",
+        "focus:outline-none focus:ring-2 focus:ring-primary/20",
       )}
     >
       <div className="flex items-center gap-4 min-w-0">
@@ -98,7 +115,7 @@ export function BookingActivityRow({
           <span className="w-[88px]" aria-hidden="true" />
         )}
       </div>
-    </button>
+    </div>
   );
 }
 

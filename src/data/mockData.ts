@@ -56,6 +56,8 @@ export interface BookingLocationInfo {
 export interface BookingScheduleInfo {
   readonly dateLabel: string; // e.g. "Thursday, Oct 24, 2023"
   readonly timeLabel: string; // e.g. "14:00 - 16:30 (2h 30m)"
+  /** yyyy-MM-dd from API; preferred for same-calendar-day checks */
+  readonly dateIso?: string;
 }
 
 export interface BookingTimelineEvent {

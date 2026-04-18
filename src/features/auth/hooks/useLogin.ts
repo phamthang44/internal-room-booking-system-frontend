@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import authApi from "../api/auth.api";
 import { useAuthStore } from "./useAuthStore";
+import { useProfileStore } from "./useProfileStore";
 import { extractErrorMessage } from "../utils/errorExtractor";
 import { decodeJWT } from "../utils/jwt";
 import type { LoginRequest, User } from "../types/auth.types";
@@ -22,6 +23,8 @@ export const useLogin = () => {
     onSuccess: async (response) => {
       try {
         const { accessToken, role } = response.data;
+
+        useProfileStore.getState().clearProfile();
 
         // NOTE: Do NOT store accessToken in localStorage (XSS vulnerability)
         // Keep in memory via Zustand store only

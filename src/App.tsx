@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Router } from "@core/routing";
 import { createAppQueryClient } from "@core/query";
+import { StompWebSocketProvider } from "@core/ws";
 import { I18nProvider } from "@shared/i18n/useI18n";
 
 const queryClient = createAppQueryClient();
@@ -18,9 +19,16 @@ function App() {
     <I18nProvider>
       <GoogleOAuthProvider clientId={googleClientId || ""}>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <Router />
-          </BrowserRouter>
+          <StompWebSocketProvider>
+            <BrowserRouter
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+              }}
+            >
+              <Router />
+            </BrowserRouter>
+          </StompWebSocketProvider>
         </QueryClientProvider>
       </GoogleOAuthProvider>
     </I18nProvider>

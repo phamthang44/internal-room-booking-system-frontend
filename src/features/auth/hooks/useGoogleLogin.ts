@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import authApi from "../api/auth.api";
 import { useAuthStore } from "./useAuthStore";
+import { useProfileStore } from "./useProfileStore";
 import { useI18n } from "@shared/i18n/useI18n";
 import type { CredentialResponse } from "@react-oauth/google";
 import type { LoginResponseData, User } from "../types/auth.types";
@@ -53,6 +54,8 @@ export const useGoogleLogin = () => {
         // Extract data from ApiResponse wrapper
         const responseData: LoginResponseData = data.data;
         const { accessToken, role } = responseData;
+
+        useProfileStore.getState().clearProfile();
 
         // NOTE: Do NOT store accessToken in localStorage (XSS vulnerability)
         // Keep in memory via Zustand store only

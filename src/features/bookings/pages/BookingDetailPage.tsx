@@ -11,6 +11,7 @@ import { useBookingDetail } from "../hooks/useBookingDetail";
 import { BookingTimeline } from "../components/BookingTimeline";
 import { bookingsApiService } from "../api/bookings.api.service";
 import { useBookingCheckout } from "../hooks/useBookingCheckout";
+import { isBookingDateToday } from "@shared/utils/date";
 
 export interface BookingDetailPageProps {
   readonly className?: string;
@@ -58,6 +59,12 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
     if (data.status === "pending") return "pending" as const;
     if (data.status === "cancelled") return "cancelled" as const;
     return null;
+  }, [data]);
+
+  const bookingIsToday = useMemo(() => {
+    if (!data) return false;
+    const raw = data.schedule.dateIso ?? data.schedule.dateLabel;
+    return isBookingDateToday(raw);
   }, [data]);
 
   return (
@@ -164,12 +171,29 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                   <div className="mt-6">
                     <button
                       type="button"
-                      onClick={() => navigate(`/bookings/${data.id}/checkin`)}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:opacity-90 active:scale-95 transition-all"
+                      disabled={!bookingIsToday}
+                      title={
+                        !bookingIsToday ? t("bookings.detail.sameDayOnlyHint") : undefined
+                      }
+                      onClick={() => {
+                        if (!bookingIsToday) return;
+                        navigate(`/bookings/${data.id}/checkin`);
+                      }}
+                      className={cn(
+                        "w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all",
+                        bookingIsToday
+                          ? "bg-primary text-on-primary hover:opacity-90 active:scale-95"
+                          : "cursor-not-allowed bg-surface-container-high text-on-surface-variant opacity-90",
+                      )}
                     >
                       <span className="material-symbols-outlined text-[18px]">location_on</span>
                       {t("bookings.checkin.actions.primary")}
                     </button>
+                    {!bookingIsToday ? (
+                      <p className="mt-2 text-center text-xs text-on-surface-variant">
+                        {t("bookings.detail.sameDayOnlyHint")}
+                      </p>
+                    ) : null}
                   </div>
                 ) : null}
 
@@ -177,11 +201,19 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                   <div className="mt-3">
                     <button
                       type="button"
-                      disabled={checkout.isPending}
-                      onClick={() => void checkout.checkout()}
+                      disabled={checkout.isPending || !bookingIsToday}
+                      title={
+                        !bookingIsToday ? t("bookings.detail.sameDayOnlyHint") : undefined
+                      }
+                      onClick={() => {
+                        if (!bookingIsToday) return;
+                        void checkout.checkout();
+                      }}
                       className={cn(
                         "w-full inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container",
-                        checkout.isPending ? "opacity-70 cursor-not-allowed" : "",
+                        checkout.isPending || !bookingIsToday
+                          ? "opacity-70 cursor-not-allowed"
+                          : "",
                       )}
                     >
                       <span className="material-symbols-outlined text-[18px]">
@@ -189,6 +221,11 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                       </span>
                       {t("bookings.checkout.actions.primary")}
                     </button>
+                    {!bookingIsToday ? (
+                      <p className="mt-2 text-center text-xs text-on-surface-variant">
+                        {t("bookings.detail.sameDayOnlyHint")}
+                      </p>
+                    ) : null}
                     {checkout.errorMessage ? (
                       <div className="mt-3 rounded-xl border border-error-container bg-error-container/20 px-4 py-3 text-xs text-error">
                         {checkout.errorMessage}

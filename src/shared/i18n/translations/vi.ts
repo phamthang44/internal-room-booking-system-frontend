@@ -106,6 +106,8 @@ export const vi = {
     support: "Hỗ trợ CNTT",
     date: {
       justNow: "Vừa xong",
+      minuteAgo: "1 phút trước",
+      minutesAgo: "{{count}} phút trước",
       hourAgo: "1 giờ trước",
       hoursAgo: "{{count}} giờ trước",
       yesterday: "Hôm qua",
@@ -431,6 +433,8 @@ export const vi = {
         location: "Vị trí",
         dateTime: "Ngày & Giờ",
       },
+      sameDayOnlyHint:
+        "Chỉ có thể check-in và check-out vào đúng ngày đặt phòng.",
       sections: {
         purpose: "Mục đích đặt phòng",
         attendees: "Người tham dự",
