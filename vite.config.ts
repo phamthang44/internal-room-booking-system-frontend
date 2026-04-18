@@ -1,9 +1,27 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import fs from "node:fs";
+import type { Plugin } from "vite";
+
+function spaFallbackPlugin(): Plugin {
+  return {
+    name: "spa-fallback",
+    writeBundle(_options: { dir?: string }) {
+      const distPath = _options?.dir || "dist";
+      const indexFile = path.join(distPath, "index.html");
+      const file404 = path.join(distPath, "404.html");
+
+      if (fs.existsSync(indexFile)) {
+        fs.copyFileSync(indexFile, file404);
+        console.log("[spa-fallback] Copied index.html to 404.html");
+      }
+    },
+  };
+}
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), spaFallbackPlugin()],
   resolve: {
     dedupe: ["react", "react-dom"],
     alias: {
