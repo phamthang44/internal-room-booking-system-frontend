@@ -226,6 +226,7 @@ export const en = {
       availability: "Availability",
       pickDate: "Pick Date",
       timeSlot: "Time Slot",
+      timeSlotHint: "Only rooms that are free for this time slot are shown.",
       anyTime: "Any time",
       capacity: "Capacity (Seats)",
       status: "Status",
@@ -273,12 +274,17 @@ export const en = {
       noResults: "No results",
       showing: "Showing {{shown}} of {{total}} rooms",
       showingOne: "Showing {{shown}} of {{total}} room",
+      showingSlotPage:
+        "{{count}} rooms available for this time slot on this page",
     },
     empty: {
       title: "No rooms found",
       withFilters: "Try adjusting your filters or search query.",
       noRooms: "No classrooms are available at the moment.",
       clearFilters: "Clear all filters",
+      slotTitle: "No rooms for this slot",
+      slotUnavailable:
+        "No rooms are available for this time slot on this page. Try another slot or date.",
     },
     error: {
       loadFailed: "Failed to load rooms. Please try again.",
@@ -453,6 +459,25 @@ export const en = {
         cancelSuccessFallback: "Cancelled successfully.",
         cancelHint:
           "Cancellations must be made at least 24 hours prior to the start time.",
+      },
+      history: {
+        unknownEvent: "Update",
+        fallback: "{{summary}}",
+        events: {
+          createBooking_pending: "Booking submitted · Pending approval",
+          submitBooking_pending: "Request sent · Pending approval",
+          approveBooking_approved: "Booking approved",
+          approveBooking_confirmed: "Booking approved · Confirmed",
+          confirmBooking_confirmed: "Booking confirmed",
+          confirmBooking_approved: "Booking confirmed",
+          checkIn_checkedIn: "Checked in",
+          checkIn_approved: "Check-in recorded",
+          checkOut_completed: "Checked out · Session completed",
+          cancelBooking_cancelled: "Booking cancelled",
+          cancel_cancelled: "Booking cancelled",
+          rejectBooking_rejected: "Booking rejected",
+          reject_rejected: "Request rejected",
+        },
       },
     },
     checkin: {

@@ -227,6 +227,7 @@ export const vi = {
       availability: "Lịch trống",
       pickDate: "Chọn ngày",
       timeSlot: "Ca học",
+      timeSlotHint: "Chỉ hiển thị các phòng còn trống trong ca này.",
       anyTime: "Tất cả ca",
       capacity: "Sức chứa (chỗ ngồi)",
       status: "Trạng thái",
@@ -274,12 +275,16 @@ export const vi = {
       noResults: "Không có kết quả",
       showing: "Hiển thị {{shown}} trên {{total}} phòng",
       showingOne: "Hiển thị {{shown}} trên {{total}} phòng",
+      showingSlotPage: "{{count}} phòng còn trống trong ca này (trên trang này)",
     },
     empty: {
       title: "Không tìm thấy phòng",
       withFilters: "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm.",
       noRooms: "Hiện tại không có phòng học nào.",
       clearFilters: "Xóa tất cả bộ lọc",
+      slotTitle: "Không có phòng trong ca này",
+      slotUnavailable:
+        "Không có phòng trống cho ca này trên trang hiện tại. Thử ca khác hoặc ngày khác.",
     },
     error: {
       loadFailed: "Không thể tải danh sách phòng. Vui lòng thử lại.",
@@ -455,6 +460,25 @@ export const vi = {
         cancelSuccessFallback: "Đã hủy thành công.",
         cancelHint:
           "Việc hủy phải được thực hiện ít nhất 24 giờ trước thời gian bắt đầu.",
+      },
+      history: {
+        unknownEvent: "Cập nhật",
+        fallback: "{{summary}}",
+        events: {
+          createBooking_pending: "Đã gửi đặt phòng · Chờ duyệt",
+          submitBooking_pending: "Đã gửi yêu cầu · Chờ duyệt",
+          approveBooking_approved: "Đặt phòng đã được duyệt",
+          approveBooking_confirmed: "Đặt phòng đã duyệt · Đã xác nhận",
+          confirmBooking_confirmed: "Đặt phòng đã xác nhận",
+          confirmBooking_approved: "Đặt phòng đã xác nhận",
+          checkIn_checkedIn: "Đã điểm danh",
+          checkIn_approved: "Đã ghi nhận điểm danh",
+          checkOut_completed: "Đã check-out · Buổi học kết thúc",
+          cancelBooking_cancelled: "Đặt phòng đã hủy",
+          cancel_cancelled: "Đặt phòng đã hủy",
+          rejectBooking_rejected: "Đặt phòng bị từ chối",
+          reject_rejected: "Yêu cầu bị từ chối",
+        },
       },
     },
     checkin: {

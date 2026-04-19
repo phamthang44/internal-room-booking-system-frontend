@@ -13,6 +13,7 @@ import type {
 } from "../types/bookings.api.types";
 import type { BookingActivityItem, BookingDetail, BookingHistoryItem, BookingStatus } from "@/data/mockData";
 import { deriveCheckInWindow } from "../utils/checkInTime";
+import { getBookingHistoryIcon, getBookingHistoryTone } from "../utils/formatBookingHistory";
 
 const BASE = import.meta.env.VITE_API_URL + "/bookings";
 
@@ -199,14 +200,19 @@ const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
       cancelHint: "",
     },
     proTip: undefined,
-    timeline: (raw.bookingHistorySummaryResponses ?? raw.bookingHistorySummary ?? []).map((h, idx) => ({
-      id: String(h.timestamp ?? idx),
-      title: [h.action, h.statusAfter ? `→ ${h.statusAfter}` : ""].filter(Boolean).join(" "),
-      atLabel: formatInstantLabel(h.timestamp),
-      note: [h.performedBy ? `${performedBy} ${h.performedBy}` : "", h.note ?? ""].filter(Boolean).join(" — ") || undefined,
-      icon: "history",
-      tone: h.statusAfter === "APPROVED" ? "primary" : "neutral",
-    })),
+    timeline: (raw.bookingHistorySummaryResponses ?? raw.bookingHistorySummary ?? []).map((h, idx) => {
+      const action = h.action ?? undefined;
+      const statusAfter = h.statusAfter ?? undefined;
+      return {
+        id: String(h.timestamp ?? idx),
+        action,
+        statusAfter,
+        atLabel: formatInstantLabel(h.timestamp),
+        note: [h.performedBy ? `${performedBy} ${h.performedBy}` : "", h.note ?? ""].filter(Boolean).join(" — ") || undefined,
+        icon: getBookingHistoryIcon(action, statusAfter),
+        tone: getBookingHistoryTone(action, statusAfter),
+      };
+    }),
   };
 };
 

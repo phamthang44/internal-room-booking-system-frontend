@@ -62,7 +62,11 @@ export interface BookingScheduleInfo {
 
 export interface BookingTimelineEvent {
   readonly id: string;
-  readonly title: string; // e.g. "Booking Confirmed"
+  /** Mock / legacy copy when API action codes are not used */
+  readonly title?: string;
+  /** API history action (e.g. CREATE_BOOKING); title is resolved via i18n */
+  readonly action?: string;
+  readonly statusAfter?: string;
   readonly atLabel: string; // e.g. "Oct 20, 2023 · 09:45 AM"
   readonly note?: string;
   readonly icon: string; // material symbol name

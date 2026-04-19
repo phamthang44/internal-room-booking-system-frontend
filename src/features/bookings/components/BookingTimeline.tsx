@@ -1,5 +1,7 @@
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "@shared/i18n/useI18n";
 import type { BookingTimelineEvent } from "@/data/mockData";
+import { formatBookingHistoryTitle, type TranslateFn } from "../utils/formatBookingHistory";
 
 export interface BookingTimelineProps {
   readonly title: string;
@@ -7,11 +9,20 @@ export interface BookingTimelineProps {
   readonly className?: string;
 }
 
+function resolveEventTitle(t: TranslateFn, ev: BookingTimelineEvent): string {
+  const hasCodes = Boolean(ev.action?.trim() || ev.statusAfter?.trim());
+  if (hasCodes) {
+    return formatBookingHistoryTitle(t, ev.action, ev.statusAfter, ev.title);
+  }
+  return ev.title ?? "";
+}
+
 export function BookingTimeline({
   title,
   events,
   className,
 }: Readonly<BookingTimelineProps>) {
+  const { t } = useI18n();
   return (
     <section
       className={cn(
@@ -47,7 +58,7 @@ export function BookingTimeline({
               </span>
             </div>
             <div>
-              <p className="text-sm font-bold text-on-surface">{ev.title}</p>
+              <p className="text-sm font-bold text-on-surface">{resolveEventTitle(t, ev)}</p>
               <p className="text-xs text-on-surface-variant mt-1">{ev.atLabel}</p>
               {ev.note ? (
                 <p className="text-sm text-on-surface-variant mt-2 italic">

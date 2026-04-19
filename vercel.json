@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/v1/:path*",
-      "destination": "http://13.212.211.160/api/v1/:path*"
+      "destination": "https://api.roomhub.online/api/v1/:path*"
     }
   ]
 }

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useI18n } from "@shared/i18n/useI18n";
 import { SkeletonBlock } from "@shared/components/SkeletonBlock";
 import { RoomCard, RoomCardList } from "./RoomCard";
@@ -51,17 +52,27 @@ const ListSkeleton = () => (
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
-const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
+const EmptyState = ({
+  hasFilters,
+  slotFilterNoMatches,
+}: {
+  hasFilters: boolean;
+  slotFilterNoMatches?: boolean;
+}) => {
   const { clearAll } = useRoomFilterStore();
   const { t } = useI18n();
   return (
     <div className="col-span-full flex flex-col items-center gap-3 py-20 text-center">
       <span className="material-symbols-outlined text-5xl text-on-surface-variant/40">search_off</span>
       <p className="font-headline text-base font-semibold text-on-surface">
-        {t("rooms.empty.title")}
+        {slotFilterNoMatches ? t("rooms.empty.slotTitle") : t("rooms.empty.title")}
       </p>
       <p className="text-sm text-on-surface-variant">
-        {hasFilters ? t("rooms.empty.withFilters") : t("rooms.empty.noRooms")}
+        {slotFilterNoMatches
+          ? t("rooms.empty.slotUnavailable")
+          : hasFilters
+            ? t("rooms.empty.withFilters")
+            : t("rooms.empty.noRooms")}
       </p>
       {hasFilters && (
         <button
@@ -104,16 +115,46 @@ interface RoomGridProps {
 }
 
 export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGridProps) => {
-  const { activeFilterCount, search, viewMode, setViewMode, sort, setSort } =
-    useRoomFilterStore();
+  const {
+    activeFilterCount,
+    search,
+    viewMode,
+    setViewMode,
+    sort,
+    setSort,
+    timeSlotId,
+  } = useRoomFilterStore();
   const { t } = useI18n();
   const hasFilters = activeFilterCount() > 0 || search.length > 0;
   const isGrid = viewMode === "grid";
 
-  // ── Result label ────────────────────────────────────────────────────────────
+  const rawRooms = rooms ?? [];
+  const slotFilterActive = timeSlotId > 0;
+
+  /**
+   * With a time slot selected, omit rows where `availableForQuery` is false.
+   * Pagination totals from the API still reflect the unfiltered query; the count line uses copy that refers to this page only.
+   */
+  const displayRooms = useMemo(() => {
+    if (!slotFilterActive) return rawRooms;
+    return rawRooms.filter((r) => r.availableForQuery !== false);
+  }, [rawRooms, slotFilterActive]);
+
+  const slotFilterNoMatches =
+    !isLoading &&
+    !isError &&
+    slotFilterActive &&
+    rawRooms.length > 0 &&
+    displayRooms.length === 0;
+
+  // ── Result label (slot filter: count on this page only; API total is not narrowed server-side) ──
   const countLabel = (() => {
-    if (!total || total === 0) return t("rooms.grid.noResults");
-    const shown = rooms?.length ?? 0;
+    if (isLoading || isError || total === undefined) return "";
+    if (total === 0) return t("rooms.grid.noResults");
+    if (slotFilterActive) {
+      return t("rooms.grid.showingSlotPage", { count: displayRooms.length });
+    }
+    const shown = rawRooms.length;
     if (total === 1) return t("rooms.grid.showingOne", { shown, total });
     return t("rooms.grid.showing", { shown, total });
   })();
@@ -123,9 +164,7 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
       {/* ── Toolbar: result count + sort + view toggle ─────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Result count */}
-        <p className="text-sm text-on-surface-variant">
-          {!isLoading && !isError && total !== undefined ? countLabel : ""}
-        </p>
+        <p className="text-sm text-on-surface-variant">{countLabel}</p>
 
         <div className="flex items-center gap-3">
           {/* Sort dropdown */}
@@ -179,10 +218,12 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
             Array.from({ length: 6 }).map((_, i) => <GridSkeleton key={i} />)
           ) : isError ? (
             <ErrorState onRetry={onRetry} />
-          ) : !rooms?.length ? (
+          ) : slotFilterNoMatches ? (
+            <EmptyState hasFilters={hasFilters} slotFilterNoMatches />
+          ) : !rawRooms.length ? (
             <EmptyState hasFilters={hasFilters} />
           ) : (
-            rooms.map((room) => <RoomCard key={room.id} room={room} />)
+            displayRooms.map((room) => <RoomCard key={room.id} room={room} />)
           )}
         </div>
       ) : (
@@ -191,10 +232,12 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
             Array.from({ length: 4 }).map((_, i) => <ListSkeleton key={i} />)
           ) : isError ? (
             <ErrorState onRetry={onRetry} />
-          ) : !rooms?.length ? (
+          ) : slotFilterNoMatches ? (
+            <EmptyState hasFilters={hasFilters} slotFilterNoMatches />
+          ) : !rawRooms.length ? (
             <EmptyState hasFilters={hasFilters} />
           ) : (
-            rooms.map((room) => <RoomCardList key={room.id} room={room} />)
+            displayRooms.map((room) => <RoomCardList key={room.id} room={room} />)
           )}
         </div>
       )}

@@ -232,6 +232,11 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
                 </button>
               ))}
             </div>
+            {timeSlotId > 0 ? (
+              <p className="text-[11px] leading-snug text-on-surface-variant/90">
+                {t("rooms.filters.timeSlotHint")}
+              </p>
+            ) : null}
           </div>
         </div>
       </FilterGroup>
