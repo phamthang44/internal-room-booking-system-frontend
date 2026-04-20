@@ -899,6 +899,19 @@ export const vi = {
       approve: "Duyệt",
       reject: "Từ chối",
     },
+    bulk: {
+      selectedCount: "Đã chọn {{count}}",
+      applyHint: "Áp dụng thao tác cho các yêu cầu đã chọn",
+      clearSelection: "Bỏ chọn",
+    },
+    rejectDialog: {
+      title: "Nhập lý do từ chối",
+      placeholder:
+        "VD: Phòng đang bảo trì trong khung giờ này, hoặc vui lòng chọn phòng nhỏ hơn.",
+      cancel: "Hủy",
+      confirm: "Xác nhận từ chối",
+      close: "Đóng",
+    },
     preview: {
       loading: "Đang tải chi tiết…",
       loadFailed: "Không thể tải chi tiết",
@@ -948,9 +961,12 @@ export const vi = {
       unreadCount: "Chưa đọc ({{count}})",
       allCaughtUp: "Bạn đã xem hết rồi",
       loadFailed: "Không thể tải thông báo.",
+      hintDelete: "Gợi ý: rê chuột để xóa",
     },
     actions: {
       markAllRead: "Đánh dấu đã đọc tất cả",
+      delete: "Xóa",
+      clearAll: "Xóa tất cả",
     },
     empty: {
       title: "Chưa có thông báo",

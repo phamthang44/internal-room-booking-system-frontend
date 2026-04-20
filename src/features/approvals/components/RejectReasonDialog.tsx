@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "@shared/i18n/useI18n";
 
 export interface RejectReasonDialogProps {
   readonly open: boolean;
@@ -15,13 +16,14 @@ const MAX_LEN = 500;
 
 export function RejectReasonDialog({
   open,
-  title = "Provide Rejection Reason",
+  title,
   onClose,
   onConfirm,
-  confirmLabel = "Confirm Rejection",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   disabled,
 }: RejectReasonDialogProps) {
+  const { t } = useI18n();
   const [value, setValue] = useState("");
   const trimmed = useMemo(() => value.trim(), [value]);
   const tooLong = trimmed.length > MAX_LEN;
@@ -54,7 +56,7 @@ export function RejectReasonDialog({
               info
             </span>
             <span className="text-xs font-black uppercase tracking-widest text-rose-600">
-              {title}
+              {title ?? t("approvals.rejectDialog.title")}
             </span>
           </div>
           <button
@@ -64,7 +66,7 @@ export function RejectReasonDialog({
               disabled && "opacity-50 pointer-events-none",
             )}
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("approvals.rejectDialog.close")}
           >
             <span className="material-symbols-outlined text-sm">close</span>
           </button>
@@ -77,7 +79,7 @@ export function RejectReasonDialog({
               "placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500/40",
               disabled && "opacity-60",
             )}
-            placeholder="E.g., Room maintenance scheduled during this slot, or please choose a smaller venue."
+            placeholder={t("approvals.rejectDialog.placeholder")}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             maxLength={MAX_LEN + 50}
@@ -96,7 +98,7 @@ export function RejectReasonDialog({
                 )}
                 onClick={onClose}
               >
-                {cancelLabel}
+                {cancelLabel ?? t("approvals.rejectDialog.cancel")}
               </button>
               <button
                 type="button"
@@ -110,7 +112,7 @@ export function RejectReasonDialog({
                 onClick={() => void onConfirm(trimmed)}
               >
                 <span className="material-symbols-outlined text-sm">block</span>
-                {confirmLabel}
+                {confirmLabel ?? t("approvals.rejectDialog.confirm")}
               </button>
             </div>
           </div>

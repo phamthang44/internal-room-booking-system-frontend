@@ -897,6 +897,19 @@ export const en = {
       approve: "Approve",
       reject: "Reject",
     },
+    bulk: {
+      selectedCount: "{{count}} Selected",
+      applyHint: "Apply action to selected requests",
+      clearSelection: "Clear selection",
+    },
+    rejectDialog: {
+      title: "Provide rejection reason",
+      placeholder:
+        "E.g., Room maintenance scheduled during this slot, or please choose a smaller venue.",
+      cancel: "Cancel",
+      confirm: "Confirm rejection",
+      close: "Close",
+    },
     preview: {
       loading: "Loading details…",
       loadFailed: "Unable to load details",
@@ -946,9 +959,12 @@ export const en = {
       unreadCount: "Unread ({{count}})",
       allCaughtUp: "You're all caught up",
       loadFailed: "Failed to load notifications.",
+      hintDelete: "Tip: hover an item to delete",
     },
     actions: {
       markAllRead: "Mark all read",
+      delete: "Delete",
+      clearAll: "Clear all",
     },
     empty: {
       title: "No notifications yet",

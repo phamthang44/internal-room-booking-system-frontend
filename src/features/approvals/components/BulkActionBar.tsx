@@ -1,4 +1,5 @@
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "@shared/i18n/useI18n";
 
 export interface BulkActionBarProps {
   readonly selectedCount: number;
@@ -15,6 +16,7 @@ export function BulkActionBar({
   onClear,
   disabled,
 }: BulkActionBarProps) {
+  const { t } = useI18n();
   if (selectedCount <= 0) return null;
 
   return (
@@ -22,10 +24,10 @@ export function BulkActionBar({
       <div className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="rounded-full border border-blue-400/30 bg-blue-500/20 px-3 py-1 text-xs font-black uppercase tracking-widest text-blue-300">
-            {selectedCount} Selected
+            {t("approvals.bulk.selectedCount", { count: selectedCount })}
           </div>
           <p className="hidden text-sm font-medium text-slate-300 sm:block">
-            Apply action to selected requests
+            {t("approvals.bulk.applyHint")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -40,7 +42,7 @@ export function BulkActionBar({
             )}
           >
             <span className="material-symbols-outlined text-sm">done_all</span>
-            Approve
+            {t("approvals.actions.approve")}
           </button>
           <button
             type="button"
@@ -53,7 +55,7 @@ export function BulkActionBar({
             )}
           >
             <span className="material-symbols-outlined text-sm">block</span>
-            Reject
+            {t("approvals.actions.reject")}
           </button>
           <button
             type="button"
@@ -63,8 +65,8 @@ export function BulkActionBar({
               "rounded-lg p-2 text-slate-400 hover:text-white transition-colors",
               disabled && "opacity-60 pointer-events-none",
             )}
-            title="Clear selection"
-            aria-label="Clear selection"
+            title={t("approvals.bulk.clearSelection")}
+            aria-label={t("approvals.bulk.clearSelection")}
           >
             <span className="material-symbols-outlined">clear</span>
           </button>

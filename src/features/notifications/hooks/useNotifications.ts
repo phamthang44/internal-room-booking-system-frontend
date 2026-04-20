@@ -60,6 +60,21 @@ function markAllRead(rows: NotificationResponse[]): NotificationResponse[] {
   return rows.map((n) => (n.isRead ? n : { ...n, isRead: true }));
 }
 
+function removeIds(
+  rows: NotificationResponse[],
+  ids: ReadonlySet<number>,
+): { rows: NotificationResponse[]; removedUnread: number } {
+  let removedUnread = 0;
+  const next = rows.filter((n) => {
+    const id = n.id ?? 0;
+    if (!ids.has(id)) return true;
+    const wasUnread = n.isRead === false || n.isRead == null;
+    if (wasUnread) removedUnread += 1;
+    return false;
+  });
+  return { rows: next, removedUnread };
+}
+
 export function useMarkNotificationReadMutation() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -136,6 +151,159 @@ export function useMarkAllNotificationsReadMutation() {
       if (!context) return;
       if (context.previousUnread != null) {
         queryClient.setQueryData(notificationsQueryKeys.unreadCount(), context.previousUnread);
+      }
+      for (const [key, data] of context.previousLists) {
+        queryClient.setQueryData(key, data);
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationsQueryKeys.all });
+    },
+  });
+}
+
+export function useDeleteNotificationMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => notificationsApiService.deleteOne(id),
+    meta: { skipGlobalError: true },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: notificationsQueryKeys.all });
+
+      const previousUnread = queryClient.getQueryData<number>(
+        notificationsQueryKeys.unreadCount(),
+      );
+      const previousLists = queryClient.getQueriesData<{
+        rows: NotificationResponse[];
+        meta?: unknown;
+      }>({ queryKey: notificationsQueryKeys.all });
+
+      const ids = new Set<number>([id]);
+      let removedUnread = 0;
+
+      for (const [key, cached] of previousLists) {
+        if (!cached?.rows) continue;
+        const updated = removeIds(cached.rows, ids);
+        if (updated.rows.length !== cached.rows.length) {
+          queryClient.setQueryData(key, { ...cached, rows: updated.rows });
+          removedUnread += updated.removedUnread;
+        }
+      }
+
+      if (removedUnread > 0) {
+        queryClient.setQueryData<number>(
+          notificationsQueryKeys.unreadCount(),
+          (prev) => Math.max(0, Number(prev ?? 0) - removedUnread),
+        );
+      }
+
+      return { previousUnread, previousLists };
+    },
+    onError: (_err, _id, context) => {
+      if (!context) return;
+      if (context.previousUnread != null) {
+        queryClient.setQueryData(
+          notificationsQueryKeys.unreadCount(),
+          context.previousUnread,
+        );
+      }
+      for (const [key, data] of context.previousLists) {
+        queryClient.setQueryData(key, data);
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationsQueryKeys.all });
+    },
+  });
+}
+
+export function useClearAllNotificationsMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => notificationsApiService.clearAll(),
+    meta: { skipGlobalError: true },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: notificationsQueryKeys.all });
+
+      const previousUnread = queryClient.getQueryData<number>(
+        notificationsQueryKeys.unreadCount(),
+      );
+      const previousLists = queryClient.getQueriesData<{
+        rows: NotificationResponse[];
+        meta?: unknown;
+      }>({ queryKey: notificationsQueryKeys.all });
+
+      for (const [key, cached] of previousLists) {
+        if (!cached?.rows) continue;
+        queryClient.setQueryData(key, { ...cached, rows: [] });
+      }
+
+      queryClient.setQueryData<number>(notificationsQueryKeys.unreadCount(), 0);
+
+      return { previousUnread, previousLists };
+    },
+    onError: (_err, _vars, context) => {
+      if (!context) return;
+      if (context.previousUnread != null) {
+        queryClient.setQueryData(
+          notificationsQueryKeys.unreadCount(),
+          context.previousUnread,
+        );
+      }
+      for (const [key, data] of context.previousLists) {
+        queryClient.setQueryData(key, data);
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationsQueryKeys.all });
+    },
+  });
+}
+
+export function useBulkDeleteNotificationsMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (ids: number[]) => notificationsApiService.deleteBulk(ids),
+    meta: { skipGlobalError: true },
+    onMutate: async (ids) => {
+      const unique = Array.from(new Set(ids)).filter((x) => Number.isFinite(x) && x > 0);
+      const idSet = new Set<number>(unique);
+      await queryClient.cancelQueries({ queryKey: notificationsQueryKeys.all });
+
+      const previousUnread = queryClient.getQueryData<number>(
+        notificationsQueryKeys.unreadCount(),
+      );
+      const previousLists = queryClient.getQueriesData<{
+        rows: NotificationResponse[];
+        meta?: unknown;
+      }>({ queryKey: notificationsQueryKeys.all });
+
+      let removedUnread = 0;
+      for (const [key, cached] of previousLists) {
+        if (!cached?.rows) continue;
+        const updated = removeIds(cached.rows, idSet);
+        if (updated.rows.length !== cached.rows.length) {
+          queryClient.setQueryData(key, { ...cached, rows: updated.rows });
+          removedUnread += updated.removedUnread;
+        }
+      }
+
+      if (removedUnread > 0) {
+        queryClient.setQueryData<number>(
+          notificationsQueryKeys.unreadCount(),
+          (prev) => Math.max(0, Number(prev ?? 0) - removedUnread),
+        );
+      }
+
+      return { previousUnread, previousLists };
+    },
+    onError: (_err, _vars, context) => {
+      if (!context) return;
+      if (context.previousUnread != null) {
+        queryClient.setQueryData(
+          notificationsQueryKeys.unreadCount(),
+          context.previousUnread,
+        );
       }
       for (const [key, data] of context.previousLists) {
         queryClient.setQueryData(key, data);

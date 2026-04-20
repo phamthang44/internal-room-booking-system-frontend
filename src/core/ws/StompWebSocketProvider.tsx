@@ -14,6 +14,7 @@ import { startStompSession } from "./stompSession";
 import { createDebouncedBookingInvalidator } from "./invalidateBookingQueries";
 import { parseBookingNotificationPayload, presentBookingNotification } from "./bookingNotification";
 import { notificationsQueryKeys } from "@features/notifications";
+import { adminApprovalsQueryKeys } from "@features/approvals/hooks/useAdminApprovalsQueries";
 
 export interface StompDebugValue {
   brokerConfigured: boolean;
@@ -37,11 +38,19 @@ export function StompWebSocketProvider({ children }: { readonly children: ReactN
   const destinations = useMemo(() => {
     const fromEnv = parseSubscribeDestinations();
     const uid = user?.id;
+    const role = user?.roleName;
+    const isAdminOrStaff =
+      role === "ADMIN" || role === "FACILITY_STAFF" || role === "MANAGER";
+
+    const all = new Set<string>(fromEnv);
     if (uid != null && uid > 0) {
-      return [...fromEnv, `/topic/notifications/${uid}`];
+      all.add(`/topic/notifications/${uid}`);
     }
-    return fromEnv;
-  }, [user?.id]);
+    if (isAdminOrStaff) {
+      all.add("/topic/admin/bookings");
+    }
+    return Array.from(all);
+  }, [user?.id, user?.roleName]);
 
   const [connected, setConnected] = useState(false);
   const [lastMessagePreview, setLastMessagePreview] = useState<string | null>(null);
@@ -68,7 +77,14 @@ export function StompWebSocketProvider({ children }: { readonly children: ReactN
       token,
       destinations,
       onMessage: (msg) => {
+        const destination = msg.headers?.destination ?? "";
         const body = msg.body;
+        // Admin dashboard realtime: invalidate on any admin-bookings message,
+        // regardless of payload shape (admin payload may differ from student payload).
+        if (destination.includes("/topic/admin/bookings")) {
+          void queryClient.invalidateQueries({ queryKey: adminApprovalsQueryKeys.all });
+        }
+
         if (typeof body === "string") {
           const notification = parseBookingNotificationPayload(body);
           if (notification) {

@@ -11,6 +11,8 @@ import {
 import type { NotificationResponse, NotificationTypeApi } from "../types/notifications.api.types";
 import {
   useMarkAllNotificationsReadMutation,
+  useClearAllNotificationsMutation,
+  useDeleteNotificationMutation,
   useMarkNotificationReadMutation,
   useNotificationsListQuery,
   useUnreadNotificationCountQuery,
@@ -54,11 +56,17 @@ export function NotificationsPopover() {
   const list = useNotificationsListQuery({ page: 1, size: pageSize });
   const markRead = useMarkNotificationReadMutation();
   const markAllRead = useMarkAllNotificationsReadMutation();
+  const deleteOne = useDeleteNotificationMutation();
+  const clearAll = useClearAllNotificationsMutation();
 
   const unreadCount = unread.data ?? 0;
   const rows = list.data?.rows ?? [];
 
-  const busy = markRead.isPending || markAllRead.isPending;
+  const busy =
+    markRead.isPending ||
+    markAllRead.isPending ||
+    deleteOne.isPending ||
+    clearAll.isPending;
 
   return (
     <Popover>
@@ -152,28 +160,30 @@ export function NotificationsPopover() {
                 const clickable = canNavigate(n);
 
                 return (
-                  <button
+                  <div
                     key={String(n.id ?? `${n.title}-${n.createdAt}`)}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => {
-                      if (id > 0 && isUnread) {
-                        markRead.mutate(id);
-                      }
-                      if (clickable) {
-                        const bookingId = bookingIdFromRelatedId(n.relatedId ?? undefined);
-                        if (bookingId) {
-                          navigate(`/bookings/${bookingId}`);
-                        }
-                      }
-                    }}
-                    className={cn(
-                      "w-full rounded-xl px-3 py-2 text-left transition-colors",
-                      "hover:bg-surface-container-lowest/70 disabled:opacity-60",
-                      isUnread ? "bg-primary/5" : "",
-                    )}
+                    className={cn("group relative rounded-xl", isUnread ? "bg-primary/5" : "")}
                   >
-                    <div className="flex items-start gap-3">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => {
+                        if (id > 0 && isUnread) {
+                          markRead.mutate(id);
+                        }
+                        if (clickable) {
+                          const bookingId = bookingIdFromRelatedId(n.relatedId ?? undefined);
+                          if (bookingId) {
+                            navigate(`/bookings/${bookingId}`);
+                          }
+                        }
+                      }}
+                      className={cn(
+                        "w-full rounded-xl px-3 py-2 text-left transition-colors",
+                        "hover:bg-surface-container-lowest/70 disabled:opacity-60",
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
                       <div
                         className={cn(
                           "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
@@ -217,12 +227,55 @@ export function NotificationsPopover() {
                         ) : null}
                       </div>
                     </div>
-                  </button>
+                    </button>
+
+                    {id > 0 ? (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteOne.mutate(id);
+                        }}
+                        className={cn(
+                          "absolute right-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-lg",
+                          // more discoverable + clear danger affordance
+                          "text-error/80 bg-error-container/0 ring-1 ring-error/0",
+                          "opacity-70 group-hover:opacity-100 focus:opacity-100 transition-all",
+                          "hover:bg-error-container/40 hover:text-error hover:ring-error/20",
+                          "focus:outline-none focus:ring-2 focus:ring-error/25 focus:bg-error-container/40",
+                          busy ? "opacity-60" : "",
+                        )}
+                        aria-label={t("notifications.actions.delete")}
+                        title={t("notifications.actions.delete")}
+                      >
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    ) : null}
+                  </div>
                 );
               })}
             </div>
           )}
         </div>
+
+        {rows.length > 0 ? (
+          <div className="border-t border-outline-variant/20 px-4 py-3 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => clearAll.mutate()}
+              className={cn(
+                "text-xs font-bold text-error hover:underline disabled:opacity-60",
+              )}
+            >
+              {t("notifications.actions.clearAll")}
+            </button>
+            <span className="text-[11px] text-on-surface-variant">
+              {t("notifications.popover.hintDelete")}
+            </span>
+          </div>
+        ) : null}
 
         {list.isError ? (
           <div className="border-t border-outline-variant/20 px-4 py-3 text-xs text-error">

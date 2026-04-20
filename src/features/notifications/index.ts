@@ -5,6 +5,9 @@ export {
   useUnreadNotificationCountQuery,
   useMarkNotificationReadMutation,
   useMarkAllNotificationsReadMutation,
+  useDeleteNotificationMutation,
+  useClearAllNotificationsMutation,
+  useBulkDeleteNotificationsMutation,
 } from "./hooks/useNotifications";
 export type {
   NotificationResponse,

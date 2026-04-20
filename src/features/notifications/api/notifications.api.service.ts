@@ -44,5 +44,17 @@ export const notificationsApiService = {
   markAllRead: async (): Promise<void> => {
     await apiClient.post<ApiResult<void>>(`${BASE}/read-all`, null);
   },
+
+  deleteOne: async (id: number): Promise<void> => {
+    await apiClient.delete<ApiResult<void>>(`${BASE}/${id}`);
+  },
+
+  deleteBulk: async (ids: number[]): Promise<void> => {
+    await apiClient.delete<ApiResult<void>>(`${BASE}/bulk`, { data: ids });
+  },
+
+  clearAll: async (): Promise<void> => {
+    await apiClient.delete<ApiResult<void>>(`${BASE}/clear-all`);
+  },
 };
 
