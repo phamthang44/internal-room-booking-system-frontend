@@ -89,6 +89,7 @@ export function CreateUserModal({
 }: CreateUserModalProps) {
   const { t } = useI18n();
   const [step, setStep] = useState<"form" | "confirm">("form");
+  const [showPassword, setShowPassword] = useState(false);
   const [value, setValue] = useState<CreateUserFormValue>({
     username: "",
     fullName: "",
@@ -126,6 +127,7 @@ export function CreateUserModal({
   useEffect(() => {
     if (!open) return;
     setStep("form");
+    setShowPassword(false);
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -221,7 +223,21 @@ export function CreateUserModal({
                   value={value.password}
                   onChange={(v) => setValue((s) => ({ ...s, password: v }))}
                   disabled={busy}
-                  type="password"
+                  type={showPassword ? "text" : "password"}
+                  right={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((s) => !s)}
+                      disabled={busy}
+                      className="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      title={showPassword ? "Hide password" : "Show password"}
+                    >
+                      <span className="material-symbols-outlined text-[20px]">
+                        {showPassword ? "visibility_off" : "visibility"}
+                      </span>
+                    </button>
+                  }
                   error={
                     !validation.passwordOk && value.password.length > 0
                       ? t("adminUsers.create.errors.password")
@@ -257,7 +273,21 @@ export function CreateUserModal({
                     setValue((s) => ({ ...s, confirmPassword: v }))
                   }
                   disabled={busy}
-                  type="password"
+                  type={showPassword ? "text" : "password"}
+                  right={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((s) => !s)}
+                      disabled={busy}
+                      className="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      title={showPassword ? "Hide password" : "Show password"}
+                    >
+                      <span className="material-symbols-outlined text-[20px]">
+                        {showPassword ? "visibility_off" : "visibility"}
+                      </span>
+                    </button>
+                  }
                   error={
                     !validation.confirmOk && value.confirmPassword.length > 0
                       ? t("adminUsers.create.errors.confirmPassword")
@@ -363,6 +393,7 @@ function Field({
   error,
   type = "text",
   inputMode,
+  right,
 }: {
   readonly label: string;
   readonly placeholder?: string;
@@ -372,26 +403,33 @@ function Field({
   readonly error?: string;
   readonly type?: string;
   readonly inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  readonly right?: React.ReactNode;
 }) {
   return (
     <div>
       <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/60">
         {label}
       </label>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        type={type}
-        inputMode={inputMode}
-        disabled={disabled}
-        className={cn(
-          "h-11 w-full rounded-xl border bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
-          error
-            ? "border-error/60 focus:border-error/60 focus:ring-error/10"
-            : "border-outline-variant/40 focus:border-primary/50 focus:ring-primary/10",
-        )}
-      />
+      <div className="relative">
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          type={type}
+          inputMode={inputMode}
+          disabled={disabled}
+          className={cn(
+            "h-11 w-full rounded-xl border bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+            right ? "pr-12" : undefined,
+            error
+              ? "border-error/60 focus:border-error/60 focus:ring-error/10"
+              : "border-outline-variant/40 focus:border-primary/50 focus:ring-primary/10",
+          )}
+        />
+        {right ? (
+          <div className="absolute right-1 top-1/2 -translate-y-1/2">{right}</div>
+        ) : null}
+      </div>
       {error ? (
         <p className="mt-1 text-xs text-error">{error}</p>
       ) : null}
