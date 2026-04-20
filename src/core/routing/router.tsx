@@ -10,25 +10,20 @@ import {
   AdminRoomsListPage,
   AdminRoomUpsertPage,
 } from "@features/adminRooms";
+import { AdminApprovalsPage } from "@features/approvals";
+import { AdminBookingDetailPage } from "@features/adminBookings";
 import { AdminEquipmentListPage } from "@features/adminEquipment";
+import { AdminUsersPage } from "@features/adminUsers";
 import { NotFoundPage } from "@features/error";
 import { AppToastStack } from "@shared/components/AppToastStack";
+import { FullScreenLoader } from "@shared/components/FullScreenLoader";
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token, hasHydrated } = useAuthStore();
 
   if (!hasHydrated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-surface">
-        <div className="flex items-center gap-3 text-on-surface-variant">
-          <span className="material-symbols-outlined animate-spin">
-            progress_activity
-          </span>
-          <span className="text-sm font-medium">Restoring session...</span>
-        </div>
-      </div>
-    );
+    return <FullScreenLoader messageKey="common.loading.restoringSession" />;
   }
 
   if (!token) {
@@ -50,16 +45,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   }, [token, profile, isLoading, fetchProfile]);
 
   if (!hasHydrated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-surface">
-        <div className="flex items-center gap-3 text-on-surface-variant">
-          <span className="material-symbols-outlined animate-spin">
-            progress_activity
-          </span>
-          <span className="text-sm font-medium">Restoring session...</span>
-        </div>
-      </div>
-    );
+    return <FullScreenLoader messageKey="common.loading.restoringSession" />;
   }
 
   if (!token) {
@@ -68,19 +54,41 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
   // While profile is loading, show a lightweight loading state.
   if (!profile) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-surface">
-        <div className="flex items-center gap-3 text-on-surface-variant">
-          <span className="material-symbols-outlined animate-spin">
-            progress_activity
-          </span>
-          <span className="text-sm font-medium">Loading profile...</span>
-        </div>
-      </div>
-    );
+    return <FullScreenLoader messageKey="common.loading.loadingProfile" />;
   }
 
   if (profile.roleName !== "ADMIN") {
+    return <Navigate to="/404" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Staff/admin route wrapper (requires authenticated user with role ADMIN or STAFF)
+const StaffRoute = ({ children }: { children: React.ReactNode }) => {
+  const { token, hasHydrated } = useAuthStore();
+  const { profile, isLoading, fetchProfile } = useProfileStore();
+
+  useEffect(() => {
+    if (token && !profile && !isLoading) {
+      void fetchProfile();
+    }
+  }, [token, profile, isLoading, fetchProfile]);
+
+  if (!hasHydrated) {
+    return <FullScreenLoader messageKey="common.loading.restoringSession" />;
+  }
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!profile) {
+    return <FullScreenLoader messageKey="common.loading.loadingProfile" />;
+  }
+
+  const role = profile.roleName;
+  if (role !== "ADMIN" && role !== "STAFF") {
     return <Navigate to="/404" replace />;
   }
 
@@ -221,6 +229,30 @@ const RouterContent = () => {
             <AdminRoute>
               <AdminEquipmentListPage />
             </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUsersPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/approvals"
+          element={
+            <StaffRoute>
+              <AdminApprovalsPage />
+            </StaffRoute>
+          }
+        />
+        <Route
+          path="/admin/bookings/:bookingId"
+          element={
+            <StaffRoute>
+              <AdminBookingDetailPage />
+            </StaffRoute>
           }
         />
 

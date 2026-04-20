@@ -98,6 +98,8 @@ export const vi = {
       redirecting: "Đang chuyển hướng...",
       initializing: "Đang khởi tạo dịch vụ...",
       ready: "Sẵn sàng",
+      restoringSession: "Đang khôi phục phiên...",
+      loadingProfile: "Đang tải hồ sơ...",
     },
     language: "Ngôn ngữ",
     help: "Trợ giúp",
@@ -132,6 +134,7 @@ export const vi = {
     settings: "Cài đặt",
     admin: {
       section: "Quản trị",
+      users: "Người dùng (Quản trị)",
       rooms: "Phòng (Quản trị)",
       roomsNew: "Tạo phòng",
       roomsEdit: "Sửa phòng",
@@ -750,6 +753,170 @@ export const vi = {
           "Kho thiết bị đang hoạt động ổn định. Chỉ có 2 mục cần được xử lý ngay.",
         runAudit: "Chạy kiểm kê",
       },
+    },
+  },
+  adminUsers: {
+    title: "Quản lý người dùng",
+    subtitle: "Quản lý tài khoản, vai trò và trạng thái truy cập.",
+    loading: "Đang tải người dùng…",
+    empty: "Không có người dùng phù hợp với bộ lọc.",
+    errors: {
+      loadFailed: "Không thể tải danh sách người dùng.",
+    },
+    filters: {
+      ariaLabel: "Tìm kiếm và bộ lọc người dùng",
+      searchPlaceholder:
+        "Tìm theo ID, tên đăng nhập, email hoặc mã sinh viên…",
+      reset: "Đặt lại",
+      pageScopeHint: "Bộ lọc áp dụng cho trang hiện tại.",
+      role: {
+        all: "Tất cả vai trò",
+      },
+      status: {
+        all: "Tất cả trạng thái",
+      },
+    },
+    table: {
+      user: "Người dùng",
+      email: "Email",
+      studentCode: "Mã sinh viên",
+      role: "Vai trò",
+      status: "Trạng thái",
+      actions: "Thao tác",
+    },
+    pagination: {
+      pageOf: "Trang {{page}} / {{total}}",
+      prev: "Trang trước",
+      next: "Trang sau",
+    },
+    role: {
+      ADMIN: "Quản trị",
+      STAFF: "Nhân viên",
+      STUDENT: "Sinh viên",
+    },
+    status: {
+      ACTIVE: "Đang hoạt động",
+      INACTIVE: "Không hoạt động",
+      BANNED: "Bị khóa",
+    },
+    actions: {
+      create: "Tạo người dùng",
+      openDetails: "Xem chi tiết",
+      ban: "Khóa",
+      unban: "Mở khóa",
+      close: "Đóng",
+      cancel: "Hủy",
+      saving: "Đang lưu…",
+      copy: "Sao chép",
+      copied: "Đã sao chép",
+    },
+    drawer: {
+      ariaLabel: "Chi tiết người dùng",
+      title: "Chi tiết người dùng",
+      idLabel: "Mã người dùng:",
+      fields: {
+        role: "Vai trò",
+        identifiers: "Định danh",
+        userId: "Mã người dùng",
+        email: "Email",
+        studentCode: "Mã sinh viên",
+        actions: "Thao tác",
+      },
+      actionsHint: "Thay đổi có hiệu lực ngay.",
+    },
+    confirm: {
+      ban: "Khóa người dùng này? Họ sẽ mất quyền truy cập cho đến khi được mở khóa.",
+      unban: "Mở khóa người dùng này và khôi phục quyền truy cập?",
+    },
+    create: {
+      modalTitle: "Tạo người dùng",
+      title: "Tạo người dùng mới",
+      subtitle: "Tạo thủ công tài khoản cho nhân viên hoặc sinh viên.",
+      fields: {
+        username: "Tên đăng nhập",
+        fullName: "Họ và tên",
+        email: "Email",
+        password: "Mật khẩu",
+        confirmPassword: "Xác nhận mật khẩu",
+      },
+      passwordHint:
+        "Mật khẩu dài 8–64 ký tự và phải có chữ hoa, chữ thường, số và ký tự đặc biệt.",
+    },
+    toasts: {
+      created: "Đã tạo người dùng.",
+      updated: "Đã cập nhật người dùng.",
+      roleUpdated: "Đã cập nhật vai trò.",
+    },
+  },
+  approvals: {
+    title: "Không gian phê duyệt",
+    subtitle: "Xem và quản lý các yêu cầu đặt phòng học.",
+    tabs: {
+      pending: "Đang chờ",
+      approved: "Đã duyệt",
+      rejected: "Từ chối",
+    },
+    filters: {
+      bookingIdPlaceholder: "Mã đặt phòng (VD: 41)",
+      studentCodePlaceholder: "Mã sinh viên (VD: SE000007)",
+      classroomIdPlaceholder: "Mã phòng (VD: 205)",
+      bookingDatePlaceholder: "Ngày đặt (YYYY-MM-DD)",
+      more: "Bộ lọc thêm",
+      reset: "Đặt lại",
+    },
+    errors: {
+      loadFailed: "Không thể tải danh sách phê duyệt.",
+    },
+    table: {
+      student: "Sinh viên & Độ tin cậy",
+      request: "Nội dung yêu cầu",
+      venue: "Phòng & Tải",
+      date: "Ngày",
+      status: "Trạng thái / Cảnh báo",
+      actions: "Thao tác",
+      bookingIdLabel: "Mã đặt phòng:",
+    },
+    actions: {
+      approve: "Duyệt",
+      reject: "Từ chối",
+    },
+    preview: {
+      loading: "Đang tải chi tiết…",
+      loadFailed: "Không thể tải chi tiết",
+      viewDetails: "Xem chi tiết",
+    },
+    status: {
+      available: "Còn trống",
+      conflictAlert: "Cảnh báo trùng lịch",
+    },
+  },
+  adminBookings: {
+    detail: {
+      invalidId: "Mã đặt phòng không hợp lệ.",
+      loading: "Đang tải đặt phòng…",
+      loadFailed: "Không thể tải chi tiết đặt phòng.",
+      empty: "Không có dữ liệu.",
+      header: {
+        bookingId: "Đặt phòng #{{id}}",
+      },
+      sections: {
+        purpose: "Mục đích",
+        roomLoad: "Tải phòng",
+        timeSlots: "Ca học",
+        audit: "Nhật ký",
+        user: "Người dùng",
+      },
+      actualAttendees: "Thực tế: {{count}}",
+      studentCode: "Mã sinh viên: {{code}}",
+      audit: {
+        created: "Tạo",
+        updated: "Cập nhật",
+        by: "bởi {{name}}",
+      },
+    },
+    userStatus: {
+      AVAILABLE: "Còn trống",
+      ACTIVE: "Đang hoạt động",
     },
   },
 } as const;

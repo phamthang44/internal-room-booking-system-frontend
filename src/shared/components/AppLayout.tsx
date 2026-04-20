@@ -47,6 +47,20 @@ function useRouteHeader(pathname: string) {
       backTo: null,
     };
   }
+  if (matchPath({ path: "/admin/users", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.users" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
+  if (matchPath({ path: "/admin/bookings/:bookingId", end: true }, pathname)) {
+    return {
+      titleKey: "nav.approvals" as const,
+      showBack: true,
+      backTo: "/admin/approvals",
+    };
+  }
   if (matchPath({ path: "/booking/success", end: true }, pathname)) {
     return {
       titleKey: "nav.header.bookingSuccess" as const,
@@ -96,6 +110,13 @@ function useRouteHeader(pathname: string) {
       backTo: null,
     };
   }
+  if (matchPath({ path: "/admin/approvals", end: true }, pathname)) {
+    return {
+      titleKey: "nav.approvals" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
   return {
     titleKey: "nav.header.fallback" as const,
     showBack: false,
@@ -113,7 +134,9 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const isAdmin = (profile?.roleName ?? user?.roleName) === "ADMIN";
+  const roleName = profile?.roleName ?? user?.roleName;
+  const canSeeAdminSection = roleName === "ADMIN" || roleName === "STAFF";
+  const isAdmin = roleName === "ADMIN";
 
   // Close drawer on mobile when route changes
   useEffect(() => {
@@ -157,13 +180,22 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
     { icon: "dashboard", label: t("nav.dashboard"), to: "/dashboard" },
     { icon: "meeting_room", label: t("nav.browseRooms"), to: "/rooms" },
     { icon: "event_note", label: t("nav.myBookings"), to: "/bookings" },
-    { icon: "verified_user", label: t("nav.approvals"), to: "/approvals" },
     { icon: "settings", label: t("nav.settings"), to: "/settings" },
   ];
 
   const ADMIN_NAV_ITEMS = [
-    { icon: "meeting_room", label: t("nav.admin.rooms"), to: "/admin/rooms" },
-    { icon: "inventory_2", label: t("nav.admin.equipment"), to: "/admin/equipment" },
+    { icon: "verified_user", label: t("nav.approvals"), to: "/admin/approvals" },
+    ...(isAdmin
+      ? ([
+          { icon: "group", label: t("nav.admin.users"), to: "/admin/users" },
+          { icon: "meeting_room", label: t("nav.admin.rooms"), to: "/admin/rooms" },
+          {
+            icon: "inventory_2",
+            label: t("nav.admin.equipment"),
+            to: "/admin/equipment",
+          },
+        ] as const)
+      : []),
   ];
 
   return (
@@ -224,7 +256,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             ))}
           </ul>
 
-          {isAdmin ? (
+          {canSeeAdminSection ? (
             <>
               <div className="my-4 h-px bg-outline-variant/20" />
               <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">

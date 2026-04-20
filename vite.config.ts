@@ -42,6 +42,17 @@ export default defineConfig({
       // This fixes: "Cross-Origin-Opener-Policy policy would block the window.postMessage call"
       "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
     },
+    proxy: {
+      /**
+       * Dev-only proxy to avoid CORS when backend runs on a different origin.
+       * Use `VITE_API_URL=/api/v1` so axios hits same-origin and Vite forwards to :8080.
+       */
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: "dist",

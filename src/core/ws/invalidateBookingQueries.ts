@@ -18,6 +18,7 @@ export function createDebouncedBookingInvalidator(queryClient: QueryClient) {
       void queryClient.invalidateQueries({
         queryKey: ["student-dashboard-recent-activity"],
       });
+      void queryClient.invalidateQueries({ queryKey: ["admin", "bookings"] });
     }, DEBOUNCE_MS);
   };
 }
