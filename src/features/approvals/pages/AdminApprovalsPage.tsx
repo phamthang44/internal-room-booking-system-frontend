@@ -88,22 +88,34 @@ export const AdminApprovalsPage = () => {
 
   const currentIds = rows.map((r) => r.bookingId).filter((id) => id > 0);
 
+  const bookingStatusById = useMemo(() => {
+    const map = new Map<number, string>();
+    for (const r of rows) {
+      map.set(r.bookingId, r.bookingStatus?.toString?.().toUpperCase?.() ?? "PENDING");
+    }
+    return map;
+  }, [rows]);
+
+  const isPendingBooking = (id: number) => bookingStatusById.get(id) === "PENDING";
+
   const approveOne = (bookingId: number) => {
+    if (!isPendingBooking(bookingId)) return;
     approveMutation.mutate({ bookingId });
   };
 
   const openReject = (bookingId: number) => {
+    if (!isPendingBooking(bookingId)) return;
     ui.openRejectDialog(bookingId);
   };
 
   const approveSelected = () => {
-    const ids = Array.from(ui.selectedIds);
+    const ids = Array.from(ui.selectedIds).filter(isPendingBooking);
     if (ids.length === 0) return;
     approveMutation.mutate({ bulkIds: ids });
   };
 
   const rejectSelected = () => {
-    const ids = Array.from(ui.selectedIds);
+    const ids = Array.from(ui.selectedIds).filter(isPendingBooking);
     if (ids.length === 0) return;
     ui.openBulkRejectDialog(ids);
   };
@@ -371,11 +383,14 @@ export const AdminApprovalsPage = () => {
           const bulkIds = ui.rejectDialog.bulkIds;
           ui.closeRejectDialog();
           if (singleId != null) {
+            if (!isPendingBooking(singleId)) return;
             rejectMutation.mutate({ bookingId: singleId, reason });
             return;
           }
           if (bulkIds && bulkIds.length > 0) {
-            rejectMutation.mutate({ bulkIds, reason });
+            const pendingIds = bulkIds.filter(isPendingBooking);
+            if (pendingIds.length === 0) return;
+            rejectMutation.mutate({ bulkIds: pendingIds, reason });
           }
         }}
       />

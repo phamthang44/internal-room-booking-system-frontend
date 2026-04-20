@@ -23,8 +23,13 @@ export interface ApprovalsDateCellUI {
 }
 
 export interface ApprovalsStatusCellUI {
-  readonly badgeLabelKey: "approvals.status.available" | "approvals.status.conflictAlert";
-  readonly badgeTone: "available" | "conflict" | "neutral";
+  readonly badgeLabelKey:
+    | "approvals.status.pending"
+    | "approvals.status.approved"
+    | "approvals.status.rejected"
+    | "approvals.status.available"
+    | "approvals.status.conflictAlert";
+  readonly badgeTone: "pending" | "approved" | "rejected" | "available" | "conflict" | "neutral";
   readonly hint?: string;
 }
 

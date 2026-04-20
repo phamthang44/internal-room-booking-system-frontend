@@ -67,10 +67,39 @@ function StatusBadge({ status }: { readonly status: ApprovalRowUI["status"] }) {
       </div>
     );
   }
+
+  const toneClass =
+    status.badgeTone === "approved"
+      ? "bg-emerald-100 text-emerald-700"
+      : status.badgeTone === "rejected"
+        ? "bg-rose-100 text-rose-700"
+        : status.badgeTone === "pending"
+          ? "bg-amber-100 text-amber-800"
+          : "bg-surface-container-high text-on-surface-variant";
+
+  const icon =
+    status.badgeTone === "approved"
+      ? "check_circle"
+      : status.badgeTone === "rejected"
+        ? "cancel"
+        : status.badgeTone === "pending"
+          ? "hourglass_empty"
+          : "event_available";
+
   return (
-    <div className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-high px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
-      <span className="material-symbols-outlined text-sm">event_available</span>
-      {t(status.badgeLabelKey)}
+    <div>
+      <div
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider",
+          toneClass,
+        )}
+      >
+        <span className="material-symbols-outlined text-sm">{icon}</span>
+        {t(status.badgeLabelKey)}
+      </div>
+      {status.hint ? (
+        <p className="mt-1 text-[10px] italic text-on-surface-variant">{status.hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -119,6 +148,7 @@ export function ApprovalsTable({
           <tbody className="divide-y divide-surface-container">
             {rows.map((row, idx) => {
               const zebra = idx % 2 === 0 ? "bg-background" : "bg-surface-container-low";
+              const isActionable = row.bookingStatus?.toString?.().toUpperCase?.() === "PENDING";
               return (
                 <tr
                   key={row.bookingId}
@@ -142,6 +172,7 @@ export function ApprovalsTable({
                       type="checkbox"
                       className="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
                       checked={selectedIds.has(row.bookingId)}
+                      disabled={!isActionable}
                       onClick={(e) => e.stopPropagation()}
                       onChange={() => onToggleSelected(row.bookingId)}
                     />
@@ -218,32 +249,47 @@ export function ApprovalsTable({
                   </td>
                   <td className="px-6 py-5 text-right">
                     <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 transition-colors hover:bg-emerald-200"
-                        title={t("approvals.actions.approve")}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onApprove(row.bookingId);
-                        }}
-                      >
-                        <span className="material-symbols-outlined text-[20px]">
-                          check
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-100 text-rose-700 transition-colors hover:bg-rose-200"
-                        title={t("approvals.actions.reject")}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onReject(row.bookingId);
-                        }}
-                      >
-                        <span className="material-symbols-outlined text-[20px]">
-                          close
-                        </span>
-                      </button>
+                      {isActionable ? (
+                        <>
+                          <button
+                            type="button"
+                            className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 transition-colors hover:bg-emerald-200"
+                            title={t("approvals.actions.approve")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onApprove(row.bookingId);
+                            }}
+                          >
+                            <span className="material-symbols-outlined text-[20px]">
+                              check
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-100 text-rose-700 transition-colors hover:bg-rose-200"
+                            title={t("approvals.actions.reject")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onReject(row.bookingId);
+                            }}
+                          >
+                            <span className="material-symbols-outlined text-[20px]">
+                              close
+                            </span>
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-container-high text-on-surface-variant opacity-70 pointer-events-none"
+                          title={t("approvals.actions.locked")}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            lock
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

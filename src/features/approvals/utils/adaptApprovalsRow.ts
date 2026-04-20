@@ -54,10 +54,31 @@ export function adaptApprovalsRow(raw: AdminBookingItemResponse): ApprovalRowUI 
   const loadTone: "primary" | "warning" | "neutral" =
     loadPct >= 0.9 ? "warning" : loadPct > 0 ? "primary" : "neutral";
 
-  // Conflict/status pill (design shows “Conflict Alert” vs “Available”)
+  const bookingStatus = (raw.status ?? "PENDING").toString().toUpperCase();
+
+  // Conflict/status pill
+  // - Pending: show "Conflict Alert" when conflictNote exists, otherwise "Pending"
+  // - Approved/Rejected: show their final state and keep conflictNote only as a hint
   const conflictNote = (raw as unknown as { conflictNote?: string }).conflictNote;
-  const badgeTone = conflictNote ? "conflict" : "available";
-  const badgeLabelKey = conflictNote ? "approvals.status.conflictAlert" : "approvals.status.available";
+  const hasConflict = Boolean(conflictNote?.trim());
+
+  const badgeLabelKey =
+    bookingStatus === "APPROVED"
+      ? "approvals.status.approved"
+      : bookingStatus === "REJECTED"
+        ? "approvals.status.rejected"
+        : hasConflict
+          ? "approvals.status.conflictAlert"
+          : "approvals.status.pending";
+
+  const badgeTone =
+    bookingStatus === "APPROVED"
+      ? "approved"
+      : bookingStatus === "REJECTED"
+        ? "rejected"
+        : hasConflict
+          ? "conflict"
+          : "pending";
 
   return {
     bookingId,
@@ -84,7 +105,7 @@ export function adaptApprovalsRow(raw: AdminBookingItemResponse): ApprovalRowUI 
     status: {
       badgeLabelKey,
       badgeTone,
-      hint: conflictNote,
+      hint: hasConflict ? conflictNote : undefined,
     },
   };
 }

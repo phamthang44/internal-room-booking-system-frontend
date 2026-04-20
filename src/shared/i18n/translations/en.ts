@@ -896,6 +896,7 @@ export const en = {
     actions: {
       approve: "Approve",
       reject: "Reject",
+      locked: "Locked",
     },
     bulk: {
       selectedCount: "{{count}} Selected",
@@ -918,6 +919,9 @@ export const en = {
     status: {
       available: "Available",
       conflictAlert: "Conflict Alert",
+      pending: "Pending",
+      approved: "Approved",
+      rejected: "Rejected",
     },
   },
   adminBookings: {

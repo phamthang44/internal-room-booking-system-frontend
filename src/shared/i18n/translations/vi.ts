@@ -898,6 +898,7 @@ export const vi = {
     actions: {
       approve: "Duyệt",
       reject: "Từ chối",
+      locked: "Đã khóa",
     },
     bulk: {
       selectedCount: "Đã chọn {{count}}",
@@ -920,6 +921,9 @@ export const vi = {
     status: {
       available: "Còn trống",
       conflictAlert: "Cảnh báo trùng lịch",
+      pending: "Đang chờ",
+      approved: "Đã duyệt",
+      rejected: "Từ chối",
     },
   },
   adminBookings: {
