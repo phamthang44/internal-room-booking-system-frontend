@@ -155,7 +155,9 @@ export function NotificationsPopover() {
             <div className="p-2">
               {rows.map((n) => {
                 const id = n.id ?? 0;
-                const isUnread = n.isRead === false || n.isRead == null;
+                // Backend sometimes omits `isRead` (undefined/null). We treat that as READ
+                // to avoid "stuck unread" UI after marking read.
+                const isUnread = n.isRead === false;
                 const caption = n.createdAt ? formatIsoRelativeCaption(n.createdAt) : "";
                 const clickable = canNavigate(n);
 
@@ -164,7 +166,8 @@ export function NotificationsPopover() {
                     key={String(n.id ?? `${n.title}-${n.createdAt}`)}
                     className={cn(
                       "group relative rounded-xl overflow-hidden",
-                      isUnread ? "bg-primary/6" : "bg-transparent",
+                      // Design: READ items are darker than UNREAD items.
+                      isUnread ? "bg-surface-container-lowest/60" : "bg-surface-container-low/70",
                     )}
                   >
                     {isUnread ? (
@@ -189,7 +192,7 @@ export function NotificationsPopover() {
                       }}
                       className={cn(
                         "w-full rounded-xl px-3 py-2 text-left transition-colors",
-                        "hover:bg-surface-container-lowest/70 disabled:opacity-60",
+                        "hover:bg-surface-container-high/40 disabled:opacity-60",
                       )}
                     >
                       <div className="flex items-start gap-3">
@@ -198,7 +201,7 @@ export function NotificationsPopover() {
                           "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
                           isUnread
                             ? "bg-primary/10 text-primary"
-                            : "bg-surface-container-low text-on-surface-variant",
+                            : "bg-surface-container-high text-on-surface-variant",
                         )}
                       >
                         <span className="material-symbols-outlined text-[18px]">
@@ -222,7 +225,7 @@ export function NotificationsPopover() {
                             <p
                               className={cn(
                                 "min-w-0 truncate text-sm font-semibold",
-                                isUnread ? "text-on-surface font-extrabold" : "text-on-surface-variant",
+                                isUnread ? "text-on-surface font-extrabold" : "text-on-surface",
                               )}
                             >
                               {n.title ?? t("notifications.item.fallbackTitle")}
@@ -237,7 +240,7 @@ export function NotificationsPopover() {
                         <p
                           className={cn(
                             "mt-0.5 line-clamp-2 text-xs",
-                            isUnread ? "text-on-surface-variant" : "text-on-surface-variant/80",
+                            isUnread ? "text-on-surface-variant" : "text-on-surface-variant",
                           )}
                         >
                           {n.message ?? ""}
