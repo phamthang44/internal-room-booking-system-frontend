@@ -58,6 +58,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
     if (data.status === "confirmed") return "confirmed" as const;
     if (data.status === "pending") return "pending" as const;
     if (data.status === "cancelled") return "cancelled" as const;
+    if (data.status === "rejected") return "rejected" as const;
     return null;
   }, [data]);
 

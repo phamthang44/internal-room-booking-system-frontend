@@ -42,7 +42,9 @@ export function BookingTimeline({
                 "absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest",
                 ev.tone === "primary"
                   ? "bg-tertiary-fixed"
-                  : "bg-surface-container-high"
+                  : ev.tone === "danger"
+                    ? "bg-error"
+                    : "bg-surface-container-high"
               )}
             >
               <span
@@ -50,7 +52,9 @@ export function BookingTimeline({
                   "material-symbols-outlined text-sm",
                   ev.tone === "primary"
                     ? "text-on-tertiary-fixed"
-                    : "text-on-surface-variant"
+                    : ev.tone === "danger"
+                      ? "text-on-error"
+                      : "text-on-surface-variant"
                 )}
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
@@ -58,7 +62,14 @@ export function BookingTimeline({
               </span>
             </div>
             <div>
-              <p className="text-sm font-bold text-on-surface">{resolveEventTitle(t, ev)}</p>
+              <p
+                className={cn(
+                  "text-sm font-bold",
+                  ev.tone === "danger" ? "text-error" : "text-on-surface",
+                )}
+              >
+                {resolveEventTitle(t, ev)}
+              </p>
               <p className="text-xs text-on-surface-variant mt-1">{ev.atLabel}</p>
               {ev.note ? (
                 <p className="text-sm text-on-surface-variant mt-2 italic">

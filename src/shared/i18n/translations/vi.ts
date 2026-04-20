@@ -335,6 +335,7 @@ export const vi = {
       occupied: "Đã đặt",
       inUse: "Đang sử dụng",
       pending: "Chờ phê duyệt",
+      past: "Đã qua",
       roomMaintenance: "Bảo trì",
       roomUnavailable: "Không khả dụng",
     },
@@ -978,6 +979,7 @@ export const vi = {
     },
     item: {
       fallbackTitle: "Thông báo",
+      unread: "Chưa đọc",
       viewDetails: "Xem chi tiết",
     },
   },

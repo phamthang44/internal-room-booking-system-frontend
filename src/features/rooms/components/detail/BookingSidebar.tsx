@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useMemo, useEffect, useRef } from "react";
 import { CheckCircle, CircleAlert } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, isBefore, isSameDay, set } from "date-fns";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import { useSubmitBooking } from "../../hooks/useRoomDetail";
@@ -21,6 +21,30 @@ const MAX_SLOT_SELECTION = 2;
 
 const formatTimeShort = (time: string) => time.slice(0, 5);
 
+const parseTimeToParts = (time: string): { hours: number; minutes: number; seconds: number } => {
+  const [h, m, s] = time.split(":");
+  return {
+    hours: Number.parseInt(h ?? "0", 10) || 0,
+    minutes: Number.parseInt(m ?? "0", 10) || 0,
+    seconds: Number.parseInt(s ?? "0", 10) || 0,
+  };
+};
+
+const isSlotInPast = (selectedDateIso: string, slotStartTime: string, now: Date): boolean => {
+  if (!selectedDateIso) return false;
+  const day = parseISO(selectedDateIso);
+  const today = new Date();
+
+  // Entire prior days are always "past".
+  if (isBefore(day, set(today, { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }))) return true;
+  // Future days are never "past".
+  if (!isSameDay(day, today)) return false;
+
+  const { hours, minutes, seconds } = parseTimeToParts(slotStartTime);
+  const slotStart = set(day, { hours, minutes, seconds, milliseconds: 0 });
+  return isBefore(slotStart, now) || slotStart.getTime() === now.getTime();
+};
+
 /**
  * When the classroom is not AVAILABLE, every slot is non-bookable — label by room status,
  * not as "booked" (`occupied`). Otherwise derive status from the slot payload.
@@ -33,24 +57,24 @@ const mapApiSlotToBookingSlot = (
   const id = String(s.slotId);
 
   if (roomAvailability === "maintenance") {
-    return { id, label, status: "roomMaintenance" };
+    return { id, label, status: "roomMaintenance", startTime: s.startTime, endTime: s.endTime };
   }
   if (roomAvailability !== "available") {
-    return { id, label, status: "roomUnavailable" };
+    return { id, label, status: "roomUnavailable", startTime: s.startTime, endTime: s.endTime };
   }
 
   const st = (s.status ?? "").toUpperCase();
   if (s.isAvailable && st === "AVAILABLE") {
-    return { id, label, status: "available" };
+    return { id, label, status: "available", startTime: s.startTime, endTime: s.endTime };
   }
   if (st.includes("IN_USE")) {
-    return { id, label, status: "inUse" };
+    return { id, label, status: "inUse", startTime: s.startTime, endTime: s.endTime };
   }
   const looksPendingApproval = st.includes("PENDING") || st.includes("AWAITING");
   if (looksPendingApproval) {
-    return { id, label, status: "pendingApproval" };
+    return { id, label, status: "pendingApproval", startTime: s.startTime, endTime: s.endTime };
   }
-  return { id, label, status: "occupied" };
+  return { id, label, status: "occupied", startTime: s.startTime, endTime: s.endTime };
 };
 
 const disabledSlotBadgeKey = (status: SlotStatus): string => {
@@ -64,6 +88,15 @@ const disabledSlotBadgeKey = (status: SlotStatus): string => {
     case "inUse":
       return "roomDetail.slots.inUse";
     case "occupied":
+    default:
+      return "roomDetail.slots.occupied";
+  }
+};
+
+const disabledReasonBadgeKey = (reason: BookingSlot["disabledReason"]): string => {
+  switch (reason) {
+    case "past":
+      return "roomDetail.slots.past";
     default:
       return "roomDetail.slots.occupied";
   }
@@ -83,8 +116,15 @@ const SlotRow = ({
   onSelect: () => void;
   t: (key: string) => string;
 }) => {
-  if (slot.status !== "available") {
+  if (slot.status !== "available" || slot.disabledReason) {
     const rowStyle =
+      slot.disabledReason === "past"
+        ? {
+            box: "bg-surface-container-low/60 border border-outline-variant/40",
+            dot: "bg-on-surface-variant/60",
+            badge: "text-on-surface-variant bg-surface-container-high",
+          }
+        :
       slot.status === "roomMaintenance"
         ? {
             box: "bg-amber-500/5 border border-amber-500/15",
@@ -136,7 +176,7 @@ const SlotRow = ({
             rowStyle.badge,
           )}
         >
-          {t(disabledSlotBadgeKey(slot.status))}
+          {t(slot.disabledReason ? disabledReasonBadgeKey(slot.disabledReason) : disabledSlotBadgeKey(slot.status))}
         </span>
       </div>
     );
@@ -199,6 +239,12 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
   const availabilities = room.schedule.availabilities;
   const dateStripRef = useRef<HTMLDivElement>(null);
 
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const dateOptions = useMemo((): DateOption[] => {
     return availabilities.map((a) => {
       const d = parseISO(a.date);
@@ -243,8 +289,15 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
   const slots = useMemo((): BookingSlot[] => {
     const day = availabilities.find((a) => a.date === selectedDate);
     if (!day) return [];
-    return day.slots.map((s) => mapApiSlotToBookingSlot(s, room.availability));
-  }, [availabilities, selectedDate, room.availability]);
+    return day.slots.map((s) => {
+      const base = mapApiSlotToBookingSlot(s, room.availability);
+      if (base.status !== "available") return base;
+      if (isSlotInPast(selectedDate, s.startTime, now)) {
+        return { ...base, disabledReason: "past" };
+      }
+      return base;
+    });
+  }, [availabilities, selectedDate, room.availability, now]);
 
   /** Selected ids in day order (chronological) for API and display. */
   const orderedSelectedSlotIds = useMemo(() => {
@@ -379,7 +432,7 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
                   isSelected={isSelected}
                   selectionOrder={selectionOrder}
                   onSelect={() => {
-                    if (slot.status !== "available") return;
+                    if (slot.status !== "available" || slot.disabledReason) return;
                     setSelectedSlotIds((prev) => {
                       if (prev.includes(slot.id)) {
                         return prev.filter((id) => id !== slot.id);

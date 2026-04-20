@@ -23,7 +23,7 @@ const EVENT_TITLE_KEY_BY_PAIR: Record<string, string> = {
   "REJECT|REJECTED": "bookings.detail.history.events.reject_rejected",
 };
 
-export type BookingHistoryTone = "primary" | "neutral";
+export type BookingHistoryTone = "primary" | "neutral" | "danger";
 
 function normalizeCode(value?: string | null): string {
   return (value ?? "").trim().toUpperCase();
@@ -134,6 +134,9 @@ export function getBookingHistoryTone(
 ): BookingHistoryTone {
   const actionUpper = normalizeCode(action);
   const statusUpper = normalizeCode(statusAfter);
+
+  if (statusUpper === "REJECTED" || statusUpper === "CANCELLED") return "danger";
+  if (actionUpper.includes("REJECT") || actionUpper.includes("CANCEL")) return "danger";
 
   if (
     statusUpper === "APPROVED" ||

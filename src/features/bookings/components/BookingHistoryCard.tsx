@@ -8,8 +8,6 @@ export interface BookingHistoryCardProps {
 }
 
 function statusClassName(status: BookingHistoryItem["status"]) {
-  if (status === "cancelled")
-    return "bg-surface-container-highest text-on-surface-variant";
   if (status === "completed")
     return "bg-tertiary-fixed/10 text-on-tertiary-fixed-variant";
   return "bg-error-container text-on-error-container";

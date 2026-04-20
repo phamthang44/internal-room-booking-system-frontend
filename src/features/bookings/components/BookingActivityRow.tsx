@@ -14,6 +14,7 @@ function mapToChipStatus(status: BookingStatus) {
   if (status === "confirmed") return "confirmed" as const;
   if (status === "pending") return "pending" as const;
   if (status === "cancelled") return "cancelled" as const;
+  if (status === "rejected") return "rejected" as const;
   return null;
 }
 

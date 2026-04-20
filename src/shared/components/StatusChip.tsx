@@ -5,6 +5,7 @@ export type StatusChipVariant =
   | "confirmed"
   | "pending"
   | "cancelled"
+  | "rejected"
   | "available"
   | "occupied"
   | "maintenance";
@@ -15,6 +16,8 @@ const variantStyles: Record<StatusChipVariant, string> = {
   pending:
     "bg-secondary-container text-on-secondary-container border border-secondary-fixed-dim/40",
   cancelled:
+    "bg-error-container text-on-error-container border border-error/20",
+  rejected:
     "bg-error-container text-on-error-container border border-error/20",
   available:
     "bg-tertiary-fixed/20 text-on-tertiary-container border border-tertiary-fixed/30",

@@ -70,7 +70,7 @@ export interface BookingTimelineEvent {
   readonly atLabel: string; // e.g. "Oct 20, 2023 · 09:45 AM"
   readonly note?: string;
   readonly icon: string; // material symbol name
-  readonly tone: "primary" | "neutral";
+  readonly tone: "primary" | "neutral" | "danger";
 }
 
 export interface BookingDetail {
@@ -313,7 +313,7 @@ export const bookingDetailsById: Readonly<Record<string, BookingDetail>> = {
         title: "Booking Rejected",
         atLabel: "Oct 18, 2023 · 09:10 AM",
         icon: "cancel",
-        tone: "neutral",
+        tone: "danger",
       },
       {
         id: "t3-2",

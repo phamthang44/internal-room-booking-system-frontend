@@ -97,6 +97,11 @@ export interface BookingSlot {
   id: string;
   label: string;
   status: SlotStatus;
+  /** Raw times from API (used for client-side "past slot" disabling). */
+  startTime?: string;
+  endTime?: string;
+  /** Additional UI-only disabled reasons for otherwise-available slots. */
+  disabledReason?: "past";
 }
 
 export interface DateOption {

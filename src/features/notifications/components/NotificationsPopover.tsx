@@ -162,8 +162,17 @@ export function NotificationsPopover() {
                 return (
                   <div
                     key={String(n.id ?? `${n.title}-${n.createdAt}`)}
-                    className={cn("group relative rounded-xl", isUnread ? "bg-primary/5" : "")}
+                    className={cn(
+                      "group relative rounded-xl overflow-hidden",
+                      isUnread ? "bg-primary/6" : "bg-transparent",
+                    )}
                   >
+                    {isUnread ? (
+                      <div
+                        aria-hidden="true"
+                        className="absolute left-0 top-0 h-full w-1 bg-primary"
+                      />
+                    ) : null}
                     <button
                       type="button"
                       disabled={busy}
@@ -199,21 +208,38 @@ export function NotificationsPopover() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p
-                            className={cn(
-                              "truncate text-sm font-semibold",
-                              isUnread ? "text-on-surface" : "text-on-surface-variant",
-                            )}
-                          >
-                            {n.title ?? t("notifications.item.fallbackTitle")}
-                          </p>
+                          <div className="min-w-0 flex items-center gap-2">
+                            {isUnread ? (
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest",
+                                  "bg-primary/12 text-primary",
+                                )}
+                              >
+                                {t("notifications.item.unread")}
+                              </span>
+                            ) : null}
+                            <p
+                              className={cn(
+                                "min-w-0 truncate text-sm font-semibold",
+                                isUnread ? "text-on-surface font-extrabold" : "text-on-surface-variant",
+                              )}
+                            >
+                              {n.title ?? t("notifications.item.fallbackTitle")}
+                            </p>
+                          </div>
                           {caption ? (
                             <span className="shrink-0 text-[10px] text-on-surface-variant/70">
                               {caption}
                             </span>
                           ) : null}
                         </div>
-                        <p className="mt-0.5 line-clamp-2 text-xs text-on-surface-variant">
+                        <p
+                          className={cn(
+                            "mt-0.5 line-clamp-2 text-xs",
+                            isUnread ? "text-on-surface-variant" : "text-on-surface-variant/80",
+                          )}
+                        >
                           {n.message ?? ""}
                         </p>
 

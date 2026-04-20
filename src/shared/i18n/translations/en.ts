@@ -335,6 +335,7 @@ export const en = {
       occupied: "Occupied",
       inUse: "In use",
       pending: "Pending Approval",
+      past: "Past",
       roomMaintenance: "Under maintenance",
       roomUnavailable: "Unavailable",
     },
@@ -976,6 +977,7 @@ export const en = {
     },
     item: {
       fallbackTitle: "Notification",
+      unread: "Unread",
       viewDetails: "View details",
     },
   },
