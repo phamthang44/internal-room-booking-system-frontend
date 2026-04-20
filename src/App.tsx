@@ -16,6 +16,11 @@ function App() {
   if (!googleClientId && import.meta.env.DEV) {
     console.warn("VITE_GOOGLE_CLIENT_ID environment variable is not set");
   }
+  if (import.meta.env.PROD) {
+    console.log = () => {};
+    console.warn = () => {};
+    console.error = () => {};
+  }
 
   return (
     <I18nProvider>
