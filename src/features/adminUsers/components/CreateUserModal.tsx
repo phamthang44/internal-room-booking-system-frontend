@@ -22,6 +22,65 @@ const PASSWORD_REGEX =
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const PASSWORD_LOWER = "abcdefghijklmnopqrstuvwxyz";
+const PASSWORD_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const PASSWORD_DIGITS = "0123456789";
+// Must match the allowed special-character set in PASSWORD_REGEX.
+const PASSWORD_SPECIAL = "@$!%*?&";
+const PASSWORD_ALL = `${PASSWORD_LOWER}${PASSWORD_UPPER}${PASSWORD_DIGITS}${PASSWORD_SPECIAL}`;
+
+function randomInt(maxExclusive: number) {
+  if (!Number.isFinite(maxExclusive) || maxExclusive <= 0) {
+    throw new Error("randomInt(maxExclusive) requires maxExclusive > 0");
+  }
+  // Rejection sampling to avoid modulo bias.
+  const maxUint32 = 0xffff_ffff;
+  const limit = maxUint32 - (maxUint32 % maxExclusive);
+  const buf = new Uint32Array(1);
+  while (true) {
+    crypto.getRandomValues(buf);
+    const x = buf[0]!;
+    if (x < limit) return x % maxExclusive;
+  }
+}
+
+function pickChar(chars: string) {
+  return chars[randomInt(chars.length)]!;
+}
+
+function shuffleInPlace<T>(arr: T[]) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [arr[i], arr[j]] = [arr[j]!, arr[i]!];
+  }
+  return arr;
+}
+
+function generatePassword({
+  length = 16,
+}: {
+  readonly length?: number;
+} = {}) {
+  const clampedLength = Math.max(8, Math.min(64, length));
+
+  // Ensure it satisfies the existing regex requirements.
+  const chars: string[] = [
+    pickChar(PASSWORD_LOWER),
+    pickChar(PASSWORD_UPPER),
+    pickChar(PASSWORD_DIGITS),
+    pickChar(PASSWORD_SPECIAL),
+  ];
+
+  while (chars.length < clampedLength) {
+    chars.push(pickChar(PASSWORD_ALL));
+  }
+
+  const password = shuffleInPlace(chars).join("");
+  // Extremely defensive: should always pass due to construction.
+  if (!PASSWORD_REGEX.test(password)) return generatePassword({ length: clampedLength });
+  return password;
+}
+
 export function CreateUserModal({
   open,
   busy = false,
@@ -169,6 +228,28 @@ export function CreateUserModal({
                       : undefined
                   }
                 />
+                <div className="-mt-2 flex justify-end">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      const next = generatePassword();
+                      setValue((s) => ({
+                        ...s,
+                        password: next,
+                        confirmPassword: next,
+                      }));
+                    }}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-surface-container-low px-3 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50"
+                    aria-label="Generate a random password"
+                    title="Generate a random password"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      auto_awesome
+                    </span>
+                    Generate password
+                  </button>
+                </div>
                 <Field
                   label={t("adminUsers.create.fields.confirmPassword")}
                   value={value.confirmPassword}
