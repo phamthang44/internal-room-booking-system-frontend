@@ -938,4 +938,27 @@ export const vi = {
       ACTIVE: "Đang hoạt động",
     },
   },
+  notifications: {
+    bell: {
+      ariaLabel: "Thông báo",
+    },
+    popover: {
+      title: "Thông báo",
+      loadingCaption: "Đang tải…",
+      unreadCount: "Chưa đọc ({{count}})",
+      allCaughtUp: "Bạn đã xem hết rồi",
+      loadFailed: "Không thể tải thông báo.",
+    },
+    actions: {
+      markAllRead: "Đánh dấu đã đọc tất cả",
+    },
+    empty: {
+      title: "Chưa có thông báo",
+      caption: "Bạn sẽ thấy cập nhật về đặt phòng và thông báo hệ thống tại đây.",
+    },
+    item: {
+      fallbackTitle: "Thông báo",
+      viewDetails: "Xem chi tiết",
+    },
+  },
 } as const;

@@ -13,6 +13,7 @@ import { parseSubscribeDestinations } from "./parseSubscribeDestinations";
 import { startStompSession } from "./stompSession";
 import { createDebouncedBookingInvalidator } from "./invalidateBookingQueries";
 import { parseBookingNotificationPayload, presentBookingNotification } from "./bookingNotification";
+import { notificationsQueryKeys } from "@features/notifications";
 
 export interface StompDebugValue {
   brokerConfigured: boolean;
@@ -72,6 +73,7 @@ export function StompWebSocketProvider({ children }: { readonly children: ReactN
           const notification = parseBookingNotificationPayload(body);
           if (notification) {
             presentBookingNotification(notification);
+            void queryClient.invalidateQueries({ queryKey: notificationsQueryKeys.all });
           }
         }
         const preview =

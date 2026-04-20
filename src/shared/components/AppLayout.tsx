@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/utils/cn";
 import { useSidebarStore } from "@shared/hooks/useSidebarStore";
 import { useAuthStore, useProfileStore } from "@features/auth";
+import { NotificationsPopover } from "@features/notifications";
 import { useI18n } from "@shared/i18n/useI18n";
 import authApi from "@features/auth/api/auth.api";
 
@@ -378,11 +379,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           </div>
 
           {/* Notifications */}
-          <button className="relative ml-2 flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface">
-            <span className="material-symbols-outlined text-[24px]">notifications</span>
-            {/* Red dot for future implementation */}
-            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-error" />
-          </button>
+          <NotificationsPopover />
 
           {/* Divider */}
           <div className="mx-2 h-8 w-[1px] bg-outline-variant/30" />

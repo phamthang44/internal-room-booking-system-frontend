@@ -936,4 +936,27 @@ export const en = {
       ACTIVE: "Active",
     },
   },
+  notifications: {
+    bell: {
+      ariaLabel: "Notifications",
+    },
+    popover: {
+      title: "Notifications",
+      loadingCaption: "Loading…",
+      unreadCount: "Unread ({{count}})",
+      allCaughtUp: "You're all caught up",
+      loadFailed: "Failed to load notifications.",
+    },
+    actions: {
+      markAllRead: "Mark all read",
+    },
+    empty: {
+      title: "No notifications yet",
+      caption: "You’ll see updates about your bookings and system alerts here.",
+    },
+    item: {
+      fallbackTitle: "Notification",
+      viewDetails: "View details",
+    },
+  },
 } as const;
