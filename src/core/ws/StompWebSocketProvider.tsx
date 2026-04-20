@@ -85,7 +85,11 @@ export function StompWebSocketProvider({ children }: { readonly children: ReactN
           void queryClient.invalidateQueries({ queryKey: adminApprovalsQueryKeys.all });
         }
 
-        if (typeof body === "string") {
+        // Toasts: only present for the per-user notifications topic to avoid duplicate toasts
+        // when admins/staff also receive the same event on `/topic/admin/bookings`.
+        const shouldPresentToast = destination.includes("/topic/notifications/");
+
+        if (shouldPresentToast && typeof body === "string") {
           const notification = parseBookingNotificationPayload(body);
           if (notification) {
             presentBookingNotification(notification);
