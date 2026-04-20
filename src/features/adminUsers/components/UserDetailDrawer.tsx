@@ -9,8 +9,8 @@ export interface UserDetailDrawerProps {
   readonly user: UserBasicResponse | null;
   readonly busy?: boolean;
   readonly onClose: () => void;
-  readonly onChangeRole: (userId: number, roleName: AdminUserRoleApi) => void;
-  readonly onToggleBan: (userId: number) => void;
+  readonly onRequestChangeRole: (userId: number, roleName: AdminUserRoleApi) => void;
+  readonly onRequestToggleBan: (userId: number) => void;
 }
 
 const ROLE_OPTIONS: CustomSelectOption[] = [
@@ -34,8 +34,8 @@ export function UserDetailDrawer({
   user,
   busy = false,
   onClose,
-  onChangeRole,
-  onToggleBan,
+  onRequestChangeRole,
+  onRequestToggleBan,
 }: UserDetailDrawerProps) {
   const { t } = useI18n();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -161,7 +161,7 @@ export function UserDetailDrawer({
               <CustomSelect
                 value={roleValue}
                 options={ROLE_OPTIONS}
-                onChange={(val) => onChangeRole(user.id, val as AdminUserRoleApi)}
+                onChange={(val) => onRequestChangeRole(user.id, val as AdminUserRoleApi)}
                 className="w-full"
                 menuClassName="z-[90]"
                 disabled={busy}
@@ -213,15 +213,7 @@ export function UserDetailDrawer({
                   type="button"
                   disabled={busy}
                   onClick={() => {
-                    if (
-                      window.confirm(
-                        isBanned
-                          ? t("adminUsers.confirm.unban")
-                          : t("adminUsers.confirm.ban"),
-                      )
-                    ) {
-                      onToggleBan(user.id);
-                    }
+                    onRequestToggleBan(user.id);
                   }}
                   className={cn(
                     "inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition-colors disabled:opacity-50",

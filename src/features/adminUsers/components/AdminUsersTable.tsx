@@ -5,7 +5,7 @@ import type { UserBasicResponse } from "../types/adminUsers.api.types";
 export interface AdminUsersTableProps {
   readonly rows: readonly UserBasicResponse[];
   readonly onOpenUser: (user: UserBasicResponse) => void;
-  readonly onToggleBan: (user: UserBasicResponse) => void;
+  readonly onRequestToggleBan: (user: UserBasicResponse) => void;
   readonly busyUserId?: number | null;
 }
 
@@ -35,7 +35,7 @@ function statusPillClass(status: string | undefined) {
 export function AdminUsersTable({
   rows,
   onOpenUser,
-  onToggleBan,
+  onRequestToggleBan,
   busyUserId,
 }: AdminUsersTableProps) {
   const { t } = useI18n();
@@ -153,7 +153,7 @@ export function AdminUsersTable({
                       </button>
                       <button
                         type="button"
-                        onClick={() => onToggleBan(u)}
+                        onClick={() => onRequestToggleBan(u)}
                         className={cn(
                           "rounded-xl p-2 transition-colors",
                           isBanned

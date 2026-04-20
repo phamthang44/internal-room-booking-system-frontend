@@ -5,6 +5,7 @@ import { cn } from "@shared/utils/cn";
 import { normalizeApiError } from "@shared/errors/normalizeApiError";
 import { useAppToastStore } from "@shared/errors/appToastStore";
 import { presentAppSuccess } from "@shared/errors/presentAppSuccess";
+import { ConfirmDialog } from "@shared/components/ConfirmDialog";
 import type {
   AdminUserRoleApi,
   UserBasicResponse,
@@ -51,6 +52,11 @@ export const AdminUsersPage = () => {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [drawerUser, setDrawerUser] = useState<UserBasicResponse | null>(null);
+  const [confirmBanUser, setConfirmBanUser] = useState<UserBasicResponse | null>(null);
+  const [confirmRole, setConfirmRole] = useState<{
+    user: UserBasicResponse;
+    nextRole: AdminUserRoleApi;
+  } | null>(null);
 
   const listQuery = useAdminUsersListQuery({ page, size, sort });
   const createMutation = useAdminUserCreateMutation();
@@ -92,15 +98,6 @@ export const AdminUsersPage = () => {
       titleI18nKey: n.titleI18nKey,
       message: n.message,
       traceId: n.traceId,
-    });
-  };
-
-  const onToggleBan = (u: UserBasicResponse) => {
-    toggleBanMutation.mutate(u.id, {
-      onSuccess: (msg) => {
-        presentAppSuccess(msg ?? t("adminUsers.toasts.updated"));
-      },
-      onError: showToastError,
     });
   };
 
@@ -183,7 +180,7 @@ export const AdminUsersPage = () => {
           <AdminUsersTable
             rows={filteredRows}
             onOpenUser={(u) => setDrawerUser(u)}
-            onToggleBan={onToggleBan}
+            onRequestToggleBan={(u) => setConfirmBanUser(u)}
             busyUserId={busyUserId}
           />
         )}
@@ -236,8 +233,69 @@ export const AdminUsersPage = () => {
         user={drawerUser}
         busy={toggleBanMutation.isPending || updateRoleMutation.isPending}
         onClose={() => setDrawerUser(null)}
-        onChangeRole={(id, role) => onChangeRole(id, role)}
-        onToggleBan={(id) => onToggleBanById(id)}
+        onRequestChangeRole={(_id, role) => {
+          if (!drawerUser) return;
+          // Only ask confirmation when actually changing
+          if (String(drawerUser.role) === String(role)) return;
+          setConfirmRole({ user: drawerUser, nextRole: role });
+        }}
+        onRequestToggleBan={(id) => {
+          const u = drawerUser;
+          if (!u || u.id !== id) return;
+          setConfirmBanUser(u);
+        }}
+      />
+
+      <ConfirmDialog
+        open={confirmBanUser != null}
+        tone="danger"
+        title={
+          confirmBanUser && String(confirmBanUser.status) === "BANNED"
+            ? t("adminUsers.confirm.unbanTitle")
+            : t("adminUsers.confirm.banTitle")
+        }
+        description={
+          confirmBanUser && String(confirmBanUser.status) === "BANNED"
+            ? t("adminUsers.confirm.unban")
+            : t("adminUsers.confirm.ban")
+        }
+        cancelLabel={t("adminUsers.actions.cancel")}
+        confirmLabel={
+          confirmBanUser && String(confirmBanUser.status) === "BANNED"
+            ? t("adminUsers.actions.unban")
+            : t("adminUsers.actions.ban")
+        }
+        busy={toggleBanMutation.isPending}
+        onCancel={() => setConfirmBanUser(null)}
+        onConfirm={() => {
+          if (!confirmBanUser) return;
+          const id = confirmBanUser.id;
+          setConfirmBanUser(null);
+          onToggleBanById(id);
+        }}
+      />
+
+      <ConfirmDialog
+        open={confirmRole != null}
+        title={t("adminUsers.confirm.roleTitle")}
+        description={
+          confirmRole
+            ? t("adminUsers.confirm.role", {
+                username: confirmRole.user.username,
+                role: t(`adminUsers.role.${confirmRole.nextRole}` as "adminUsers.role.ADMIN"),
+              })
+            : undefined
+        }
+        cancelLabel={t("adminUsers.actions.cancel")}
+        confirmLabel={t("adminUsers.actions.confirm")}
+        busy={updateRoleMutation.isPending}
+        onCancel={() => setConfirmRole(null)}
+        onConfirm={() => {
+          if (!confirmRole) return;
+          const payload = confirmRole;
+          setConfirmRole(null);
+          onChangeRole(payload.user.id, payload.nextRole);
+        }}
       />
     </AppLayout>
   );

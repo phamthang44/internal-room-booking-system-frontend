@@ -1,6 +1,7 @@
 import { apiClient } from "@core/api";
 import type {
   AdminUserRoleApi,
+  ApiEnvelope,
   ApiResult,
   Page,
   RegisterRequest,
@@ -11,29 +12,52 @@ import type {
 // Axios concatenates baseURL + url; this must start with "/" to avoid ".../api/v1admin/...".
 const BASE = "/admin/users";
 
+type ListResponse =
+  | ApiEnvelope<UserBasicResponse[]>
+  | ApiResult<Page<UserBasicResponse>>;
+
+const isApiResult = <T,>(body: unknown): body is ApiResult<T> => {
+  if (!body || typeof body !== "object") return false;
+  return "success" in body;
+};
+
+const isApiEnvelope = <T,>(body: unknown): body is ApiEnvelope<T> => {
+  if (!body || typeof body !== "object") return false;
+  if (!("data" in body)) return false;
+  // Ensure we don't treat ApiResult as ApiEnvelope
+  return !("success" in body);
+};
+
 const assertApiSuccess = (body: unknown): void => {
-  if (!body || typeof body !== "object" || !("success" in body)) return;
-  const r = body as { success?: boolean; message?: string; errorCode?: string };
-  if (r.success === false) {
+  if (!isApiResult<unknown>(body)) return;
+  if (body.success === false) {
     throw {
-      message: r.message ?? "Request failed",
+      message: body.message ?? "Request failed",
       response: { data: body },
     };
   }
 };
 
 const unwrapApiResult = <T,>(body: unknown): T => {
+  if (isApiEnvelope<T>(body)) return body.data;
+  if (isApiResult<T>(body)) return body.data;
   if (body && typeof body === "object" && "data" in body) {
-    return (body as { data: T }).data;
+    return (body as { data: T }).data; // fallback
   }
-  return body as T;
+  return body as T; // fallback
 };
 
 const normalizePage = <T,>(raw: unknown): Page<T> => {
+  // New list shape: { data: T[]; meta?: ... }
+  if (isApiEnvelope<T[]>(raw)) {
+    return { content: raw.data };
+  }
+
   const data = unwrapApiResult<unknown>(raw);
-  if (data && typeof data === "object") return data as Page<T>;
   // If backend returns list directly, adapt to Page-like.
   if (Array.isArray(data)) return { content: data as T[] };
+  // If backend returns a page object, keep it.
+  if (data && typeof data === "object") return data as Page<T>;
   return {};
 };
 
@@ -57,8 +81,8 @@ export const adminUsersApiService = {
   list: async (
     params: AdminUsersListParams = {},
   ): Promise<AdminUsersListResult> => {
-    const res = await apiClient.get<ApiResult<Page<UserBasicResponse>>>(
-      `${BASE}/`,
+    const res = await apiClient.get<ListResponse>(
+      `${BASE}`,
       { params },
     );
     assertApiSuccess(res.data);
@@ -66,14 +90,19 @@ export const adminUsersApiService = {
     const page = normalizePage<UserBasicResponse>(res.data);
     const rows = page.content ?? [];
 
-    const apiPage = page.number ?? res.data.meta?.page ?? params.page ?? 0;
-    const size = page.size ?? res.data.meta?.size ?? params.size ?? rows.length;
+    const meta =
+      isApiResult<unknown>(res.data) || isApiEnvelope<unknown>(res.data)
+        ? res.data.meta
+        : undefined;
+
+    const apiPage = page.number ?? meta?.page ?? params.page ?? 0;
+    const size = page.size ?? meta?.size ?? params.size ?? rows.length;
     const totalPages =
-      page.totalPages ?? res.data.meta?.totalPages ?? Math.max(1, apiPage + 1);
+      page.totalPages ?? meta?.totalPages ?? Math.max(1, apiPage + 1);
     const totalElements =
-      page.totalElements ?? res.data.meta?.totalElements ?? rows.length;
+      page.totalElements ?? meta?.totalElements ?? rows.length;
     const hasNextPage =
-      res.data.meta?.hasNextPage ?? (apiPage + 1 < totalPages);
+      meta?.hasNextPage ?? (apiPage + 1 < totalPages);
 
     return {
       rows,
@@ -87,7 +116,7 @@ export const adminUsersApiService = {
 
   create: async (payload: RegisterRequest): Promise<UserBasicResponse> => {
     const res = await apiClient.post<ApiResult<UserBasicResponse>>(
-      `${BASE}/`,
+      `${BASE}`,
       payload,
     );
     assertApiSuccess(res.data);

@@ -28,6 +28,15 @@ export interface ApiResult<T> {
   };
 }
 
+/**
+ * Some endpoints (or environments) return a simplified envelope:
+ * `{ data: T; meta: {...} }` without `success/message`.
+ */
+export interface ApiEnvelope<T> {
+  data: T;
+  meta?: ApiResult<unknown>["meta"];
+}
+
 export type AdminUserRoleApi = "ADMIN" | "STAFF" | "STUDENT";
 export type AdminUserStatusApi = "ACTIVE" | "INACTIVE" | "BANNED";
 

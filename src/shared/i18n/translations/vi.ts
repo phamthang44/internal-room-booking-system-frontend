@@ -806,6 +806,10 @@ export const vi = {
       unban: "Mở khóa",
       close: "Đóng",
       cancel: "Hủy",
+      back: "Quay lại",
+      continue: "Tiếp tục",
+      confirmCreate: "Tạo tài khoản",
+      confirm: "Xác nhận",
       saving: "Đang lưu…",
       copy: "Sao chép",
       copied: "Đã sao chép",
@@ -825,8 +829,12 @@ export const vi = {
       actionsHint: "Thay đổi có hiệu lực ngay.",
     },
     confirm: {
+      banTitle: "Xác nhận khóa",
       ban: "Khóa người dùng này? Họ sẽ mất quyền truy cập cho đến khi được mở khóa.",
+      unbanTitle: "Xác nhận mở khóa",
       unban: "Mở khóa người dùng này và khôi phục quyền truy cập?",
+      roleTitle: "Xác nhận đổi vai trò",
+      role: "Đổi {{username}} sang vai trò {{role}}?",
     },
     create: {
       modalTitle: "Tạo người dùng",
@@ -839,8 +847,19 @@ export const vi = {
         password: "Mật khẩu",
         confirmPassword: "Xác nhận mật khẩu",
       },
+      errors: {
+        username: "Tên đăng nhập phải dài 3–30 ký tự.",
+        fullName: "Họ và tên phải dài 3–100 ký tự.",
+        email: "Vui lòng nhập email hợp lệ.",
+        password: "Mật khẩu chưa đáp ứng yêu cầu độ mạnh.",
+        confirmPassword: "Mật khẩu không khớp.",
+      },
       passwordHint:
         "Mật khẩu dài 8–64 ký tự và phải có chữ hoa, chữ thường, số và ký tự đặc biệt.",
+      confirm: {
+        title: "Kiểm tra thông tin",
+        note: "Mật khẩu sẽ không hiển thị. Nếu đúng, hãy tạo tài khoản.",
+      },
     },
     toasts: {
       created: "Đã tạo người dùng.",

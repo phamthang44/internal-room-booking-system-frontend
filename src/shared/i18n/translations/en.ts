@@ -804,6 +804,10 @@ export const en = {
       unban: "Unban",
       close: "Close",
       cancel: "Cancel",
+      back: "Back",
+      continue: "Continue",
+      confirmCreate: "Create account",
+      confirm: "Confirm",
       saving: "Saving…",
       copy: "Copy",
       copied: "Copied",
@@ -823,8 +827,12 @@ export const en = {
       actionsHint: "Changes take effect immediately.",
     },
     confirm: {
+      banTitle: "Confirm ban",
       ban: "Ban this user? They will lose access until unbanned.",
+      unbanTitle: "Confirm unban",
       unban: "Unban this user and restore access?",
+      roleTitle: "Confirm role change",
+      role: "Change {{username}} to role {{role}}?",
     },
     create: {
       modalTitle: "Create user",
@@ -837,8 +845,19 @@ export const en = {
         password: "Password",
         confirmPassword: "Confirm password",
       },
+      errors: {
+        username: "Username must be 3–30 characters.",
+        fullName: "Full name must be 3–100 characters.",
+        email: "Please enter a valid email address.",
+        password: "Password does not meet complexity requirements.",
+        confirmPassword: "Passwords do not match.",
+      },
       passwordHint:
         "Password must be 8–64 characters and include uppercase, lowercase, a number, and a special character.",
+      confirm: {
+        title: "Review details",
+        note: "Password will not be shown. If these details are correct, create the account.",
+      },
     },
     toasts: {
       created: "User created.",

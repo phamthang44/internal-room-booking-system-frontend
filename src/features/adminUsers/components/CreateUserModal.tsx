@@ -20,6 +20,8 @@ export interface CreateUserModalProps {
 const PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,64}$/;
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function CreateUserModal({
   open,
   busy = false,
@@ -27,6 +29,7 @@ export function CreateUserModal({
   onSubmit,
 }: CreateUserModalProps) {
   const { t } = useI18n();
+  const [step, setStep] = useState<"form" | "confirm">("form");
   const [value, setValue] = useState<CreateUserFormValue>({
     username: "",
     fullName: "",
@@ -35,18 +38,35 @@ export function CreateUserModal({
     confirmPassword: "",
   });
 
-  const canSubmit = useMemo(() => {
-    const v = value;
-    if (!v.username.trim() || v.username.trim().length < 3) return false;
-    if (!v.fullName.trim() || v.fullName.trim().length < 3) return false;
-    if (!v.email.trim() || !v.email.includes("@")) return false;
-    if (!PASSWORD_REGEX.test(v.password)) return false;
-    if (v.confirmPassword !== v.password) return false;
-    return true;
-  }, [value]);
+  const validation = useMemo(() => {
+    const username = value.username.trim();
+    const fullName = value.fullName.trim();
+    const email = value.email.trim();
+    const password = value.password;
+    const confirmPassword = value.confirmPassword;
+
+    const usernameOk = username.length >= 3 && username.length <= 30;
+    const fullNameOk = fullName.length >= 3 && fullName.length <= 100;
+    const emailOk = EMAIL_REGEX.test(email);
+    const passwordOk = PASSWORD_REGEX.test(password);
+    const confirmOk = confirmPassword.length > 0 && confirmPassword === password;
+
+    return {
+      username,
+      fullName,
+      email,
+      usernameOk,
+      fullNameOk,
+      emailOk,
+      passwordOk,
+      confirmOk,
+      canSubmit: usernameOk && fullNameOk && emailOk && passwordOk && confirmOk,
+    };
+  }, [value.confirmPassword, value.email, value.fullName, value.password, value.username]);
 
   useEffect(() => {
     if (!open) return;
+    setStep("form");
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -97,69 +117,158 @@ export function CreateUserModal({
           </div>
 
           <div className="mt-5 grid grid-cols-1 gap-4">
-            <Field
-              label={t("adminUsers.create.fields.username")}
-              placeholder="john.doe"
-              value={value.username}
-              onChange={(v) => setValue((s) => ({ ...s, username: v }))}
-              disabled={busy}
-            />
-            <Field
-              label={t("adminUsers.create.fields.fullName")}
-              placeholder="John Doe"
-              value={value.fullName}
-              onChange={(v) => setValue((s) => ({ ...s, fullName: v }))}
-              disabled={busy}
-            />
-            <Field
-              label={t("adminUsers.create.fields.email")}
-              placeholder="john@example.com"
-              value={value.email}
-              onChange={(v) => setValue((s) => ({ ...s, email: v }))}
-              disabled={busy}
-              inputMode="email"
-            />
+            {step === "form" ? (
+              <>
+                <Field
+                  label={t("adminUsers.create.fields.username")}
+                  placeholder="john.doe"
+                  value={value.username}
+                  onChange={(v) => setValue((s) => ({ ...s, username: v }))}
+                  disabled={busy}
+                  error={
+                    !validation.usernameOk && value.username.trim().length > 0
+                      ? t("adminUsers.create.errors.username")
+                      : undefined
+                  }
+                />
+                <Field
+                  label={t("adminUsers.create.fields.fullName")}
+                  placeholder="John Doe"
+                  value={value.fullName}
+                  onChange={(v) => setValue((s) => ({ ...s, fullName: v }))}
+                  disabled={busy}
+                  error={
+                    !validation.fullNameOk && value.fullName.trim().length > 0
+                      ? t("adminUsers.create.errors.fullName")
+                      : undefined
+                  }
+                />
+                <Field
+                  label={t("adminUsers.create.fields.email")}
+                  placeholder="john@example.com"
+                  value={value.email}
+                  onChange={(v) => setValue((s) => ({ ...s, email: v }))}
+                  disabled={busy}
+                  inputMode="email"
+                  error={
+                    !validation.emailOk && value.email.trim().length > 0
+                      ? t("adminUsers.create.errors.email")
+                      : undefined
+                  }
+                />
 
-            <Field
-              label={t("adminUsers.create.fields.password")}
-              value={value.password}
-              onChange={(v) => setValue((s) => ({ ...s, password: v }))}
-              disabled={busy}
-              type="password"
-            />
-            <Field
-              label={t("adminUsers.create.fields.confirmPassword")}
-              value={value.confirmPassword}
-              onChange={(v) => setValue((s) => ({ ...s, confirmPassword: v }))}
-              disabled={busy}
-              type="password"
-            />
+                <Field
+                  label={t("adminUsers.create.fields.password")}
+                  value={value.password}
+                  onChange={(v) => setValue((s) => ({ ...s, password: v }))}
+                  disabled={busy}
+                  type="password"
+                  error={
+                    !validation.passwordOk && value.password.length > 0
+                      ? t("adminUsers.create.errors.password")
+                      : undefined
+                  }
+                />
+                <Field
+                  label={t("adminUsers.create.fields.confirmPassword")}
+                  value={value.confirmPassword}
+                  onChange={(v) =>
+                    setValue((s) => ({ ...s, confirmPassword: v }))
+                  }
+                  disabled={busy}
+                  type="password"
+                  error={
+                    !validation.confirmOk && value.confirmPassword.length > 0
+                      ? t("adminUsers.create.errors.confirmPassword")
+                      : undefined
+                  }
+                />
 
-            <p className="rounded-xl bg-surface-container-low px-3 py-2 text-xs text-on-surface-variant">
-              {t("adminUsers.create.passwordHint")}
-            </p>
+                <p className="rounded-xl bg-surface-container-low px-3 py-2 text-xs text-on-surface-variant">
+                  {t("adminUsers.create.passwordHint")}
+                </p>
+              </>
+            ) : (
+              <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest/70 p-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                  {t("adminUsers.create.confirm.title")}
+                </p>
+                <div className="mt-3 space-y-2">
+                  <ConfirmRow
+                    label={t("adminUsers.create.fields.username")}
+                    value={validation.username}
+                  />
+                  <ConfirmRow
+                    label={t("adminUsers.create.fields.fullName")}
+                    value={validation.fullName}
+                  />
+                  <ConfirmRow
+                    label={t("adminUsers.create.fields.email")}
+                    value={validation.email}
+                  />
+                </div>
+                <p className="mt-3 text-xs text-on-surface-variant">
+                  {t("adminUsers.create.confirm.note")}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="mt-6 flex justify-end gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => {
+                if (step === "confirm") {
+                  setStep("form");
+                  return;
+                }
+                onClose();
+              }}
               disabled={busy}
               className="h-11 rounded-xl px-4 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50"
             >
-              {t("adminUsers.actions.cancel")}
+              {step === "confirm"
+                ? t("adminUsers.actions.back")
+                : t("adminUsers.actions.cancel")}
             </button>
             <button
               type="button"
-              disabled={busy || !canSubmit}
-              onClick={() => onSubmit(value)}
+              disabled={busy || !validation.canSubmit}
+              onClick={() => {
+                if (step === "form") {
+                  setStep("confirm");
+                  return;
+                }
+                onSubmit({
+                  username: validation.username,
+                  fullName: validation.fullName,
+                  email: validation.email,
+                  password: value.password,
+                  confirmPassword: value.confirmPassword,
+                });
+              }}
               className="h-11 rounded-xl bg-primary px-5 text-sm font-bold text-on-primary hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {busy ? t("adminUsers.actions.saving") : t("adminUsers.actions.create")}
+              {busy
+                ? t("adminUsers.actions.saving")
+                : step === "form"
+                  ? t("adminUsers.actions.continue")
+                  : t("adminUsers.actions.confirmCreate")}
             </button>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ConfirmRow({ label, value }: { readonly label: string; readonly value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-xl bg-surface-container-low/50 px-3 py-2">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+        {label}
+      </p>
+      <p className="truncate text-sm font-semibold text-on-surface">{value}</p>
     </div>
   );
 }
@@ -170,6 +279,7 @@ function Field({
   value,
   onChange,
   disabled,
+  error,
   type = "text",
   inputMode,
 }: {
@@ -178,6 +288,7 @@ function Field({
   readonly value: string;
   readonly onChange: (v: string) => void;
   readonly disabled?: boolean;
+  readonly error?: string;
   readonly type?: string;
   readonly inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 }) {
@@ -193,8 +304,16 @@ function Field({
         type={type}
         inputMode={inputMode}
         disabled={disabled}
-        className="h-11 w-full rounded-xl border border-outline-variant/40 bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+        className={cn(
+          "h-11 w-full rounded-xl border bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+          error
+            ? "border-error/60 focus:border-error/60 focus:ring-error/10"
+            : "border-outline-variant/40 focus:border-primary/50 focus:ring-primary/10",
+        )}
       />
+      {error ? (
+        <p className="mt-1 text-xs text-error">{error}</p>
+      ) : null}
     </div>
   );
 }

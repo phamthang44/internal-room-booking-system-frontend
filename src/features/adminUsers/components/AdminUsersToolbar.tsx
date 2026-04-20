@@ -45,7 +45,9 @@ export function AdminUsersToolbar({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-outline-variant/20 bg-surface-container-lowest/70 p-3 shadow-[0_8px_32px_rgba(24,28,30,0.06)] backdrop-blur-md",
+        // Important: give this a higher stacking context so CustomSelect menus
+        // can overlay subsequent glass cards (backdrop-filter creates new stacks).
+        "relative z-[60] rounded-2xl border border-outline-variant/20 bg-surface-container-lowest/70 p-3 shadow-[0_8px_32px_rgba(24,28,30,0.06)] backdrop-blur-md",
         className,
       )}
       aria-label={t("adminUsers.filters.ariaLabel")}
