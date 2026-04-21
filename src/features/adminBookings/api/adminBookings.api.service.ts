@@ -1,4 +1,5 @@
 import { apiClient } from "@core/api";
+import { ADMIN_BOOKINGS_ENDPOINTS } from "../constants/adminBookings.endpoints";
 import type {
   AdminBookingDetailResponse,
   AdminBookingItemResponse,
@@ -6,10 +7,6 @@ import type {
   ApiResult,
   BookingApprovalRequest,
 } from "../types/adminBookings.api.types";
-
-// NOTE: VITE_API_URL is configured as ".../api/v1" (no trailing slash).
-// Axios concatenates baseURL + url; this must start with "/" to avoid ".../api/v1admin/...".
-const BASE = "/admin/bookings";
 
 const assertApiSuccess = (body: unknown): void => {
   if (!body || typeof body !== "object" || !("success" in body)) return;
@@ -52,7 +49,7 @@ export interface AdminBookingSearchResult {
 export const adminBookingsApiService = {
   getDetail: async (bookingId: number): Promise<AdminBookingDetailResponse> => {
     const res = await apiClient.get<ApiResult<AdminBookingDetailResponse>>(
-      `${BASE}/${bookingId}`,
+      ADMIN_BOOKINGS_ENDPOINTS.DETAIL(bookingId),
     );
     assertApiSuccess(res.data);
     return res.data.data;
@@ -60,7 +57,7 @@ export const adminBookingsApiService = {
 
   approve: async (payload: BookingApprovalRequest): Promise<string | null> => {
     const res = await apiClient.patch<ApiResult<unknown>>(
-      `${BASE}/approve`,
+      ADMIN_BOOKINGS_ENDPOINTS.APPROVE,
       payload,
     );
     assertApiSuccess(res.data);
@@ -69,7 +66,7 @@ export const adminBookingsApiService = {
 
   reject: async (payload: BookingApprovalRequest): Promise<string | null> => {
     const res = await apiClient.patch<ApiResult<unknown>>(
-      `${BASE}/reject`,
+      ADMIN_BOOKINGS_ENDPOINTS.REJECT,
       payload,
     );
     assertApiSuccess(res.data);
@@ -80,7 +77,7 @@ export const adminBookingsApiService = {
     params: AdminBookingSearchParams = {},
   ): Promise<AdminBookingSearchResult> => {
     const res = await apiClient.get<ApiResult<AdminBookingItemResponse[]>>(
-      `${BASE}`,
+      ADMIN_BOOKINGS_ENDPOINTS.BASE,
       { params: cleanQuery(params) },
     );
     assertApiSuccess(res.data);

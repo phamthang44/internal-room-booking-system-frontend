@@ -1,4 +1,5 @@
 import { apiClient } from "@core/api";
+import { ADMIN_USERS_ENDPOINTS } from "../constants/adminUsers.endpoints";
 import type {
   AdminUserRoleApi,
   ApiEnvelope,
@@ -7,10 +8,6 @@ import type {
   RegisterRequest,
   UserBasicResponse,
 } from "../types/adminUsers.api.types";
-
-// NOTE: VITE_API_URL is configured as ".../api/v1" (no trailing slash).
-// Axios concatenates baseURL + url; this must start with "/" to avoid ".../api/v1admin/...".
-const BASE = "/admin/users";
 
 type ListResponse =
   | ApiEnvelope<UserBasicResponse[]>
@@ -82,7 +79,7 @@ export const adminUsersApiService = {
     params: AdminUsersListParams = {},
   ): Promise<AdminUsersListResult> => {
     const res = await apiClient.get<ListResponse>(
-      `${BASE}`,
+      ADMIN_USERS_ENDPOINTS.BASE,
       { params },
     );
     assertApiSuccess(res.data);
@@ -116,7 +113,7 @@ export const adminUsersApiService = {
 
   create: async (payload: RegisterRequest): Promise<UserBasicResponse> => {
     const res = await apiClient.post<ApiResult<UserBasicResponse>>(
-      `${BASE}`,
+      ADMIN_USERS_ENDPOINTS.BASE,
       payload,
     );
     assertApiSuccess(res.data);
@@ -124,7 +121,7 @@ export const adminUsersApiService = {
   },
 
   toggleBan: async (userId: number): Promise<string | null> => {
-    const res = await apiClient.put<ApiResult<unknown>>(`${BASE}/${userId}/ban`);
+    const res = await apiClient.put<ApiResult<unknown>>(ADMIN_USERS_ENDPOINTS.TOGGLE_BAN(userId));
     assertApiSuccess(res.data);
     return res.data.meta?.message ?? res.data.message ?? null;
   },
@@ -134,7 +131,7 @@ export const adminUsersApiService = {
     roleName: AdminUserRoleApi,
   ): Promise<UserBasicResponse> => {
     const res = await apiClient.put<ApiResult<UserBasicResponse>>(
-      `${BASE}/${userId}/role`,
+      ADMIN_USERS_ENDPOINTS.UPDATE_ROLE(userId),
       null,
       { params: { roleName } },
     );

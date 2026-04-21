@@ -6,6 +6,8 @@
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
 import { useAuthStore } from "@features/auth";
+import { BOOKINGS_ENDPOINTS } from "@features/bookings/constants/bookings.endpoints";
+import { ROOMS_ENDPOINTS } from "../constants/rooms.endpoints";
 import type {
   RoomDetail,
   EquipmentDetail,
@@ -93,8 +95,6 @@ const adaptRoomDetail = (raw: RoomDetailDataDto): RoomDetail => {
   };
 };
 
-const BASE = import.meta.env.VITE_API_URL;
-
 const formatTimeShort = (time: string) => time.slice(0, 5);
 
 /** Builds a single-line summary for the success screen from API time slots. */
@@ -134,7 +134,7 @@ const adaptCreateBookingResponse = (
 export const roomDetailApiService = {
   getRoomById: async (roomId: string): Promise<RoomDetail> => {
     const { token } = useAuthStore.getState();
-    const response = await apiClient.get(`${BASE}/rooms/${roomId}`, {
+    const response = await apiClient.get(ROOMS_ENDPOINTS.DETAIL(roomId), {
       ...getAuthConfig(token ?? null),
     });
     const raw = unwrapData(response.data);
@@ -146,7 +146,7 @@ export const roomDetailApiService = {
   ): Promise<BookingConfirmation> => {
     const { token } = useAuthStore.getState();
     const response = await apiClient.post(
-      `${BASE}/bookings`,
+      BOOKINGS_ENDPOINTS.BASE,
       {
         classroomId: Number(payload.roomId),
         bookingDate: payload.date,

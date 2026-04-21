@@ -3,6 +3,7 @@ import { devtools } from "zustand/middleware";
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
 import { useAuthStore } from "./useAuthStore";
+import { AUTH_ENDPOINTS } from "../constants/auth.constants";
 
 export interface UserProfileData {
   id: number;
@@ -32,8 +33,6 @@ interface ProfileState {
   clearProfile: () => void;
 }
 
-const BASE = import.meta.env.VITE_API_URL;
-
 export const useProfileStore = create<ProfileState>()(
   devtools(
     (set) => ({
@@ -50,7 +49,7 @@ export const useProfileStore = create<ProfileState>()(
 
           // Note: apiClient already sends 'Accept-Language' based on i18n via its interceptor
           const response = await apiClient.get<ProfileApiResponse>(
-            `${BASE}/users/me`,
+            AUTH_ENDPOINTS.GET_CURRENT_USER,
             getAuthConfig(token)
           );
 

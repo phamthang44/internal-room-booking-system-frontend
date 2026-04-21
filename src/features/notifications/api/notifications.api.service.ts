@@ -1,9 +1,6 @@
 import { apiClient } from "@core/api";
+import { NOTIFICATIONS_ENDPOINTS } from "../constants/notifications.endpoints";
 import type { ApiResult, NotificationResponse } from "../types/notifications.api.types";
-
-// NOTE: VITE_API_URL is configured as ".../api/v1" (no trailing slash).
-// Axios concatenates baseURL + url; this must start with "/" to avoid ".../api/v1notifications".
-const BASE = "/notifications";
 
 const unwrapApiResult = <T,>(body: unknown): { data: T | null; meta?: unknown } => {
   if (body && typeof body === "object" && "data" in body) {
@@ -26,35 +23,35 @@ export interface NotificationsListResult {
 
 export const notificationsApiService = {
   list: async (params: NotificationsListParams = {}): Promise<NotificationsListResult> => {
-    const res = await apiClient.get<ApiResult<NotificationResponse[]>>(BASE, { params });
+    const res = await apiClient.get<ApiResult<NotificationResponse[]>>(NOTIFICATIONS_ENDPOINTS.BASE, { params });
     const unwrapped = unwrapApiResult<NotificationResponse[]>(res.data);
     return { rows: unwrapped.data ?? [], meta: unwrapped.meta };
   },
 
   getUnreadCount: async (): Promise<number> => {
-    const res = await apiClient.get<ApiResult<number>>(`${BASE}/unread-count`);
+    const res = await apiClient.get<ApiResult<number>>(NOTIFICATIONS_ENDPOINTS.UNREAD_COUNT);
     const unwrapped = unwrapApiResult<number>(res.data);
     return Number(unwrapped.data ?? 0);
   },
 
   markRead: async (id: number): Promise<void> => {
-    await apiClient.patch<ApiResult<void>>(`${BASE}/${id}/read`);
+    await apiClient.patch<ApiResult<void>>(NOTIFICATIONS_ENDPOINTS.MARK_READ(id));
   },
 
   markAllRead: async (): Promise<void> => {
-    await apiClient.post<ApiResult<void>>(`${BASE}/read-all`, null);
+    await apiClient.post<ApiResult<void>>(NOTIFICATIONS_ENDPOINTS.MARK_ALL_READ, null);
   },
 
   deleteOne: async (id: number): Promise<void> => {
-    await apiClient.delete<ApiResult<void>>(`${BASE}/${id}`);
+    await apiClient.delete<ApiResult<void>>(NOTIFICATIONS_ENDPOINTS.DELETE_ONE(id));
   },
 
   deleteBulk: async (ids: number[]): Promise<void> => {
-    await apiClient.delete<ApiResult<void>>(`${BASE}/bulk`, { data: ids });
+    await apiClient.delete<ApiResult<void>>(NOTIFICATIONS_ENDPOINTS.DELETE_BULK, { data: ids });
   },
 
   clearAll: async (): Promise<void> => {
-    await apiClient.delete<ApiResult<void>>(`${BASE}/clear-all`);
+    await apiClient.delete<ApiResult<void>>(NOTIFICATIONS_ENDPOINTS.CLEAR_ALL);
   },
 };
 

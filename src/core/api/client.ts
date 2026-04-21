@@ -5,6 +5,7 @@ import type {
   InternalAxiosRequestConfig,
 } from "axios";
 import { ENV } from "@core/config/env";
+import { CORE_API_ENDPOINTS } from "./endpoints";
 
 const makeIdempotencyKey = (): string => {
   // Prefer Web Crypto UUID when available (modern browsers)
@@ -70,7 +71,7 @@ let failedQueue: Array<{
 /**
  * Extract refresh endpoint to avoid magic strings
  */
-const REFRESH_ENDPOINT = "/auth/refresh";
+const REFRESH_ENDPOINT = CORE_API_ENDPOINTS.AUTH_REFRESH;
 
 const processQueue = (
   error: AxiosError | null,

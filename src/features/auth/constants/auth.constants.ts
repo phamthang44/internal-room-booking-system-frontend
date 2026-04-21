@@ -7,5 +7,6 @@ export const AUTH_ENDPOINTS = {
   GOOGLE_LOGIN: "/auth/google-login",
   LOGOUT: "/auth/logout",
   REFRESH: "/auth/refresh",
-  GET_CURRENT_USER: "/users/me",
+  // Canonical “current user” endpoint used across the app.
+  GET_CURRENT_USER: "/profile",
 } as const;

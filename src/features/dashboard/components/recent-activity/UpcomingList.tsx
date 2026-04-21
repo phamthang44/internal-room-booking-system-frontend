@@ -183,10 +183,15 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                     </button>
                   ) : null}
 
-                  <span
-                    className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${statusClass}`}
-                  >
-                    {statusLabel}
+                  <span className="inline-flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                      {t("common.labels.status")}
+                    </span>
+                    <span
+                      className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${statusClass}`}
+                    >
+                      {statusLabel}
+                    </span>
                   </span>
                   <button
                     type="button"
@@ -221,7 +226,7 @@ function getStatusStyle(status: string, t: any) {
     };
   } else if (statusUpper === "CHECKED_IN") {
     return {
-      statusClass: "bg-sky-50 text-sky-700",
+      statusClass: "bg-primary-container text-on-primary-container",
       statusLabel: t("dashboard.upcomingBookings.status.inUse"),
     };
   } else if (statusUpper === "PENDING" || statusUpper === "SUBMITTED") {

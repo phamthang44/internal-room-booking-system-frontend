@@ -17,6 +17,7 @@ export function useBookingCheckIn(bookingId: string): UseBookingCheckInResult {
   const { t } = useI18n();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [locked, setLocked] = useState(false);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -29,6 +30,7 @@ export function useBookingCheckIn(bookingId: string): UseBookingCheckInResult {
     onMutate: () => {
       setErrorMessage(null);
       setSuccessMessage(null);
+      setLocked(true);
     },
     onSuccess: async (message) => {
       const msg = message ?? t("bookings.checkin.toast.successFallback");
@@ -40,15 +42,18 @@ export function useBookingCheckIn(bookingId: string): UseBookingCheckInResult {
     onError: (err) => {
       const normalized = normalizeApiError(err);
       setErrorMessage(normalized.message);
+      setLocked(false);
     },
   });
 
   const checkIn = useCallback(async () => {
+    // Prevent double-submit (rapid clicks) and block after successful check-in.
+    if (locked || mutation.isPending || mutation.isSuccess) return;
     await mutation.mutateAsync();
-  }, [mutation]);
+  }, [locked, mutation]);
 
   return {
-    isPending: mutation.isPending,
+    isPending: mutation.isPending || locked,
     errorMessage,
     successMessage,
     checkIn,

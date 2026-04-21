@@ -5,6 +5,7 @@
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
 import { useAuthStore } from "@features/auth";
+import { ROOMS_ENDPOINTS } from "../constants/rooms.endpoints";
 import type {
   ApiResultClassroomList,
   RoomSearchParams,
@@ -65,8 +66,6 @@ const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): Ro
 
 // ── API service ───────────────────────────────────────────────────────────────
 
-const BASE = import.meta.env.VITE_API_URL;
-
 export const classroomApiService = {
   /**
    * GET /api/v1/rooms
@@ -82,7 +81,7 @@ export const classroomApiService = {
     ) as Record<string, string | number>;
 
     const response = await apiClient.get<ApiResultClassroomList>(
-      `${BASE}/rooms`,
+      ROOMS_ENDPOINTS.LIST,
       {
         params: cleanParams,
         ...getAuthConfig(token ?? null),

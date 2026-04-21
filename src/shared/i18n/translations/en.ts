@@ -50,6 +50,10 @@ export const en = {
   },
   common: {
     appName: "Scholarly Sanctuary",
+    labels: {
+      status: "Status",
+      reason: "Reason",
+    },
     toast: {
       successTitle: "Success",
     },
@@ -335,6 +339,9 @@ export const en = {
       occupied: "Occupied",
       inUse: "In use",
       pending: "Pending Approval",
+      rejected: "Rejected",
+      rejectedNote: "Status: Rejected",
+      rejectedNoteWithReason: "Status: Rejected • Reason: {{reason}}",
       past: "Past",
       roomMaintenance: "Under maintenance",
       roomUnavailable: "Unavailable",
@@ -485,6 +492,14 @@ export const en = {
       },
     },
     checkin: {
+      status: {
+        confirmed: "Approved • Ready for check-in",
+        pending: "Pending approval",
+        inUse: "In use",
+        completed: "Checked in",
+        cancelled: "Cancelled",
+        rejected: "Rejected",
+      },
       hero: {
         title: "Check-in for your Session",
         subtitle:

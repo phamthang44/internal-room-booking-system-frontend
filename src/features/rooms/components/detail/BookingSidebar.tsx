@@ -64,15 +64,39 @@ const mapApiSlotToBookingSlot = (
   }
 
   const st = (s.status ?? "").toUpperCase();
+  const isRejected = st.includes("REJECT");
   if (s.isAvailable && st === "AVAILABLE") {
     return { id, label, status: "available", startTime: s.startTime, endTime: s.endTime };
+  }
+  if (s.isAvailable && isRejected) {
+    return {
+      id,
+      label,
+      status: "available",
+      startTime: s.startTime,
+      endTime: s.endTime,
+      note: s.isMine
+        ? {
+            kind: "rejected",
+            reason: s.rejectionReason,
+            bookingId: s.currentBookingId,
+          }
+        : undefined,
+    };
   }
   if (st.includes("IN_USE")) {
     return { id, label, status: "inUse", startTime: s.startTime, endTime: s.endTime };
   }
   const looksPendingApproval = st.includes("PENDING") || st.includes("AWAITING");
   if (looksPendingApproval) {
-    return { id, label, status: "pendingApproval", startTime: s.startTime, endTime: s.endTime };
+    // Only the creator should see "pending approval"; other viewers should see the slot as occupied.
+    return {
+      id,
+      label,
+      status: s.isMine ? "pendingApproval" : "occupied",
+      startTime: s.startTime,
+      endTime: s.endTime,
+    };
   }
   return { id, label, status: "occupied", startTime: s.startTime, endTime: s.endTime };
 };
@@ -193,23 +217,35 @@ const SlotRow = ({
           : "bg-surface-container-low border-transparent hover:border-tertiary-fixed-dim hover:shadow-[0_4px_16px_rgba(24,28,30,0.06)]"
       )}
     >
-      <div className="flex items-center gap-3">
+      <div className="min-w-0 flex items-start gap-3">
         <span
           className={cn(
-            "w-2.5 h-2.5 rounded-full shrink-0 transition-all",
+            "mt-1 w-2.5 h-2.5 rounded-full shrink-0 transition-all",
             isSelected
               ? "bg-primary shadow-[0_0_8px_rgba(0,32,69,0.5)]"
               : "bg-tertiary-fixed shadow-[0_0_8px_rgba(136,249,176,0.5)]"
           )}
         />
-        <span
-          className={cn(
-            "font-headline font-bold text-sm transition-colors",
-            isSelected ? "text-on-primary-fixed" : "text-on-surface"
-          )}
-        >
-          {slot.label}
-        </span>
+        <div className="min-w-0">
+          <span
+            className={cn(
+              "block font-headline font-bold text-sm transition-colors",
+              isSelected ? "text-on-primary-fixed" : "text-on-surface"
+            )}
+          >
+            {slot.label}
+          </span>
+          {slot.note?.kind === "rejected" ? (
+            <span
+              className="mt-0.5 block truncate text-[11px] font-semibold text-on-surface-variant"
+              title={slot.note.reason}
+            >
+              {`${t("common.labels.status")}: ${t("roomDetail.slots.rejected")}${
+                slot.note.reason ? ` • ${t("common.labels.reason")}: ${slot.note.reason}` : ""
+              }`}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {isSelected ? (

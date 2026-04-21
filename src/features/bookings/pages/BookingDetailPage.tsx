@@ -115,7 +115,16 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                         className="px-3 py-1 text-xs font-bold tracking-wider uppercase"
                       />
                     ) : (
-                      <span className="px-3 py-1 text-xs font-bold tracking-wider rounded-full bg-surface-container-high text-on-surface-variant uppercase">
+                      <span
+                        className={cn(
+                          "px-3 py-1 text-xs font-bold tracking-wider rounded-full uppercase",
+                          data.status === "inUse"
+                            ? "bg-primary-container text-on-primary-container"
+                            : data.status === "completed"
+                              ? "bg-tertiary-fixed/20 text-on-tertiary-container border border-tertiary-fixed/30"
+                            : "bg-surface-container-high text-on-surface-variant",
+                        )}
+                      >
                         {t(`bookings.status.${data.status}`)}
                       </span>
                     )}

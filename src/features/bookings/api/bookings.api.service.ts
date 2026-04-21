@@ -1,6 +1,7 @@
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
 import { useAuthStore } from "@features/auth";
+import { BOOKINGS_ENDPOINTS } from "../constants/bookings.endpoints";
 import type {
   ApiResult,
   BookingDetailResponse,
@@ -14,8 +15,6 @@ import type {
 import type { BookingActivityItem, BookingDetail, BookingHistoryItem, BookingStatus } from "@/data/mockData";
 import { deriveCheckInWindow } from "../utils/checkInTime";
 import { getBookingHistoryIcon, getBookingHistoryTone } from "../utils/formatBookingHistory";
-
-const BASE = import.meta.env.VITE_API_URL + "/bookings";
 
 const toTimeRange = (slots: { startTime?: string; endTime?: string }[]) => {
   const s = slots?.[0]?.startTime?.slice(0, 5) ?? "00:00";
@@ -54,8 +53,8 @@ const mapStatusApiToUi = (
   }
 };
 
-const canCancelFromStatus = (status?: string | null): boolean =>
-  status === "PENDING" || status === "APPROVED";
+// Business rule: once approved/confirmed, a booking should not be cancellable by the student.
+const canCancelFromStatus = (status?: string | null): boolean => status === "PENDING";
 
 const iconForStatus = (status: BookingStatus): string => {
   if (status === "pending") return "hourglass_top";
@@ -221,7 +220,7 @@ export const bookingsApiService = {
     params: BookingSearchParams = {}
   ): Promise<MyBookingsUiData> => {
     const { token } = useAuthStore.getState();
-    const response = await apiClient.get<ApiResult<BookingDetailResponse[]>>(BASE, {
+    const response = await apiClient.get<ApiResult<BookingDetailResponse[]>>(BOOKINGS_ENDPOINTS.BASE, {
       ...getAuthConfig(token ?? null),
       params,
     });
@@ -233,7 +232,7 @@ export const bookingsApiService = {
 
   getBookingDetail: async (id: string): Promise<BookingDetail> => {
     const { token } = useAuthStore.getState();
-    const response = await apiClient.get<ApiResult<BookingDetailResponse>>(`${BASE}/${id}`, {
+    const response = await apiClient.get<ApiResult<BookingDetailResponse>>(BOOKINGS_ENDPOINTS.DETAIL(id), {
       ...getAuthConfig(token ?? null),
     });
     const unwrapped = unwrapApiResult<BookingDetailResponse>(response.data);
@@ -244,7 +243,7 @@ export const bookingsApiService = {
   createBooking: async (payload: CreateBookingRequest): Promise<CreateBookingResponse> => {
     const { token } = useAuthStore.getState();
     const response = await apiClient.post<ApiResult<CreateBookingResponse>>(
-      `${BASE}/`,
+      BOOKINGS_ENDPOINTS.BASE,
       payload,
       { ...getAuthConfig(token ?? null) }
     );
@@ -259,7 +258,7 @@ export const bookingsApiService = {
       cancelTime: new Date().toISOString(),
     };
     const response = await apiClient.patch<ApiResult<unknown>>(
-      `${BASE}/cancel`,
+      BOOKINGS_ENDPOINTS.CANCEL,
       payload,
       { ...getAuthConfig(token ?? null) }
     );
@@ -273,7 +272,7 @@ export const bookingsApiService = {
       checkInTime: new Date().toISOString(),
     };
     const response = await apiClient.patch<ApiResult<unknown>>(
-      `${BASE}/checkin`,
+      BOOKINGS_ENDPOINTS.CHECK_IN,
       payload,
       { ...getAuthConfig(token ?? null) }
     );
@@ -287,7 +286,7 @@ export const bookingsApiService = {
       checkoutTime: new Date().toISOString(),
     };
     const response = await apiClient.patch<ApiResult<unknown>>(
-      `${BASE}/checkout`,
+      BOOKINGS_ENDPOINTS.CHECK_OUT,
       payload,
       { ...getAuthConfig(token ?? null) }
     );

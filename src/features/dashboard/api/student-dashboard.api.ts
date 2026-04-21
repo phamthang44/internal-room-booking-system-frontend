@@ -1,6 +1,7 @@
 import apiClient from "@core/api/client";
 import { getAuthConfig } from "@core/api/helpers";
 import { useAuthStore } from "@features/auth";
+import { DASHBOARD_ENDPOINTS } from "../constants/dashboard.endpoints";
 
 export interface DashboardMeta {
   apiVersion: string;
@@ -121,7 +122,7 @@ export const fetchStudentDashboard =
     if (USE_MOCK) return Promise.resolve(MOCK_RESPONSE);
     const { token } = useAuthStore.getState();
     const response = await apiClient.get<StudentDashboardResponse>(
-      "/students/dashboard",
+      DASHBOARD_ENDPOINTS.STUDENT_DASHBOARD,
       getAuthConfig(token),
     );
     return response.data;

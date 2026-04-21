@@ -20,6 +20,7 @@ function mapToChipStatus(status: BookingStatus) {
 
 function fallbackStyles(status: BookingStatus) {
   if (status === "rejected") return "bg-error-container text-on-error-container";
+  if (status === "inUse") return "bg-primary-container text-on-primary-container";
   if (status === "completed")
     return "bg-tertiary-fixed/10 text-on-tertiary-fixed-variant border border-tertiary-fixed/20";
   return "bg-surface-container-highest text-on-surface-variant";

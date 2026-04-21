@@ -93,15 +93,15 @@ export function NotificationsPopover() {
       <PopoverContent
         align="end"
         sideOffset={10}
-        className="w-[360px] p-0 overflow-hidden z-[80]"
+        className="w-[420px] p-0 overflow-hidden z-[80]"
       >
-        <div className="border-b border-outline-variant/20 px-4 py-3">
+        <div className="border-b border-outline-variant/20 px-5 py-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-headline text-sm font-extrabold text-on-surface truncate">
+              <p className="font-headline text-[15px] font-extrabold text-on-surface truncate">
                 {t("notifications.popover.title")}
               </p>
-              <p className="text-[11px] text-on-surface-variant">
+              <p className="text-xs text-on-surface-variant mt-0.5">
                 {unread.isLoading
                   ? t("notifications.popover.loadingCaption")
                   : unreadCount > 0
@@ -129,18 +129,18 @@ export function NotificationsPopover() {
           </div>
         </div>
 
-        <div className="max-h-[420px] overflow-y-auto">
+        <div className="max-h-[520px] overflow-y-auto">
           {list.isLoading ? (
-            <div className="p-4 space-y-3">
+            <div className="p-5 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-14 rounded-xl bg-surface-container-lowest/60 animate-pulse"
+                  className="h-16 rounded-xl bg-surface-container-lowest/60 animate-pulse"
                 />
               ))}
             </div>
           ) : rows.length === 0 ? (
-            <div className="p-6 text-center">
+            <div className="p-7 text-center">
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-container-low text-on-surface-variant">
                 <span className="material-symbols-outlined text-[22px]">notifications</span>
               </div>
@@ -152,7 +152,7 @@ export function NotificationsPopover() {
               </p>
             </div>
           ) : (
-            <div className="p-2">
+            <div className="p-3 space-y-2">
               {rows.map((n) => {
                 const id = n.id ?? 0;
                 // Backend sometimes omits `isRead` (undefined/null). We treat that as READ
@@ -191,7 +191,7 @@ export function NotificationsPopover() {
                         }
                       }}
                       className={cn(
-                        "w-full rounded-xl px-3 py-2 text-left transition-colors",
+                        "w-full rounded-xl px-4 py-3 text-left transition-colors",
                         "hover:bg-surface-container-high/40 disabled:opacity-60",
                       )}
                     >
@@ -224,7 +224,7 @@ export function NotificationsPopover() {
                             ) : null}
                             <p
                               className={cn(
-                                "min-w-0 truncate text-sm font-semibold",
+                                "min-w-0 truncate text-sm font-semibold leading-snug",
                                 isUnread ? "text-on-surface font-extrabold" : "text-on-surface",
                               )}
                             >
@@ -239,7 +239,7 @@ export function NotificationsPopover() {
                         </div>
                         <p
                           className={cn(
-                            "mt-0.5 line-clamp-2 text-xs",
+                            "mt-1 line-clamp-2 text-xs leading-relaxed",
                             isUnread ? "text-on-surface-variant" : "text-on-surface-variant",
                           )}
                         >
@@ -289,7 +289,7 @@ export function NotificationsPopover() {
         </div>
 
         {rows.length > 0 ? (
-          <div className="border-t border-outline-variant/20 px-4 py-3 flex items-center justify-between gap-2">
+          <div className="border-t border-outline-variant/20 px-5 py-4 flex items-center justify-between gap-2">
             <button
               type="button"
               disabled={busy}
@@ -307,7 +307,7 @@ export function NotificationsPopover() {
         ) : null}
 
         {list.isError ? (
-          <div className="border-t border-outline-variant/20 px-4 py-3 text-xs text-error">
+          <div className="border-t border-outline-variant/20 px-5 py-4 text-xs text-error">
             {t("notifications.popover.loadFailed")}
           </div>
         ) : null}

@@ -51,6 +51,10 @@ export const vi = {
   },
   common: {
     appName: "Scholarly Sanctuary",
+    labels: {
+      status: "Trạng thái",
+      reason: "Lý do",
+    },
     toast: {
       successTitle: "Thành công",
     },
@@ -332,9 +336,12 @@ export const vi = {
     },
     slots: {
       available: "Còn trống",
-      occupied: "Đã đặt",
+      occupied: "Bị chiếm",
       inUse: "Đang sử dụng",
       pending: "Chờ phê duyệt",
+      rejected: "Bị từ chối",
+      rejectedNote: "Trạng thái: Bị từ chối",
+      rejectedNoteWithReason: "Trạng thái: Bị từ chối • Lý do: {{reason}}",
       past: "Đã qua",
       roomMaintenance: "Bảo trì",
       roomUnavailable: "Không khả dụng",
@@ -486,6 +493,14 @@ export const vi = {
       },
     },
     checkin: {
+      status: {
+        confirmed: "Đã duyệt • Sẵn sàng điểm danh",
+        pending: "Chờ phê duyệt",
+        inUse: "Đang sử dụng",
+        completed: "Đã điểm danh",
+        cancelled: "Đã hủy",
+        rejected: "Bị từ chối",
+      },
       hero: {
         title: "Điểm danh cho buổi đặt phòng",
         subtitle:

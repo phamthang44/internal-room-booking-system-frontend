@@ -1,6 +1,7 @@
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
 import { useAuthStore } from "@features/auth";
+import { ROOMS_ENDPOINTS } from "@features/rooms/constants/rooms.endpoints";
 import type {
   ApiResultClassroomList,
   ClassroomListResponse,
@@ -8,8 +9,6 @@ import type {
   RoomSearchParams,
   RoomStatusApi,
 } from "@features/rooms/types/classroom.api.types";
-
-const listUrl = () => `${import.meta.env.VITE_API_URL}/rooms`;
 
 export interface AdminRoomListRow {
   classroomId: number;
@@ -53,7 +52,7 @@ export async function fetchAdminRoomsListPage(
     Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
   ) as Record<string, string | number>;
 
-  const response = await apiClient.get<ApiResultClassroomList>(listUrl(), {
+  const response = await apiClient.get<ApiResultClassroomList>(ROOMS_ENDPOINTS.LIST, {
     params: cleanParams,
     ...getAuthConfig(token ?? null),
   });

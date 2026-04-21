@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@shared/utils/cn";
+import { useI18n } from "@shared/i18n/useI18n";
 import type { BookingStatus } from "@/data/mockData";
 import type { CheckInWindow } from "../../utils/checkInTime";
 import { formatCountdownMMSS } from "../../utils/checkInTime";
@@ -22,13 +23,7 @@ export interface CheckInBookingCardProps {
 }
 
 const statusChipLabel = (status: BookingStatus): string => {
-  if (status === "confirmed") return "APPROVED - READY FOR CHECK-IN";
-  if (status === "pending") return "PENDING";
-  if (status === "inUse") return "IN USE";
-  if (status === "completed") return "CHECKED IN";
-  if (status === "cancelled") return "CANCELLED";
-  if (status === "rejected") return "REJECTED";
-  return "STATUS";
+  return status;
 };
 
 export function CheckInBookingCard({
@@ -47,6 +42,7 @@ export function CheckInBookingCard({
   policyTone = "neutral",
   className,
 }: Readonly<CheckInBookingCardProps>) {
+  const { t } = useI18n();
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -68,6 +64,9 @@ export function CheckInBookingCard({
     }
     if (status === "cancelled" || status === "rejected") {
       return "bg-error-container text-on-error-container";
+    }
+    if (status === "inUse") {
+      return "bg-primary-container text-on-primary-container";
     }
     return "bg-surface-container-high text-on-surface-variant";
   }, [status]);
@@ -108,7 +107,19 @@ export function CheckInBookingCard({
             <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: '"FILL" 1' }}>
               check_circle
             </span>
-            {statusChipLabel(status)}
+            {status === "confirmed"
+              ? t("bookings.checkin.status.confirmed")
+              : status === "pending"
+                ? t("bookings.checkin.status.pending")
+                : status === "inUse"
+                  ? t("bookings.checkin.status.inUse")
+                  : status === "completed"
+                    ? t("bookings.checkin.status.completed")
+                    : status === "cancelled"
+                      ? t("bookings.checkin.status.cancelled")
+                      : status === "rejected"
+                        ? t("bookings.checkin.status.rejected")
+                        : statusChipLabel(status)}
           </span>
 
           <h2 className="text-3xl font-bold text-primary mb-2">{roomTitle}</h2>
@@ -132,10 +143,10 @@ export function CheckInBookingCard({
         <button
           type="button"
           onClick={() => void onPrimaryAction()}
-          disabled={Boolean(isPrimaryActionLoading)}
+          disabled={Boolean(isPrimaryActionLoading) || status !== "confirmed"}
           className={cn(
             "flex items-center justify-center gap-3 py-4 px-6 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-all shadow-lg shadow-primary/20",
-            isPrimaryActionLoading ? "opacity-80 cursor-not-allowed" : "",
+            isPrimaryActionLoading || status !== "confirmed" ? "opacity-80 cursor-not-allowed" : "",
           )}
         >
           <span className="material-symbols-outlined">

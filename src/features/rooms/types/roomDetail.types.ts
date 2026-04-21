@@ -15,6 +15,12 @@ export interface RoomSlotDto {
   endTime: string;
   status: RoomSlotStatusApi;
   isAvailable: boolean;
+  /** Last/active booking id associated with this slot (if any). */
+  currentBookingId?: number;
+  /** Reason when the latest request was rejected (viewer-scoped, if provided by API). */
+  rejectionReason?: string;
+  /** Whether the slot's booking (if any) belongs to the current viewer. */
+  isMine?: boolean;
 }
 
 export interface DayAvailabilityDto {
@@ -102,6 +108,15 @@ export interface BookingSlot {
   endTime?: string;
   /** Additional UI-only disabled reasons for otherwise-available slots. */
   disabledReason?: "past";
+  /**
+   * Additional UI hint for "available" slots that still have context
+   * (e.g., the viewer's prior request was rejected).
+   */
+  note?: {
+    kind: "rejected";
+    reason?: string;
+    bookingId?: number;
+  };
 }
 
 export interface DateOption {

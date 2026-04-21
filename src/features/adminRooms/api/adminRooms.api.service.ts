@@ -1,4 +1,5 @@
 import { apiClient } from "@core/api";
+import { ADMIN_ROOMS_ENDPOINTS } from "../constants/adminRooms.endpoints";
 import type {
   AdminDetailClassroomResponse,
   ApiResult,
@@ -7,10 +8,6 @@ import type {
   UpdateClassroomStatusRequest,
 } from "../types/adminRooms.api.types";
 import type { AdminRoomsService } from "./adminRooms.service.types";
-
-// NOTE: VITE_API_URL is configured as ".../api/v1" (no trailing slash).
-// Axios concatenates baseURL + url; this must start with "/" to avoid ".../api/v1admin/...".
-const BASE = "/admin/rooms";
 
 const assertApiSuccess = (body: unknown): void => {
   if (!body || typeof body !== "object" || !("success" in body)) return;
@@ -47,26 +44,26 @@ const unwrapCreateResult = (body: unknown): number | undefined => {
 export const adminRoomsApiService: AdminRoomsService = {
   getDetail: async (id: number) => {
     const res = await apiClient.get<ApiResult<AdminDetailClassroomResponse>>(
-      `${BASE}/${id}`,
+      ADMIN_ROOMS_ENDPOINTS.DETAIL(id),
     );
     assertApiSuccess(res.data);
     return unwrapApiResult<AdminDetailClassroomResponse>(res.data);
   },
 
   create: async (payload: CreateClassroomRequest) => {
-    const res = await apiClient.post<ApiResult<unknown>>(`${BASE}/`, payload);
+    const res = await apiClient.post<ApiResult<unknown>>(ADMIN_ROOMS_ENDPOINTS.CREATE, payload);
     assertApiSuccess(res.data);
     return unwrapCreateResult(res.data);
   },
 
   update: async (payload: UpdateClassroomRequest) => {
-    const res = await apiClient.put<ApiResult<unknown>>(`${BASE}`, payload);
+    const res = await apiClient.put<ApiResult<unknown>>(ADMIN_ROOMS_ENDPOINTS.UPDATE, payload);
     assertApiSuccess(res.data);
   },
 
   updateStatus: async (payload: UpdateClassroomStatusRequest) => {
     const res = await apiClient.patch<ApiResult<unknown>>(
-      `${BASE}/status`,
+      ADMIN_ROOMS_ENDPOINTS.UPDATE_STATUS,
       payload,
     );
     assertApiSuccess(res.data);
