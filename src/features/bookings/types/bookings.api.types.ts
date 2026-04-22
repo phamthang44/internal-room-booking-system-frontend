@@ -101,6 +101,7 @@ export interface CreateBookingResponse {
 
 export interface CancelBookingRequest {
   bookingId: number;
+  cancelReason: string;
   cancelTime: string; // Instant ISO-8601
 }
 

@@ -251,10 +251,11 @@ export const bookingsApiService = {
     return unwrapped.data ?? {};
   },
 
-  cancelBooking: async (bookingId: number): Promise<string | null> => {
+  cancelBooking: async (bookingId: number, cancelReason: string): Promise<string | null> => {
     const { token } = useAuthStore.getState();
     const payload: CancelBookingRequest = {
       bookingId,
+      cancelReason,
       cancelTime: new Date().toISOString(),
     };
     const response = await apiClient.patch<ApiResult<unknown>>(

@@ -27,6 +27,8 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
   const checkout = useBookingCheckout(bookingId ?? "");
   const [cancelSuccessMessage, setCancelSuccessMessage] = useState<string | null>(null);
   const [cancelErrorMessage, setCancelErrorMessage] = useState<string | null>(null);
+  const [cancelPanelOpen, setCancelPanelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
 
   const cancelMutation = useMutation({
     mutationFn: async () => {
@@ -34,7 +36,11 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
       if (!Number.isFinite(id)) {
         throw new Error("Invalid booking id");
       }
-      return await bookingsApiService.cancelBooking(id);
+      const reason = cancelReason.trim();
+      if (!reason) {
+        throw new Error(t("bookings.detail.actions.cancelReasonRequired"));
+      }
+      return await bookingsApiService.cancelBooking(id, reason);
     },
     onMutate: () => {
       setCancelSuccessMessage(null);
@@ -44,6 +50,8 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
       const msg = message ?? t("bookings.detail.actions.cancelSuccessFallback");
       setCancelSuccessMessage(msg);
       presentAppSuccess(msg);
+      setCancelPanelOpen(false);
+      setCancelReason("");
       await queryClient.invalidateQueries({ queryKey: ["bookings"] });
       await refetch();
     },
@@ -328,9 +336,10 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                       type="button"
                       disabled={!data.canCancel || cancelMutation.isPending}
                       onClick={() => {
-                        // Extra guard: prevent accidental double submit
-                        if (cancelMutation.isPending) return;
-                        void cancelMutation.mutateAsync();
+                        if (!data.canCancel || cancelMutation.isPending) return;
+                        setCancelSuccessMessage(null);
+                        setCancelErrorMessage(null);
+                        setCancelPanelOpen((v) => !v);
                       }}
                       className={cn(
                         "w-full h-12 font-bold rounded-xl transition-all flex items-center justify-center gap-2",
@@ -344,11 +353,59 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                       </span>
                       {cancelMutation.isPending
                         ? t("bookings.detail.actions.cancelling")
-                        : t("bookings.detail.actions.cancelBooking")}
+                        : cancelPanelOpen
+                          ? t("bookings.detail.actions.cancelBookingClose")
+                          : t("bookings.detail.actions.cancelBooking")}
                     </button>
                     <p className="text-[10px] text-on-surface-variant text-center mt-2 px-4 leading-normal">
                       {t("bookings.detail.actions.cancelHint")}
                     </p>
+
+                    {cancelPanelOpen ? (
+                      <div className="mt-3 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-4">
+                        <label className="block text-xs font-bold text-on-surface mb-2">
+                          {t("bookings.detail.actions.cancelReasonLabel")}
+                        </label>
+                        <textarea
+                          value={cancelReason}
+                          onChange={(e) => setCancelReason(e.target.value)}
+                          rows={3}
+                          placeholder={t("bookings.detail.actions.cancelReasonPlaceholder")}
+                          className="w-full resize-none rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/70 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                        />
+                        <div className="mt-3 flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (cancelMutation.isPending) return;
+                              setCancelPanelOpen(false);
+                              setCancelReason("");
+                              setCancelErrorMessage(null);
+                            }}
+                            className="flex-1 h-11 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface font-bold hover:bg-surface-container transition-colors disabled:opacity-60"
+                            disabled={cancelMutation.isPending}
+                          >
+                            {t("bookings.detail.actions.cancelReasonBack")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (cancelMutation.isPending) return;
+                              void cancelMutation.mutateAsync();
+                            }}
+                            className="flex-1 h-11 rounded-xl bg-error text-on-error font-bold hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                            disabled={cancelMutation.isPending || cancelReason.trim().length === 0}
+                          >
+                            {cancelMutation.isPending
+                              ? t("bookings.detail.actions.cancelling")
+                              : t("bookings.detail.actions.cancelReasonConfirm")}
+                          </button>
+                        </div>
+                        <p className="mt-2 text-[10px] text-on-surface-variant leading-normal">
+                          {t("bookings.detail.actions.cancelReasonNote")}
+                        </p>
+                      </div>
+                    ) : null}
 
                     {cancelSuccessMessage ? (
                       <div className="mt-3 rounded-xl border border-tertiary-fixed/30 bg-tertiary-fixed/15 px-4 py-3 text-xs text-on-surface">
