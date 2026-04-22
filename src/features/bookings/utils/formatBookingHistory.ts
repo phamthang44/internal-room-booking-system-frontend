@@ -21,6 +21,8 @@ const EVENT_TITLE_KEY_BY_PAIR: Record<string, string> = {
   "REJECT_BOOKING|REJECTED":
     "bookings.detail.history.events.rejectBooking_rejected",
   "REJECT|REJECTED": "bookings.detail.history.events.reject_rejected",
+  "SYSTEM_REJECT|REJECTED":
+    "bookings.detail.history.events.systemReject_rejected",
 };
 
 export type BookingHistoryTone = "primary" | "neutral" | "danger";

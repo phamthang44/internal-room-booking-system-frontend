@@ -495,6 +495,7 @@ export const en = {
           cancel_cancelled: "Booking cancelled",
           rejectBooking_rejected: "Booking rejected",
           reject_rejected: "Request rejected",
+          systemReject_rejected: "Rejected by the system",
         },
       },
     },

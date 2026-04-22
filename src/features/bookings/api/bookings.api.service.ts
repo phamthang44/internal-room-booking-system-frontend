@@ -165,7 +165,15 @@ const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
 
   const primaryLocation = [raw.roomName, raw.buildingName].filter(Boolean).join(" - ");
   const secondaryLocation = raw.buildingAddress ?? undefined;
-  let performedBy = localStorage.getItem("language") === "vi" ? "Bởi: " : "By: ";
+  const isVi = localStorage.getItem("language") === "vi";
+  const performedByPrefix = isVi ? "Bởi: " : "By: ";
+  const systemLabel = isVi ? "Hệ thống" : "System";
+  const presentPerformer = (value?: string | null): string | null => {
+    const v = (value ?? "").trim();
+    if (!v) return null;
+    if (v.toUpperCase() === "SYSTEM") return systemLabel;
+    return v;
+  };
   return {
     id: bookingId,
     bookingCode,
@@ -202,12 +210,16 @@ const adaptBookingDetail = (raw: BookingDetailResponse): BookingDetail => {
     timeline: (raw.bookingHistorySummaryResponses ?? raw.bookingHistorySummary ?? []).map((h, idx) => {
       const action = h.action ?? undefined;
       const statusAfter = h.statusAfter ?? undefined;
+      const performer = presentPerformer(h.performedBy);
       return {
         id: String(h.timestamp ?? idx),
         action,
         statusAfter,
         atLabel: formatInstantLabel(h.timestamp),
-        note: [h.performedBy ? `${performedBy} ${h.performedBy}` : "", h.note ?? ""].filter(Boolean).join(" — ") || undefined,
+        note:
+          [performer ? `${performedByPrefix} ${performer}` : "", h.note ?? ""]
+            .filter(Boolean)
+            .join(" — ") || undefined,
         icon: getBookingHistoryIcon(action, statusAfter),
         tone: getBookingHistoryTone(action, statusAfter),
       };

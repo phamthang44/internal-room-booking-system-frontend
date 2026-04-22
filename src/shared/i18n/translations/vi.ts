@@ -496,6 +496,7 @@ export const vi = {
           cancel_cancelled: "Đặt phòng đã hủy",
           rejectBooking_rejected: "Đặt phòng bị từ chối",
           reject_rejected: "Yêu cầu bị từ chối",
+          systemReject_rejected: "Hệ thống từ chối",
         },
       },
     },
