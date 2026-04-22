@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@shared/components/AppLayout";
-import { StatusChip } from "@shared/components/StatusChip";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import { normalizeApiError } from "@shared/errors/normalizeApiError";
@@ -12,6 +11,16 @@ import { BookingTimeline } from "../components/BookingTimeline";
 import { bookingsApiService } from "../api/bookings.api.service";
 import { useBookingCheckout } from "../hooks/useBookingCheckout";
 import { isBookingDateToday } from "@shared/utils/date";
+
+// Sub-components
+import { BookingSummaryCard } from "../components/detail/BookingSummaryCard";
+import { BookingActionButtons } from "../components/detail/BookingActionButtons";
+import { BookingPurposeSection } from "../components/detail/BookingPurposeSection";
+import { BookingAttendeesSection } from "../components/detail/BookingAttendeesSection";
+import { BookingLocationMap } from "../components/detail/BookingLocationMap";
+import { BookingSidebarActions } from "../components/detail/BookingSidebarActions";
+import { BookingCancelPanel } from "../components/detail/BookingCancelPanel";
+import { BookingProTip } from "../components/detail/BookingProTip";
 
 export interface BookingDetailPageProps {
   readonly className?: string;
@@ -76,6 +85,13 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
     return isBookingDateToday(raw);
   }, [data]);
 
+  const handleCancelToggle = () => {
+    if (!data?.canCancel || cancelMutation.isPending) return;
+    setCancelSuccessMessage(null);
+    setCancelErrorMessage(null);
+    setCancelPanelOpen((v) => !v);
+  };
+
   return (
     <AppLayout>
       <div className={cn("mx-auto max-w-5xl px-4 py-6 sm:px-6 md:py-8 lg:px-8", className)}>
@@ -113,170 +129,30 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Left column */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Title & Status Card */}
-              <section className="bg-surface-container-lowest p-5 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-start justify-between">
-                    {chipStatus ? (
-                      <StatusChip
-                        status={chipStatus}
-                        className="px-3 py-1 text-xs font-bold tracking-wider uppercase"
-                      />
-                    ) : (
-                      <span
-                        className={cn(
-                          "px-3 py-1 text-xs font-bold tracking-wider rounded-full uppercase",
-                          data.status === "inUse"
-                            ? "bg-primary-container text-on-primary-container"
-                            : data.status === "completed"
-                              ? "bg-tertiary-fixed/20 text-on-tertiary-container border border-tertiary-fixed/30"
-                            : "bg-surface-container-high text-on-surface-variant",
-                        )}
-                      >
-                        {t(`bookings.status.${data.status}`)}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-extrabold text-on-surface tracking-tight leading-tight font-headline">
-                      {data.title}
-                    </h2>
-                    <p className="text-xs text-on-surface-variant font-medium mt-1">
-                      {data.bookingCode}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-surface-container-low rounded-xl text-primary">
-                      <span className="material-symbols-outlined">location_on</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                        {t("bookings.detail.labels.location")}
-                      </p>
-                      <p className="text-base font-medium text-on-surface">
-                        {data.location.primary}
-                      </p>
-                      {data.location.secondary ? (
-                        <p className="text-sm text-on-surface-variant">
-                          {data.location.secondary}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-surface-container-low rounded-xl text-primary">
-                      <span className="material-symbols-outlined">calendar_today</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                        {t("bookings.detail.labels.dateTime")}
-                      </p>
-                      <p className="text-base font-medium text-on-surface">
-                        {data.schedule.dateLabel}
-                      </p>
-                      <p className="text-sm text-on-surface-variant">
-                        {data.schedule.timeLabel}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {data.status === "confirmed" ? (
-                  <div className="mt-6">
-                    <button
-                      type="button"
-                      disabled={!bookingIsToday}
-                      title={
-                        !bookingIsToday ? t("bookings.detail.sameDayOnlyHint") : undefined
-                      }
-                      onClick={() => {
-                        if (!bookingIsToday) return;
-                        navigate(`/bookings/${data.id}/checkin`);
-                      }}
-                      className={cn(
-                        "w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all",
-                        bookingIsToday
-                          ? "bg-primary text-on-primary hover:opacity-90 active:scale-95"
-                          : "cursor-not-allowed bg-surface-container-high text-on-surface-variant opacity-90",
-                      )}
-                    >
-                      <span className="material-symbols-outlined text-[18px]">location_on</span>
-                      {t("bookings.checkin.actions.primary")}
-                    </button>
-                    {!bookingIsToday ? (
-                      <p className="mt-2 text-center text-xs text-on-surface-variant">
-                        {t("bookings.detail.sameDayOnlyHint")}
-                      </p>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                {data.status === "inUse" ? (
-                  <div className="mt-3">
-                    <button
-                      type="button"
-                      disabled={checkout.isPending || !bookingIsToday}
-                      title={
-                        !bookingIsToday ? t("bookings.detail.sameDayOnlyHint") : undefined
-                      }
-                      onClick={() => {
-                        if (!bookingIsToday) return;
-                        void checkout.checkout();
-                      }}
-                      className={cn(
-                        "w-full inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container",
-                        checkout.isPending || !bookingIsToday
-                          ? "opacity-70 cursor-not-allowed"
-                          : "",
-                      )}
-                    >
-                      <span className="material-symbols-outlined text-[18px]">
-                        {checkout.isPending ? "progress_activity" : "logout"}
-                      </span>
-                      {t("bookings.checkout.actions.primary")}
-                    </button>
-                    {!bookingIsToday ? (
-                      <p className="mt-2 text-center text-xs text-on-surface-variant">
-                        {t("bookings.detail.sameDayOnlyHint")}
-                      </p>
-                    ) : null}
-                    {checkout.errorMessage ? (
-                      <div className="mt-3 rounded-xl border border-error-container bg-error-container/20 px-4 py-3 text-xs text-error">
-                        {checkout.errorMessage}
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-              </section>
+              {/* Summary Card */}
+              <BookingSummaryCard
+                status={data.status}
+                chipStatus={chipStatus}
+                title={data.title}
+                bookingCode={data.bookingCode}
+                location={data.location}
+                schedule={data.schedule}
+              >
+                <BookingActionButtons
+                  status={data.status}
+                  isToday={bookingIsToday}
+                  isCheckingOut={checkout.isPending}
+                  checkoutError={checkout.errorMessage}
+                  onCheckIn={() => navigate(`/bookings/${data.id}/checkin`)}
+                  onCheckOut={() => void checkout.checkout()}
+                />
+              </BookingSummaryCard>
 
               {/* Booking Purpose */}
-              <section className="bg-surface-container-lowest p-5 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
-                <h3 className="text-lg font-bold mb-4 text-on-surface font-headline">
-                  {t("bookings.detail.sections.purpose")}
-                </h3>
-                <p className="text-on-surface-variant leading-relaxed">
-                  {data.purpose}
-                </p>
-              </section>
+              <BookingPurposeSection purpose={data.purpose} />
 
-              {/* Attendees (simple count only) */}
-              <section className="bg-surface-container-lowest p-5 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-bold text-on-surface font-headline">
-                    {t("bookings.detail.sections.attendees")}
-                  </h3>
-                  <span className="text-sm font-medium text-primary bg-primary-fixed px-2 py-1 rounded">
-                    {t("bookings.detail.attendeesCount", { count: data.attendeesCount })}
-                  </span>
-                </div>
-                <p className="text-sm text-on-surface-variant">
-                  {t("bookings.detail.attendeesHidden")}
-                </p>
-              </section>
+              {/* Attendees */}
+              <BookingAttendeesSection attendeesCount={data.attendeesCount} />
 
               {/* Timeline */}
               <BookingTimeline title={t("bookings.detail.sections.history")} events={data.timeline} />
@@ -285,154 +161,45 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
             {/* Right column */}
             <div className="space-y-8">
               {/* Map / Location Visual */}
-              <section className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
-                <div className="h-48 w-full bg-surface-container-high">
-                  <img
-                    alt={t("bookings.detail.map.alt")}
-                    className="w-full h-full object-cover"
-                    src={data.map.imageUrl}
-                  />
-                </div>
-                <div className="p-6">
-                  <h4 className="text-sm font-bold text-on-surface mb-1 font-headline">
-                    {data.map.title}
-                  </h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">
-                    {data.map.description}
-                  </p>
-                  <button
-                    type="button"
-                    className="mt-4 w-full py-2 px-4 bg-surface-container-low hover:bg-surface-container-high text-primary text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
-                  >
-                    <span className="material-symbols-outlined text-sm">directions</span>
-                    {t("bookings.detail.map.viewFloorMap")}
-                  </button>
-                </div>
-              </section>
+              <BookingLocationMap map={data.map} />
 
               {/* Actions */}
-              <section className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
-                <h3 className="text-sm font-bold text-on-surface mb-4 uppercase tracking-widest font-headline">
-                  {t("bookings.detail.sections.actions")}
-                </h3>
-                <div className="space-y-3">
-                  <button
-                    type="button"
-                    className="w-full h-12 bg-primary hover:bg-primary-container text-on-primary font-bold rounded-xl transition-all flex items-center justify-center gap-2"
-                  >
-                    <span className="material-symbols-outlined">event</span>
-                    {t("bookings.detail.actions.addToCalendar")}
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full h-12 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant font-bold rounded-xl transition-all flex items-center justify-center gap-2"
-                  >
-                    <span className="material-symbols-outlined">support_agent</span>
-                    {t("bookings.detail.actions.contactSupport")}
-                  </button>
+              <BookingSidebarActions
+                canCancel={data.canCancel}
+                isCancelling={cancelMutation.isPending}
+                isPanelOpen={cancelPanelOpen}
+                onTogglePanel={handleCancelToggle}
+              >
+                <BookingCancelPanel
+                  isOpen={cancelPanelOpen}
+                  isPending={cancelMutation.isPending}
+                  reason={cancelReason}
+                  onReasonChange={setCancelReason}
+                  onOpenChange={setCancelPanelOpen}
+                  onConfirm={() => void cancelMutation.mutateAsync()}
+                  onCancel={() => {
+                    setCancelPanelOpen(false);
+                    setCancelReason("");
+                    setCancelErrorMessage(null);
+                  }}
+                />
 
-                  <div className="pt-4 mt-4 border-t border-outline-variant/10">
-                    <button
-                      type="button"
-                      disabled={!data.canCancel || cancelMutation.isPending}
-                      onClick={() => {
-                        if (!data.canCancel || cancelMutation.isPending) return;
-                        setCancelSuccessMessage(null);
-                        setCancelErrorMessage(null);
-                        setCancelPanelOpen((v) => !v);
-                      }}
-                      className={cn(
-                        "w-full h-12 font-bold rounded-xl transition-all flex items-center justify-center gap-2",
-                        data.canCancel && !cancelMutation.isPending
-                          ? "text-error hover:bg-error-container/10"
-                          : "text-on-surface-variant/50 cursor-not-allowed"
-                      )}
-                    >
-                      <span className="material-symbols-outlined">
-                        {cancelMutation.isPending ? "progress_activity" : "cancel"}
-                      </span>
-                      {cancelMutation.isPending
-                        ? t("bookings.detail.actions.cancelling")
-                        : cancelPanelOpen
-                          ? t("bookings.detail.actions.cancelBookingClose")
-                          : t("bookings.detail.actions.cancelBooking")}
-                    </button>
-                    <p className="text-[10px] text-on-surface-variant text-center mt-2 px-4 leading-normal">
-                      {t("bookings.detail.actions.cancelHint")}
-                    </p>
-
-                    {cancelPanelOpen ? (
-                      <div className="mt-3 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-4">
-                        <label className="block text-xs font-bold text-on-surface mb-2">
-                          {t("bookings.detail.actions.cancelReasonLabel")}
-                        </label>
-                        <textarea
-                          value={cancelReason}
-                          onChange={(e) => setCancelReason(e.target.value)}
-                          rows={3}
-                          placeholder={t("bookings.detail.actions.cancelReasonPlaceholder")}
-                          className="w-full resize-none rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/70 focus:outline-none focus:ring-2 focus:ring-primary/40"
-                        />
-                        <div className="mt-3 flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (cancelMutation.isPending) return;
-                              setCancelPanelOpen(false);
-                              setCancelReason("");
-                              setCancelErrorMessage(null);
-                            }}
-                            className="flex-1 h-11 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface font-bold hover:bg-surface-container transition-colors disabled:opacity-60"
-                            disabled={cancelMutation.isPending}
-                          >
-                            {t("bookings.detail.actions.cancelReasonBack")}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (cancelMutation.isPending) return;
-                              void cancelMutation.mutateAsync();
-                            }}
-                            className="flex-1 h-11 rounded-xl bg-error text-on-error font-bold hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                            disabled={cancelMutation.isPending || cancelReason.trim().length === 0}
-                          >
-                            {cancelMutation.isPending
-                              ? t("bookings.detail.actions.cancelling")
-                              : t("bookings.detail.actions.cancelReasonConfirm")}
-                          </button>
-                        </div>
-                        <p className="mt-2 text-[10px] text-on-surface-variant leading-normal">
-                          {t("bookings.detail.actions.cancelReasonNote")}
-                        </p>
-                      </div>
-                    ) : null}
-
-                    {cancelSuccessMessage ? (
-                      <div className="mt-3 rounded-xl border border-tertiary-fixed/30 bg-tertiary-fixed/15 px-4 py-3 text-xs text-on-surface">
-                        {cancelSuccessMessage}
-                      </div>
-                    ) : null}
-                    {cancelErrorMessage ? (
-                      <div className="mt-3 rounded-xl border border-error-container bg-error-container/20 px-4 py-3 text-xs text-error">
-                        {cancelErrorMessage}
-                      </div>
-                    ) : null}
+                {cancelSuccessMessage && (
+                  <div className="mt-3 rounded-xl border border-tertiary-fixed/30 bg-tertiary-fixed/15 px-4 py-3 text-xs text-on-surface">
+                    {cancelSuccessMessage}
                   </div>
-                </div>
-              </section>
+                )}
+                {cancelErrorMessage && (
+                  <div className="mt-3 rounded-xl border border-error-container bg-error-container/20 px-4 py-3 text-xs text-error">
+                    {cancelErrorMessage}
+                  </div>
+                )}
+              </BookingSidebarActions>
 
               {/* Pro-tip */}
-              {data.proTip ? (
-                <section className="bg-primary-container p-6 rounded-2xl text-on-primary-container">
-                  <h3 className="text-sm font-bold mb-2 flex items-center gap-2 font-headline">
-                    <span className="material-symbols-outlined text-lg">info</span>
-                    {data.proTip.title}
-                  </h3>
-                  <p className="text-xs leading-relaxed opacity-90">
-                    {data.proTip.message}
-                  </p>
-                </section>
-              ) : null}
+              {data.proTip && (
+                <BookingProTip title={data.proTip.title} message={data.proTip.message} />
+              )}
 
               <button
                 type="button"
@@ -449,4 +216,5 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
     </AppLayout>
   );
 }
+
 
