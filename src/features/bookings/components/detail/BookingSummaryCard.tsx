@@ -1,7 +1,7 @@
 import { StatusChip } from "@shared/components/StatusChip";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface BookingSummaryCardProps {
   readonly status: string;

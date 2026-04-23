@@ -898,6 +898,13 @@ export const vi = {
       pending: "Đang chờ",
       approved: "Đã duyệt",
       rejected: "Từ chối",
+      history: "Lịch sử",
+    },
+    pagination: {
+      showing: "Hiển thị",
+      results: "kết quả",
+      of: "trên",
+      perPage: "Mỗi trang:",
     },
     filters: {
       bookingIdPlaceholder: "Mã đặt phòng (VD: 41)",
@@ -948,6 +955,9 @@ export const vi = {
       pending: "Đang chờ",
       approved: "Đã duyệt",
       rejected: "Từ chối",
+      cancelled: "Đã hủy",
+      checkedIn: "Đã điểm danh",
+      completed: "Hoàn tất",
     },
   },
   adminBookings: {

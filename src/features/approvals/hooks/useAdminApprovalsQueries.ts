@@ -6,6 +6,7 @@ import {
   type BookingApprovalRequest,
 } from "@features/adminBookings";
 import { presentAppSuccess } from "@shared/errors/presentAppSuccess";
+import type { ApprovalTabKey } from "@/hooks/useApprovalsUi";
 
 export const adminApprovalsQueryKeys = {
   all: ["admin", "bookings"] as const,
@@ -14,7 +15,7 @@ export const adminApprovalsQueryKeys = {
 };
 
 export interface UseAdminApprovalsListQueryParams {
-  status: NonNullable<AdminBookingSearchParams["status"]>;
+  status?: AdminBookingSearchParams["status"];
   page: number;
   size: number;
   sort?: AdminBookingSearchParams["sort"];
@@ -57,10 +58,16 @@ export function useAdminApprovalsListQuery(params: UseAdminApprovalsListQueryPar
       const counts = data?.meta && typeof data.meta === "object"
         ? (data.meta as unknown as { counts?: Record<string, number> }).counts
         : undefined;
+      const processedCounts = (counts || {}) as Record<string, number>;
+      const historyCount = data.meta?.totalElements;
+
       return {
         rows: data.rows,
         meta: data.meta,
-        counts: counts as Partial<Record<"PENDING" | "APPROVED" | "REJECTED", number>> | undefined,
+        counts: {
+          ...processedCounts,
+          HISTORY: historyCount,
+        } as Partial<Record<ApprovalTabKey, number>>,
       };
     },
   });

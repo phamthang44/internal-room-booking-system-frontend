@@ -1,9 +1,7 @@
-import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 
 interface BookingCancelPanelProps {
   readonly isOpen: boolean;
-  readonly onOpenChange: (open: boolean) => void;
   readonly reason: string;
   readonly onReasonChange: (reason: string) => void;
   readonly isPending: boolean;
@@ -13,7 +11,6 @@ interface BookingCancelPanelProps {
 
 export function BookingCancelPanel({
   isOpen,
-  onOpenChange,
   reason,
   onReasonChange,
   isPending,

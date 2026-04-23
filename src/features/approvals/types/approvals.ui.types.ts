@@ -28,7 +28,10 @@ export interface ApprovalsStatusCellUI {
     | "approvals.status.approved"
     | "approvals.status.rejected"
     | "approvals.status.available"
-    | "approvals.status.conflictAlert";
+    | "approvals.status.conflictAlert"
+    | "approvals.status.cancelled"
+    | "approvals.status.checkedIn"
+    | "approvals.status.completed";
   readonly badgeTone: "pending" | "approved" | "rejected" | "available" | "conflict" | "neutral";
   readonly hint?: string;
 }

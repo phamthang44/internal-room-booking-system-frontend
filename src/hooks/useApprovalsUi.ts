@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
-export type ApprovalTabKey = "PENDING" | "APPROVED" | "REJECTED";
+export type ApprovalTabKey = "PENDING" | "APPROVED" | "REJECTED" | "HISTORY";
 
 export interface RejectDialogState {
   open: boolean;

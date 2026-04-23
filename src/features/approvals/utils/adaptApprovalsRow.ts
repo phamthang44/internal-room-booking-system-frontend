@@ -67,14 +67,20 @@ export function adaptApprovalsRow(raw: AdminBookingItemResponse): ApprovalRowUI 
       ? "approvals.status.approved"
       : bookingStatus === "REJECTED"
         ? "approvals.status.rejected"
-        : hasConflict
-          ? "approvals.status.conflictAlert"
-          : "approvals.status.pending";
+        : bookingStatus === "CANCELLED"
+          ? "approvals.status.cancelled"
+          : bookingStatus === "CHECKED_IN"
+            ? "approvals.status.checkedIn"
+            : bookingStatus === "COMPLETED"
+              ? "approvals.status.completed"
+              : hasConflict
+                ? "approvals.status.conflictAlert"
+                : "approvals.status.pending";
 
   const badgeTone =
-    bookingStatus === "APPROVED"
+    bookingStatus === "APPROVED" || bookingStatus === "COMPLETED" || bookingStatus === "CHECKED_IN"
       ? "approved"
-      : bookingStatus === "REJECTED"
+      : bookingStatus === "REJECTED" || bookingStatus === "CANCELLED"
         ? "rejected"
         : hasConflict
           ? "conflict"

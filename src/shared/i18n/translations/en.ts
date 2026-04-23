@@ -896,6 +896,13 @@ export const en = {
       pending: "Pending",
       approved: "Approved",
       rejected: "Rejected",
+      history: "History",
+    },
+    pagination: {
+      showing: "Showing",
+      results: "results",
+      of: "of",
+      perPage: "Per page:",
     },
     filters: {
       bookingIdPlaceholder: "Booking ID (e.g. 41)",
@@ -946,6 +953,9 @@ export const en = {
       pending: "Pending",
       approved: "Approved",
       rejected: "Rejected",
+      cancelled: "Cancelled",
+      checkedIn: "Checked In",
+      completed: "Completed",
     },
   },
   adminBookings: {

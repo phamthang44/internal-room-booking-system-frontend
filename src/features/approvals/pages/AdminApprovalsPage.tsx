@@ -15,6 +15,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useI18n } from "@shared/i18n/useI18n";
 import { Popover, PopoverContent, PopoverTrigger } from "@shared/components/ui/popover";
 import { Calendar } from "@shared/components/ui/calendar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@shared/components/ui/select";
 import { format, parseISO } from "date-fns";
 
 export const AdminApprovalsPage = () => {
@@ -61,7 +68,7 @@ export const AdminApprovalsPage = () => {
     };
   }, []);
 
-  const statusParam = ui.tab === "PENDING" ? "PENDING" : ui.tab === "APPROVED" ? "APPROVED" : "REJECTED";
+  const statusParam = ui.tab === "HISTORY" ? undefined : ui.tab;
 
   const listQuery = useAdminApprovalsListQuery({
     status: statusParam,
@@ -83,6 +90,7 @@ export const AdminApprovalsPage = () => {
   );
 
   const counts = listQuery.data?.counts;
+  const meta = listQuery.data?.meta;
 
   const isBusy = approveMutation.isPending || rejectMutation.isPending;
 
@@ -339,26 +347,54 @@ export const AdminApprovalsPage = () => {
           />
         </div>
 
-        <div className="flex items-center justify-between rounded-xl bg-surface-container-low px-6 py-4">
-          <p className="text-xs font-medium text-on-surface-variant">
-            Showing <span className="font-bold text-on-surface">{currentIds.length}</span> results
-          </p>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-xl bg-surface-container-low px-6 py-4">
+          <div className="flex items-center gap-4">
+            <p className="text-xs font-medium text-on-surface-variant">
+              {t("approvals.pagination.showing")} <span className="font-bold text-on-surface">{currentIds.length}</span> {t("approvals.pagination.results")}
+              {meta?.totalElements != null ? (
+                <> {t("approvals.pagination.of")} <span className="font-bold text-on-surface">{meta.totalElements}</span></>
+              ) : null}
+            </p>
+            <div className="h-4 w-px bg-outline-variant/30 hidden sm:block" />
+            <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+              <span>{t("approvals.pagination.perPage")}</span>
+              <Select
+                value={ui.size.toString()}
+                onValueChange={(val) => {
+                  ui.setSize(Number(val));
+                  ui.setPage(1);
+                }}
+              >
+                <SelectTrigger className="h-8 w-20 rounded-lg border-outline-variant/30 bg-surface-container-lowest px-2 py-1 text-xs text-on-surface focus:border-primary/50 focus:ring-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[12, 24, 48, 96].map((s) => (
+                    <SelectItem key={s} value={s.toString()} className="text-xs">
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant transition-colors hover:text-primary"
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant transition-colors hover:text-primary disabled:opacity-50 disabled:pointer-events-none"
               onClick={() => ui.setPage(ui.page - 1)}
               disabled={ui.page <= 1}
             >
               <span className="material-symbols-outlined text-sm">chevron_left</span>
             </button>
-            <span className="w-8 text-center text-xs font-bold text-on-surface">
-              {ui.page}
+            <span className="min-w-[40px] text-center text-xs font-bold text-on-surface">
+              {ui.page} {meta?.totalPages ? `/ ${meta.totalPages}` : ""}
             </span>
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant transition-colors hover:text-primary"
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant transition-colors hover:text-primary disabled:opacity-50 disabled:pointer-events-none"
               onClick={() => ui.setPage(ui.page + 1)}
+              disabled={meta?.hasNextPage === false || (meta?.totalPages != null && ui.page >= meta.totalPages) || currentIds.length === 0}
             >
               <span className="material-symbols-outlined text-sm">chevron_right</span>
             </button>

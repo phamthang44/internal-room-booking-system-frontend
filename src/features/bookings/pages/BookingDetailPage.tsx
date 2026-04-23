@@ -175,7 +175,6 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
                   isPending={cancelMutation.isPending}
                   reason={cancelReason}
                   onReasonChange={setCancelReason}
-                  onOpenChange={setCancelPanelOpen}
                   onConfirm={() => void cancelMutation.mutateAsync()}
                   onCancel={() => {
                     setCancelPanelOpen(false);
