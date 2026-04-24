@@ -1,5 +1,5 @@
 /**
- * Penalties/V iolations API endpoints (relative to axios baseURL).
+ * Penalties/Violations API endpoints (relative to axios baseURL).
  *
  * Docs:
  * - documents/docs/penalty_system_architecture.md
