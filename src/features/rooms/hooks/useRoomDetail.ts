@@ -3,6 +3,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { normalizeApiError } from "@shared/errors/normalizeApiError";
+import { useAppToastStore } from "@shared/errors/appToastStore";
 import { roomDetailApiService } from "../api/roomDetail.api.service";
 import type { BookingSubmitPayload } from "../types/roomDetail.types";
 
@@ -36,6 +38,31 @@ export const useSubmitBooking = () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
       // Navigate to success page with booking details as state
       navigate("/booking/success", { state: { booking: data } });
+    },
+    onError: (err) => {
+      const n = normalizeApiError(err);
+      useAppToastStore.getState().push({
+        tone: "error",
+        titleI18nKey: n.titleI18nKey,
+        message: n.message,
+        traceId: n.traceId,
+      });
+
+      const msg = (n.message ?? "").toLowerCase();
+      const looksLikePenalty =
+        n.status === 403 ||
+        msg.includes("ban") ||
+        msg.includes("banned") ||
+        msg.includes("suspend") ||
+        msg.includes("suspended") ||
+        msg.includes("penalt");
+
+      if (looksLikePenalty) {
+        navigate("/penalties", {
+          state: { from: "booking", message: n.message },
+          replace: false,
+        });
+      }
     },
   });
 };

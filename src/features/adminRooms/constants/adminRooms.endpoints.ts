@@ -5,7 +5,8 @@ export const ADMIN_ROOMS_ENDPOINTS = {
   BASE: "/admin/rooms",
   DETAIL: (id: number | string) => `/admin/rooms/${encodeURIComponent(String(id))}`,
   CREATE: "/admin/rooms/",
-  UPDATE: "/admin/rooms",
-  UPDATE_STATUS: "/admin/rooms/status",
+  // REST refactor: move classroomId to URL path
+  UPDATE: (id: number | string) => `/admin/rooms/${encodeURIComponent(String(id))}`,
+  UPDATE_STATUS: (id: number | string) => `/admin/rooms/${encodeURIComponent(String(id))}/status`,
 } as const;
 

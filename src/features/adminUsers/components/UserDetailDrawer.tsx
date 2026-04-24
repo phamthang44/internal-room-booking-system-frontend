@@ -3,6 +3,7 @@ import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import { CustomSelect, type CustomSelectOption } from "@shared/components/CustomSelect";
 import type { AdminUserRoleApi, UserBasicResponse } from "../types/adminUsers.api.types";
+import { AdminPenaltyPanel } from "@features/penalties/components/AdminPenaltyPanel";
 
 export interface UserDetailDrawerProps {
   readonly open: boolean;
@@ -232,6 +233,8 @@ export function UserDetailDrawer({
                 {t("adminUsers.drawer.actionsHint")}
               </p>
             </div>
+
+            <AdminPenaltyPanel userId={user.id} />
           </div>
         </div>
       </aside>

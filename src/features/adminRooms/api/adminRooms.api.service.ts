@@ -57,14 +57,16 @@ export const adminRoomsApiService: AdminRoomsService = {
   },
 
   update: async (payload: UpdateClassroomRequest) => {
-    const res = await apiClient.put<ApiResult<unknown>>(ADMIN_ROOMS_ENDPOINTS.UPDATE, payload);
+    const { classroomId, ...body } = payload;
+    const res = await apiClient.put<ApiResult<unknown>>(ADMIN_ROOMS_ENDPOINTS.UPDATE(classroomId), body);
     assertApiSuccess(res.data);
   },
 
   updateStatus: async (payload: UpdateClassroomStatusRequest) => {
+    const { classroomId, ...body } = payload;
     const res = await apiClient.patch<ApiResult<unknown>>(
-      ADMIN_ROOMS_ENDPOINTS.UPDATE_STATUS,
-      payload,
+      ADMIN_ROOMS_ENDPOINTS.UPDATE_STATUS(classroomId),
+      body,
     );
     assertApiSuccess(res.data);
   },

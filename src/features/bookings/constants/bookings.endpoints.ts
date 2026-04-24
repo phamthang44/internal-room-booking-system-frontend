@@ -4,8 +4,9 @@
 export const BOOKINGS_ENDPOINTS = {
   BASE: "/bookings",
   DETAIL: (id: number | string) => `/bookings/${encodeURIComponent(String(id))}`,
-  CANCEL: "/bookings/cancel",
-  CHECK_IN: "/bookings/checkin",
-  CHECK_OUT: "/bookings/checkout",
+  // REST refactor: move bookingId to URL path
+  CANCEL: (id: number | string) => `/bookings/${encodeURIComponent(String(id))}/cancel`,
+  CHECK_IN: (id: number | string) => `/bookings/${encodeURIComponent(String(id))}/check-in`,
+  CHECK_OUT: (id: number | string) => `/bookings/${encodeURIComponent(String(id))}/check-out`,
 } as const;
 

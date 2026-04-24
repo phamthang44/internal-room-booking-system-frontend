@@ -162,6 +162,13 @@ export const AdminUsersPage = () => {
           activeFilterCount={activeFilterCount}
         />
 
+        <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest/70 p-4 text-sm text-on-surface-variant">
+          <p className="font-bold text-on-surface">{t("adminUsers.penaltiesHint.title")}</p>
+          <p className="mt-1 text-xs">
+            {t("adminUsers.penaltiesHint.body")}
+          </p>
+        </div>
+
         {listQuery.isError ? (
           <div className="rounded-2xl border border-error/30 bg-error-container/20 p-4 text-sm text-error">
             {t("adminUsers.errors.loadFailed")}

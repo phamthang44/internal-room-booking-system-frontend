@@ -5,7 +5,10 @@ export const ADMIN_BOOKINGS_ENDPOINTS = {
   BASE: "/admin/bookings",
   DETAIL: (bookingId: number | string) =>
     `/admin/bookings/${encodeURIComponent(String(bookingId))}`,
-  APPROVE: "/admin/bookings/approve",
-  REJECT: "/admin/bookings/reject",
+  // REST refactor: move bookingId to URL path
+  APPROVE: (id: number | string) =>
+    `/admin/bookings/${encodeURIComponent(String(id))}/approve`,
+  REJECT: (id: number | string) =>
+    `/admin/bookings/${encodeURIComponent(String(id))}/reject`,
 } as const;
 

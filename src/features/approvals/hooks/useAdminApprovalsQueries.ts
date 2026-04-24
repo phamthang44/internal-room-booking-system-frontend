@@ -99,16 +99,13 @@ export function useApproveBookingMutation() {
       if ("bulkIds" in args) {
         const ids = args.bulkIds;
         for (const id of ids) {
-          const payload: BookingApprovalRequest = { bookingId: id, action: "APPROVE" };
-          await adminBookingsApiService.approve(payload);
+          const payload: BookingApprovalRequest = { action: "APPROVE" };
+          await adminBookingsApiService.approve(id, payload);
         }
         return ids.length;
       }
-      const payload: BookingApprovalRequest = {
-        bookingId: args.bookingId,
-        action: "APPROVE",
-      };
-      await adminBookingsApiService.approve(payload);
+      const payload: BookingApprovalRequest = { action: "APPROVE" };
+      await adminBookingsApiService.approve(args.bookingId, payload);
       return 1;
     },
     onSuccess: () => {
@@ -127,21 +124,19 @@ export function useRejectBookingMutation() {
         const ids = args.bulkIds;
         for (const id of ids) {
           const payload: BookingApprovalRequest = {
-            bookingId: id,
             action: "REJECT",
             reason: args.reason,
           };
-          await adminBookingsApiService.reject(payload);
+          await adminBookingsApiService.reject(id, payload);
         }
         return ids.length;
       }
 
       const payload: BookingApprovalRequest = {
-        bookingId: args.bookingId,
         action: "REJECT",
         reason: args.reason,
       };
-      await adminBookingsApiService.reject(payload);
+      await adminBookingsApiService.reject(args.bookingId, payload);
       return 1;
     },
     meta: { skipGlobalError: true },

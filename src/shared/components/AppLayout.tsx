@@ -5,6 +5,7 @@ import { cn } from "@shared/utils/cn";
 import { useSidebarStore } from "@shared/hooks/useSidebarStore";
 import { useAuthStore, useProfileStore } from "@features/auth";
 import { NotificationsPopover } from "@features/notifications";
+import { PenaltyBanner } from "@features/penalties";
 import { useI18n } from "@shared/i18n/useI18n";
 import authApi from "@features/auth/api/auth.api";
 
@@ -55,6 +56,13 @@ function useRouteHeader(pathname: string) {
       backTo: null,
     };
   }
+  if (matchPath({ path: "/admin/users/:userId/penalties", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.userPenalties" as const,
+      showBack: true,
+      backTo: "/admin/users",
+    };
+  }
   if (matchPath({ path: "/admin/bookings/:bookingId", end: true }, pathname)) {
     return {
       titleKey: "nav.approvals" as const,
@@ -86,6 +94,13 @@ function useRouteHeader(pathname: string) {
   if (matchPath({ path: "/bookings", end: true }, pathname)) {
     return {
       titleKey: "nav.myBookings" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
+  if (matchPath({ path: "/penalties", end: true }, pathname)) {
+    return {
+      titleKey: "nav.penalties" as const,
       showBack: false,
       backTo: null,
     };
@@ -181,6 +196,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
     { icon: "dashboard", label: t("nav.dashboard"), to: "/dashboard" },
     { icon: "meeting_room", label: t("nav.browseRooms"), to: "/rooms" },
     { icon: "event_note", label: t("nav.myBookings"), to: "/bookings" },
+    { icon: "policy", label: t("nav.penalties"), to: "/penalties" },
     { icon: "settings", label: t("nav.settings"), to: "/settings" },
   ];
 
@@ -401,7 +417,10 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">
+          <PenaltyBanner className="mb-4" />
+          {children}
+        </main>
       </div>
     </div>
   );

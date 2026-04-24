@@ -5,6 +5,7 @@ import { HomePage, LoadingScreen } from "@features/home";
 import { StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
 import { MyBookingsPage, BookingDetailPage, BookingCheckInPage } from "@features/bookings";
+import { AdminUserPenaltiesPage, MyPenaltiesPage } from "@features/penalties";
 import {
   AdminRoomAuditPanelPage,
   AdminRoomsListPage,
@@ -164,6 +165,15 @@ const RouterContent = () => {
         />
 
         <Route
+          path="/penalties"
+          element={
+            <ProtectedRoute>
+              <MyPenaltiesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/bookings/:bookingId"
           element={
             <ProtectedRoute>
@@ -236,6 +246,14 @@ const RouterContent = () => {
           element={
             <AdminRoute>
               <AdminUsersPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users/:userId/penalties"
+          element={
+            <AdminRoute>
+              <AdminUserPenaltiesPage />
             </AdminRoute>
           }
         />

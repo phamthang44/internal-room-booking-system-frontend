@@ -266,12 +266,11 @@ export const bookingsApiService = {
   cancelBooking: async (bookingId: number, cancelReason: string): Promise<string | null> => {
     const { token } = useAuthStore.getState();
     const payload: CancelBookingRequest = {
-      bookingId,
       cancelReason,
       cancelTime: new Date().toISOString(),
     };
     const response = await apiClient.patch<ApiResult<unknown>>(
-      BOOKINGS_ENDPOINTS.CANCEL,
+      BOOKINGS_ENDPOINTS.CANCEL(bookingId),
       payload,
       { ...getAuthConfig(token ?? null) }
     );
@@ -281,11 +280,10 @@ export const bookingsApiService = {
   checkInBooking: async (bookingId: number): Promise<string | null> => {
     const { token } = useAuthStore.getState();
     const payload: CheckInRequest = {
-      bookingId,
       checkInTime: new Date().toISOString(),
     };
     const response = await apiClient.patch<ApiResult<unknown>>(
-      BOOKINGS_ENDPOINTS.CHECK_IN,
+      BOOKINGS_ENDPOINTS.CHECK_IN(bookingId),
       payload,
       { ...getAuthConfig(token ?? null) }
     );
@@ -295,11 +293,10 @@ export const bookingsApiService = {
   checkoutBooking: async (bookingId: number): Promise<string | null> => {
     const { token } = useAuthStore.getState();
     const payload: CheckoutRequest = {
-      bookingId,
       checkoutTime: new Date().toISOString(),
     };
     const response = await apiClient.patch<ApiResult<unknown>>(
-      BOOKINGS_ENDPOINTS.CHECK_OUT,
+      BOOKINGS_ENDPOINTS.CHECK_OUT(bookingId),
       payload,
       { ...getAuthConfig(token ?? null) }
     );

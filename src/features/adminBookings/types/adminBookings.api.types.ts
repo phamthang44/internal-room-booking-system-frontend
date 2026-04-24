@@ -34,7 +34,6 @@ export type AdminBookingSortApi = "NEWEST" | "OLDEST";
 export type BookingApprovalAction = "APPROVE" | "REJECT";
 
 export interface BookingApprovalRequest {
-  bookingId: number;
   action: BookingApprovalAction;
   /** Mandatory when rejecting (max 500 chars). */
   reason?: string;

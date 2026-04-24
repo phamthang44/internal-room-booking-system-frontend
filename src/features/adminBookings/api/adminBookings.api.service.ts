@@ -55,18 +55,18 @@ export const adminBookingsApiService = {
     return res.data.data;
   },
 
-  approve: async (payload: BookingApprovalRequest): Promise<string | null> => {
+  approve: async (bookingId: number, payload: BookingApprovalRequest): Promise<string | null> => {
     const res = await apiClient.patch<ApiResult<unknown>>(
-      ADMIN_BOOKINGS_ENDPOINTS.APPROVE,
+      ADMIN_BOOKINGS_ENDPOINTS.APPROVE(bookingId),
       payload,
     );
     assertApiSuccess(res.data);
     return extractMessage(res.data);
   },
 
-  reject: async (payload: BookingApprovalRequest): Promise<string | null> => {
+  reject: async (bookingId: number, payload: BookingApprovalRequest): Promise<string | null> => {
     const res = await apiClient.patch<ApiResult<unknown>>(
-      ADMIN_BOOKINGS_ENDPOINTS.REJECT,
+      ADMIN_BOOKINGS_ENDPOINTS.REJECT(bookingId),
       payload,
     );
     assertApiSuccess(res.data);

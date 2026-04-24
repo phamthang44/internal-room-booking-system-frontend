@@ -100,18 +100,15 @@ export interface CreateBookingResponse {
 }
 
 export interface CancelBookingRequest {
-  bookingId: number;
   cancelReason: string;
   cancelTime: string; // Instant ISO-8601
 }
 
 export interface CheckInRequest {
-  bookingId: number;
   checkInTime: string; // Instant ISO-8601
 }
 
 export interface CheckoutRequest {
-  bookingId: number;
   checkoutTime: string; // Instant ISO-8601
 }
 
