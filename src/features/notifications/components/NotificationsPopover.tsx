@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
+import { useAppToastStore } from "@shared/errors/appToastStore";
 import { formatIsoRelativeCaption } from "@shared/utils/date";
 import {
   Popover,
@@ -47,6 +48,17 @@ function stablePreviewCount(size: number): number {
   return Math.min(Math.max(size, 5), 20);
 }
 
+function toastToneForType(type?: NotificationTypeApi): "info" | "warning" | "error" | "success" {
+  switch (type) {
+    case "SYSTEM_ALERT":
+      return "warning";
+    case "BOOKING_STATUS":
+      return "info";
+    default:
+      return "info";
+  }
+}
+
 export function NotificationsPopover() {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -61,6 +73,57 @@ export function NotificationsPopover() {
 
   const unreadCount = unread.data ?? 0;
   const rows = list.data?.rows ?? [];
+
+  // Toast: present newly-arrived notifications (e.g. after STOMP invalidation).
+  // We intentionally do NOT toast the initial list load to avoid spamming on page refresh.
+  const hasSeededRef = useRef(false);
+  const seenIdsRef = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!list.isSuccess) return;
+    const seeded = hasSeededRef.current;
+
+    const idsNow = new Set<number>();
+    for (const n of rows) {
+      const id = Number(n.id ?? 0);
+      if (id > 0) idsNow.add(id);
+    }
+
+    if (!seeded) {
+      hasSeededRef.current = true;
+      seenIdsRef.current = idsNow;
+      return;
+    }
+
+    const seen = seenIdsRef.current;
+    const newlyArrived = rows.filter((n) => {
+      const id = Number(n.id ?? 0);
+      if (id <= 0) return false;
+      if (seen.has(id)) return false;
+      // Prefer toasts for unread / new items. If backend omits `isRead`, we still treat it as "new".
+      return n.isRead !== true;
+    });
+
+    // Update seen set first to avoid re-toasting on quick refetch loops.
+    for (const id of idsNow) seen.add(id);
+
+    // Cap to avoid spamming if multiple arrive at once.
+    for (const n of newlyArrived.slice(0, 3)) {
+      const bookingId = canNavigate(n)
+        ? Number(bookingIdFromRelatedId(n.relatedId ?? undefined) ?? 0) || undefined
+        : undefined;
+      const caption = n.createdAt ? formatIsoRelativeCaption(n.createdAt) : undefined;
+      useAppToastStore.getState().push({
+        tone: toastToneForType(n.type),
+        plainTitle: n.title ?? t("notifications.item.fallbackTitle"),
+        titleI18nKey: "common.toast.successTitle",
+        message: n.message ?? "",
+        bookingId: bookingId && bookingId > 0 ? bookingId : undefined,
+        materialIcon: iconForType(n.type),
+        caption,
+      });
+    }
+  }, [list.isSuccess, rows, t]);
 
   const busy =
     markRead.isPending ||
