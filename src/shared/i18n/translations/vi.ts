@@ -432,6 +432,7 @@ export const vi = {
     slots: {
       available: "Còn trống",
       occupied: "Bị chiếm",
+      bookedByMe: "Bạn đã đặt slot này",
       inUse: "Đang sử dụng",
       pending: "Chờ phê duyệt",
       rejected: "Bị từ chối",

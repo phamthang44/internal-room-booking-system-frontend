@@ -432,6 +432,7 @@ export const en = {
     slots: {
       available: "Available",
       occupied: "Occupied",
+      bookedByMe: "You booked this slot",
       inUse: "In use",
       pending: "Pending Approval",
       rejected: "Rejected",

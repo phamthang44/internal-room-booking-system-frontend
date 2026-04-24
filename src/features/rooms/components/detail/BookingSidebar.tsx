@@ -98,7 +98,13 @@ const mapApiSlotToBookingSlot = (
       endTime: s.endTime,
     };
   }
-  return { id, label, status: "occupied", startTime: s.startTime, endTime: s.endTime };
+  return {
+    id,
+    label,
+    status: s.isMine ? "bookedByMe" : "occupied",
+    startTime: s.startTime,
+    endTime: s.endTime,
+  };
 };
 
 const disabledSlotBadgeKey = (status: SlotStatus): string => {
@@ -107,6 +113,8 @@ const disabledSlotBadgeKey = (status: SlotStatus): string => {
       return "roomDetail.slots.roomMaintenance";
     case "roomUnavailable":
       return "roomDetail.slots.roomUnavailable";
+    case "bookedByMe":
+      return "roomDetail.slots.bookedByMe";
     case "pendingApproval":
       return "roomDetail.slots.pending";
     case "inUse":

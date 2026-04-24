@@ -94,6 +94,7 @@ export interface RoomDetailApiResponse {
 export type SlotStatus =
   | "available"
   | "occupied"
+  | "bookedByMe"
   | "inUse"
   | "pendingApproval"
   | "roomMaintenance"
