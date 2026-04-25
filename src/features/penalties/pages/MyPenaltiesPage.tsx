@@ -14,6 +14,14 @@ function formatInstant(iso: string, locale: string) {
   return d.toLocaleString(locale, { year: "numeric", month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
+function looksLikeI18nKey(value: string): boolean {
+  const v = value.trim();
+  if (!v) return false;
+  if (/\s/.test(v)) return false;
+  if (!v.includes(".")) return false;
+  return /^[a-z0-9_.-]+$/i.test(v);
+}
+
 function penaltyStatusMeta(
   statusRaw: string,
 ): {
@@ -158,7 +166,9 @@ export function MyPenaltiesPage() {
 
                         <p className="mt-2 text-xs text-on-surface-variant">
                           {v.reason
-                            ? (t(v.reason as never) || v.reason)
+                            ? looksLikeI18nKey(v.reason)
+                              ? t(v.reason as never)
+                              : v.reason
                             : v.notes
                               ? v.notes
                               : t("penalties.labels.noReason")}

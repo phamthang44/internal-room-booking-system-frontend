@@ -21,6 +21,16 @@ function formatInstant(iso: string, locale: string) {
   });
 }
 
+function looksLikeI18nKey(value: string): boolean {
+  // Example i18n keys: "booking.cancel.reason.no_show"
+  // API may also return human-readable messages with spaces/punctuation.
+  const v = value.trim();
+  if (!v) return false;
+  if (/\s/.test(v)) return false;
+  if (!v.includes(".")) return false;
+  return /^[a-z0-9_.-]+$/i.test(v);
+}
+
 function penaltyStatusMeta(statusRaw: string): { toneClass: string; i18nKey: "adminPenalties.status.active" | "adminPenalties.status.expired" | "adminPenalties.status.revoked" | "adminPenalties.status.unknown" } {
   const s = (statusRaw ?? "").toString().toUpperCase();
   switch (s) {
@@ -158,7 +168,13 @@ export function AdminUserPenaltiesPage() {
                         </div>
 
                         <p className="mt-2 text-xs text-on-surface-variant">
-                          {v.reason ? (t(v.reason as never) || v.reason) : v.notes ? v.notes : t("penalties.labels.noReason")}
+                          {v.reason
+                            ? looksLikeI18nKey(v.reason)
+                              ? t(v.reason as never)
+                              : v.reason
+                            : v.notes
+                              ? v.notes
+                              : t("penalties.labels.noReason")}
                         </p>
                       </div>
                     </div>
