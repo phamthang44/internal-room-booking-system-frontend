@@ -5,7 +5,7 @@ import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import { AdminPenaltyPanel } from "../components/AdminPenaltyPanel";
 import { useAdminUserPenaltiesQuery } from "../hooks/usePenaltiesQueries";
-import { isPenaltyActive, penaltyEndIso, pickPenaltyType } from "../utils/penalties.utils";
+import { isPenaltyActive, penaltyEndIso, penaltyTitle } from "../utils/penalties.utils";
 
 type TabKey = "PENALTIES" | "VIOLATIONS";
 
@@ -152,7 +152,7 @@ export function AdminUserPenaltiesPage() {
             ) : (
               <ul className="mt-4 space-y-3">
                 {sortedPenalties.map((p) => {
-                  const type = pickPenaltyType(p) ?? (p.type ? String(p.type) : "—");
+                  const title = penaltyTitle(p);
                   const endIso = penaltyEndIso(p);
                   const startIso = (p.startDate ?? p.startTime) as string | undefined;
                   const start = startIso ? formatInstant(startIso, locale) : null;
@@ -163,7 +163,7 @@ export function AdminUserPenaltiesPage() {
                     <li key={String(p.id)} className="rounded-xl bg-surface-container-low p-4">
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="text-sm font-extrabold text-on-surface">{String(type)}</p>
+                          <p className="text-sm font-extrabold text-on-surface">{title}</p>
                           <p className="mt-1 text-xs text-on-surface-variant">
                             {start ? t("penalties.labels.starts", { start }) : ""}
                             {end ? ` • ${t("penalties.labels.ends", { end })}` : ""}

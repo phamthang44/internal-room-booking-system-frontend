@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import type { PenaltyRecordResponse } from "../types/penalties.api.types";
-import { isPenaltyActive, penaltyEndIso, pickPenaltyType } from "../utils/penalties.utils";
+import { isPenaltyActive, penaltyEndIso, penaltyTitle } from "../utils/penalties.utils";
 import {
   useAdminUserPenaltiesQuery,
   useExtendPenaltyMutation,
@@ -54,7 +54,7 @@ export function AdminPenaltyPanel({ userId, className }: { readonly userId: numb
 
   const busy = q.isFetching || revokeMutation.isPending || extendMutation.isPending;
 
-  const typeLabel = activePenalty ? (pickPenaltyType(activePenalty) ?? (activePenalty.type ? String(activePenalty.type) : "—")) : null;
+  const typeLabel = activePenalty ? penaltyTitle(activePenalty) : null;
   const endIso = activePenalty ? penaltyEndIso(activePenalty) : null;
 
   return (

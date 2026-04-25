@@ -85,14 +85,35 @@ export const penaltiesApiService = {
     const res = await apiClient.get<ApiResult<AdminUserPenaltiesResponse>>(
       PENALTIES_ENDPOINTS.ADMIN_USER_PENALTIES(userId),
     );
-    const unwrapped = unwrap<AdminUserPenaltiesResponse>(res.data);
-    return (
-      unwrapped.data ?? {
-        activePenalty: null,
-        penalties: [],
-        violations: [],
+    const unwrapped = unwrap<unknown>(res.data);
+    const d = unwrapped.data;
+
+    // Backends may return either:
+    // - snapshot object: { activePenalty, penalties, violations }
+    // - list object: { data: PenaltyRecordResponse[] }
+    // - direct list: PenaltyRecordResponse[]
+    if (Array.isArray(d)) {
+      return { activePenalty: null, penalties: d as PenaltyRecordResponse[], violations: [] };
+    }
+    if (d && typeof d === "object") {
+      const obj = d as Record<string, unknown>;
+      if (Array.isArray(obj.data)) {
+        return { activePenalty: null, penalties: obj.data as PenaltyRecordResponse[], violations: [] };
       }
-    );
+      if ("activePenalty" in obj || "penalties" in obj || "violations" in obj) {
+        return {
+          activePenalty: (obj.activePenalty as AdminUserPenaltiesResponse["activePenalty"]) ?? null,
+          penalties: Array.isArray(obj.penalties) ? (obj.penalties as PenaltyRecordResponse[]) : [],
+          violations: Array.isArray(obj.violations) ? (obj.violations as ViolationResponse[]) : [],
+        };
+      }
+    }
+
+    return {
+      activePenalty: null,
+      penalties: [],
+      violations: [],
+    };
   },
 
   revokePenalty: async (penaltyId: number, payload: PenaltyRevokeRequest): Promise<PenaltyRecordResponse | null> => {

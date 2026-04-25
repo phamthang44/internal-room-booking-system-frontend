@@ -2,6 +2,8 @@ import type { PenaltyRecordResponse, PenaltyTypeApi } from "../types/penalties.a
 
 export function isPenaltyActive(p: PenaltyRecordResponse | null | undefined): boolean {
   if (!p) return false;
+  // Some backends use `active` instead of `isActive`.
+  if ((p as unknown as { active?: boolean }).active === true) return true;
   if (p.isActive === true) return true;
   const status = (p.status ?? "").toString().toUpperCase();
   if (status === "ACTIVE") return true;
@@ -15,10 +17,11 @@ export function isPenaltyActive(p: PenaltyRecordResponse | null | undefined): bo
 }
 
 export function pickPenaltyType(p: PenaltyRecordResponse | null | undefined): PenaltyTypeApi | null {
-  if (!p?.type) return null;
-  const t = p.type.toString().toUpperCase();
+  const raw = (p?.type ?? p?.action ?? "").toString().toUpperCase();
+  if (!raw) return null;
+  const t = raw;
   if (t === "WARNING") return "WARNING";
-  if (t === "APPROVAL_REQUIRED") return "APPROVAL_REQUIRED";
+  if (t === "APPROVAL_REQUIRED" || t === "REQUIRE_APPROVAL") return "APPROVAL_REQUIRED";
   if (t === "TEMPORARY_BAN") return "TEMPORARY_BAN";
   if (t === "PERMANENT_BAN") return "PERMANENT_BAN";
   return null;
@@ -27,5 +30,11 @@ export function pickPenaltyType(p: PenaltyRecordResponse | null | undefined): Pe
 export function penaltyEndIso(p: PenaltyRecordResponse | null | undefined): string | null {
   const v = (p?.endDate ?? p?.endTime) as string | null | undefined;
   return v ?? null;
+}
+
+export function penaltyTitle(p: PenaltyRecordResponse | null | undefined): string {
+  if (!p) return "—";
+  const title = (p.action ?? p.type ?? "").toString().trim();
+  return title || "—";
 }
 
