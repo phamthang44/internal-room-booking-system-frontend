@@ -182,6 +182,12 @@ export const vi = {
       starts: "Bắt đầu: {{start}}",
       ends: "Kết thúc: {{end}}",
     },
+    status: {
+      active: "Đang áp dụng",
+      expired: "Hết hạn",
+      revoked: "Đã thu hồi",
+      unknown: "Không rõ",
+    },
     violationTypes: {
       LATE_CHECKIN: "Đi muộn (check-in trễ)",
       NO_SHOW: "Vắng mặt (no show)",

@@ -14,6 +14,41 @@ function formatInstant(iso: string, locale: string) {
   return d.toLocaleString(locale, { year: "numeric", month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
+function penaltyStatusMeta(
+  statusRaw: string,
+): {
+  toneClass: string;
+  i18nKey:
+    | "penalties.status.active"
+    | "penalties.status.expired"
+    | "penalties.status.revoked"
+    | "penalties.status.unknown";
+} {
+  const s = (statusRaw ?? "").toString().toUpperCase();
+  switch (s) {
+    case "ACTIVE":
+      return {
+        toneClass: "bg-tertiary-fixed/20 text-on-tertiary-fixed-variant ring-1 ring-tertiary-fixed/25",
+        i18nKey: "penalties.status.active",
+      };
+    case "EXPIRED":
+      return {
+        toneClass: "bg-surface-container-high text-on-surface-variant ring-1 ring-outline-variant/30",
+        i18nKey: "penalties.status.expired",
+      };
+    case "REVOKED":
+      return {
+        toneClass: "bg-error-container/35 text-error ring-1 ring-error/20",
+        i18nKey: "penalties.status.revoked",
+      };
+    default:
+      return {
+        toneClass: "bg-surface-container-high text-on-surface-variant ring-1 ring-outline-variant/30",
+        i18nKey: "penalties.status.unknown",
+      };
+  }
+}
+
 export function MyPenaltiesPage() {
   const { t } = useI18n();
   const [tab, setTab] = useState<TabKey>("ACTIVE");
@@ -153,6 +188,8 @@ export function MyPenaltiesPage() {
                   const end = endIso ? formatInstant(endIso, locale) : null;
                   const startIso = (p.startDate ?? p.startTime) as string | undefined;
                   const start = startIso ? formatInstant(startIso, locale) : null;
+                  const statusRaw = String(p.status ?? (isPenaltyActive(p) ? "ACTIVE" : "UNKNOWN"));
+                  const status = penaltyStatusMeta(statusRaw);
 
                   return (
                     <li key={String(p.id)} className="rounded-xl bg-surface-container-low p-4">
@@ -164,8 +201,13 @@ export function MyPenaltiesPage() {
                             {end ? ` • ${t("penalties.labels.ends", { end })}` : ""}
                           </p>
                         </div>
-                        <span className="rounded-full bg-surface-container-high px-3 py-1 text-[10px] font-bold text-on-surface-variant">
-                          {String((p.status ?? (isPenaltyActive(p) ? "ACTIVE" : "—")))}
+                        <span
+                          className={cn(
+                            "rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide",
+                            status.toneClass,
+                          )}
+                        >
+                          {t(status.i18nKey)}
                         </span>
                       </div>
                       {p.reason ? (

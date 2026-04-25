@@ -181,6 +181,12 @@ export const en = {
       starts: "Starts: {{start}}",
       ends: "Ends: {{end}}",
     },
+    status: {
+      active: "Active",
+      expired: "Expired",
+      revoked: "Revoked",
+      unknown: "Unknown",
+    },
     violationTypes: {
       LATE_CHECKIN: "Late check-in",
       NO_SHOW: "No show",
