@@ -6,6 +6,7 @@ import type {
 } from "axios";
 import { ENV } from "@core/config/env";
 import { CORE_API_ENDPOINTS } from "./endpoints";
+import { clearAccessToken, getAccessToken, setAccessToken } from "@core/auth/accessToken";
 
 const makeIdempotencyKey = (): string => {
   // Prefer Web Crypto UUID when available (modern browsers)
@@ -88,42 +89,24 @@ const processQueue = (
 };
 
 /**
- * Read the current access token from Zustand's persisted localStorage entry.
+ * Read the current access token from in-memory storage.
  */
 const getStoredToken = (): string | null => {
-  try {
-    const raw = localStorage.getItem("auth-store");
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { state?: { token?: string } };
-    return parsed.state?.token ?? null;
-  } catch {
-    return null;
-  }
+  return getAccessToken();
 };
 
 /**
- * Persist a new access token back to Zustand's localStorage entry
- * without touching Zustand's React state (we're in an interceptor, not a hook).
+ * Persist a new access token to in-memory storage.
  */
 const persistToken = (token: string): void => {
-  try {
-    const raw = localStorage.getItem("auth-store");
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    if (parsed.state) {
-      parsed.state.token = token;
-      localStorage.setItem("auth-store", JSON.stringify(parsed));
-    }
-  } catch {
-    // ignore
-  }
+  setAccessToken(token);
 };
 
 /**
- * Clear all auth state from localStorage, then redirect to /login.
+ * Clear all in-memory auth state, then redirect to /login.
  */
 const forceLogout = (): void => {
-  localStorage.removeItem("auth-store");
+  clearAccessToken();
   window.location.href = "/login";
 };
 

@@ -15,21 +15,22 @@ import authApi from "../api/auth.api";
  * refresh logic, which would cause a loop.
  */
 export const useInitAuth = () => {
-  const { token, hasHydrated, setToken, setUser } = useAuthStore();
+  const { token, hasInitialized, setHasInitialized, setToken, setUser, setLoading } =
+    useAuthStore();
 
   useEffect(() => {
-    if (!hasHydrated) {
-      return; // Wait for store to rehydrate
-    }
+    if (hasInitialized) return;
 
     // If token already exists, we're good
     if (token) {
+      setHasInitialized(true);
       return;
     }
 
     // Token doesn't exist. Try to refresh using refresh token from httpOnly cookie
     const initRefresh = async () => {
       try {
+        setLoading(true);
         const refreshResponse = await authApi.refreshToken();
         const { accessToken } = refreshResponse.data;
         setToken(accessToken);
@@ -48,9 +49,12 @@ export const useInitAuth = () => {
         // Refresh failed — user will be redirected to login by ProtectedRoute.
         // This is expected if the refresh token is expired or not present in
         // the httpOnly cookie.
+      } finally {
+        setLoading(false);
+        setHasInitialized(true);
       }
     };
 
     initRefresh();
-  }, [hasHydrated, token, setToken, setUser]);
+  }, [hasInitialized, token, setHasInitialized, setToken, setUser, setLoading]);
 };

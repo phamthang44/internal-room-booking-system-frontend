@@ -21,9 +21,9 @@ import { FullScreenLoader } from "@shared/components/FullScreenLoader";
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { token, hasHydrated } = useAuthStore();
+  const { token, hasInitialized } = useAuthStore();
 
-  if (!hasHydrated) {
+  if (!hasInitialized) {
     return <FullScreenLoader messageKey="common.loading.restoringSession" />;
   }
 
@@ -36,7 +36,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // Admin-only route wrapper (requires authenticated user with role ADMIN)
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { token, hasHydrated } = useAuthStore();
+  const { token, hasInitialized } = useAuthStore();
   const { profile, isLoading, fetchProfile } = useProfileStore();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [token, profile, isLoading, fetchProfile]);
 
-  if (!hasHydrated) {
+  if (!hasInitialized) {
     return <FullScreenLoader messageKey="common.loading.restoringSession" />;
   }
 
@@ -67,7 +67,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
 // Staff/admin route wrapper (requires authenticated user with role ADMIN or STAFF)
 const StaffRoute = ({ children }: { children: React.ReactNode }) => {
-  const { token, hasHydrated } = useAuthStore();
+  const { token, hasInitialized } = useAuthStore();
   const { profile, isLoading, fetchProfile } = useProfileStore();
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const StaffRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [token, profile, isLoading, fetchProfile]);
 
-  if (!hasHydrated) {
+  if (!hasInitialized) {
     return <FullScreenLoader messageKey="common.loading.restoringSession" />;
   }
 

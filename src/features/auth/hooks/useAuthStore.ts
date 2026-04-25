@@ -1,11 +1,16 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 import type { User, AuthState } from "../types/auth.types";
+import {
+  clearAccessToken,
+  setAccessToken,
+  subscribeAccessToken,
+} from "@core/auth/accessToken";
 
 interface AuthStoreState extends AuthState {
-  hasHydrated: boolean;
+  hasInitialized: boolean;
   // Actions
-  setHasHydrated: (hasHydrated: boolean) => void;
+  setHasInitialized: (hasInitialized: boolean) => void;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
   setLoading: (loading: boolean) => void;
@@ -24,45 +29,50 @@ const initialState: AuthState = {
 
 export const useAuthStore = create<AuthStoreState>()(
   devtools(
-    persist(
-      (set) => ({
-        ...initialState,
-        hasHydrated: false,
+    (set, get) => ({
+      ...initialState,
+      hasInitialized: false,
 
-        setHasHydrated: (hasHydrated) => set({ hasHydrated }),
+      setHasInitialized: (hasInitialized: boolean) => set({ hasInitialized }),
 
-        setUser: (user) =>
-          set({
-            user,
-            isAuthenticated: Boolean(user),
-          }),
-
-        setToken: (token) =>
-          set({
-            token,
-            isAuthenticated: Boolean(token),
-          }),
-
-        setLoading: (isLoading) => set({ isLoading }),
-
-        setError: (error) => set({ error }),
-
-        reset: () => set(initialState),
-
-        clearAuth: () => set(initialState),
-      }),
-      {
-        name: "auth-store",
-        partialize: (state) => ({
-          user: state.user,
-          token: state.token,
-          isAuthenticated: state.isAuthenticated,
+      setUser: (user: User | null) =>
+        set({
+          user,
+          isAuthenticated: Boolean(user) || Boolean(get().token),
         }),
-        onRehydrateStorage: () => (state) => {
-          state?.setHasHydrated(true);
-        },
+
+      setToken: (token: string | null) => {
+        setAccessToken(token);
+        set({
+          token,
+          isAuthenticated: Boolean(token),
+        });
       },
-    ),
+
+      setLoading: (isLoading: boolean) => set({ isLoading }),
+
+      setError: (error: string | null) => set({ error }),
+
+      reset: () => {
+        clearAccessToken();
+        set(initialState);
+      },
+
+      clearAuth: () => {
+        clearAccessToken();
+        set(initialState);
+      },
+    }),
     { name: "AuthStore" },
   ),
 );
+
+// Keep Zustand token state in sync with the in-memory token used by axios.
+subscribeAccessToken((token) => {
+  const state = useAuthStore.getState();
+  if (state.token === token) return;
+  useAuthStore.setState({
+    token,
+    isAuthenticated: Boolean(token),
+  });
+});
