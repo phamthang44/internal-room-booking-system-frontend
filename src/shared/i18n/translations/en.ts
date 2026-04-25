@@ -184,6 +184,7 @@ export const en = {
     violationTypes: {
       LATE_CHECKIN: "Late check-in",
       NO_SHOW: "No show",
+      EXCESSIVE_CANCELLATION: "Excessive cancellation",
       DAMAGE: "Damage",
       MISCONDUCT: "Misconduct",
       UNKNOWN: "Violation",

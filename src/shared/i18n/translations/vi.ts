@@ -185,6 +185,7 @@ export const vi = {
     violationTypes: {
       LATE_CHECKIN: "Đi muộn (check-in trễ)",
       NO_SHOW: "Vắng mặt (no show)",
+      EXCESSIVE_CANCELLATION: "Hủy đặt phòng quá nhiều",
       DAMAGE: "Hư hại",
       MISCONDUCT: "Vi phạm nội quy",
       UNKNOWN: "Vi phạm",
