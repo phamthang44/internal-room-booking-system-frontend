@@ -77,7 +77,9 @@ let lastFingerprint = "";
 let lastAt = 0;
 
 function fingerprint(payload: BookingNotificationPayload): string {
-  return `${payload.type}|${payload.bookingId}|${payload.timestamp}`;
+  // Backend may emit the same logical event multiple times with different timestamps.
+  // Prefer stable fields for dedupe to avoid repeated toasts.
+  return `${payload.type}|${payload.bookingId}|${payload.title}|${payload.message}`;
 }
 
 /**
