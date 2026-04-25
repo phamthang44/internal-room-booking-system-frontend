@@ -252,15 +252,17 @@ export const bookingsApiService = {
     return adaptBookingDetail(unwrapped.data);
   },
 
-  createBooking: async (payload: CreateBookingRequest): Promise<CreateBookingResponse> => {
+  createBooking: async (payload: CreateBookingRequest): Promise<CreateBookingResponse[]> => {
     const { token } = useAuthStore.getState();
-    const response = await apiClient.post<ApiResult<CreateBookingResponse>>(
+    const response = await apiClient.post<ApiResult<CreateBookingResponse[] | CreateBookingResponse>>(
       BOOKINGS_ENDPOINTS.BASE,
       payload,
       { ...getAuthConfig(token ?? null) }
     );
-    const unwrapped = unwrapApiResult<CreateBookingResponse>(response.data);
-    return unwrapped.data ?? {};
+    const unwrapped = unwrapApiResult<CreateBookingResponse[] | CreateBookingResponse>(response.data);
+    const data = unwrapped.data;
+    if (!data) return [];
+    return Array.isArray(data) ? data : [data];
   },
 
   cancelBooking: async (bookingId: number, cancelReason: string): Promise<string | null> => {

@@ -49,16 +49,29 @@ export const BookingConfirmationPage = () => {
   const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
-  const booking = location.state?.booking as BookingConfirmation | undefined;
+  const bookingState = location.state?.booking as BookingConfirmation | BookingConfirmation[] | undefined;
+  const bookings = Array.isArray(bookingState) ? bookingState : bookingState ? [bookingState] : undefined;
+  const booking = bookings?.[0];
 
   // Guard: if arrived without booking data, redirect to rooms
   useEffect(() => {
-    if (!booking) {
+    if (!bookings || bookings.length === 0) {
       navigate("/rooms", { replace: true });
     }
-  }, [booking, navigate]);
+  }, [bookings, navigate]);
 
-  if (!booking) return null;
+  if (!bookings || bookings.length === 0 || !booking) return null;
+
+  const isMulti = bookings.length > 1;
+  const bookingIdLabel = isMulti ? bookings.map((b) => `#${b.bookingId}`).join(", ") : `#${booking.bookingId}`;
+  const timeLabel = isMulti ? bookings.map((b) => b.timeSlot).filter(Boolean).join(" | ") : booking.timeSlot;
+  const primaryAction = () => {
+    if (isMulti) {
+      navigate("/bookings");
+    } else {
+      navigate(`/bookings/${encodeURIComponent(String(booking.bookingId))}`);
+    }
+  };
 
   return (
     <AppLayout>
@@ -96,17 +109,17 @@ export const BookingConfirmationPage = () => {
             {/* Booking ID badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container border border-outline-variant/30">
               <span className="text-xs text-on-surface-variant uppercase tracking-widest font-medium">
-                Booking ID
+                {isMulti ? "Booking IDs" : "Booking ID"}
               </span>
               <span className="text-sm font-headline font-bold text-primary">
-                #{booking.bookingId}
+                {bookingIdLabel}
               </span>
             </div>
 
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => navigate(`/bookings/${encodeURIComponent(String(booking.bookingId))}`)}
+                onClick={primaryAction}
                 className={cn(
                   "flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl",
                   "bg-gradient-to-r from-primary to-primary-container text-white",
@@ -158,7 +171,7 @@ export const BookingConfirmationPage = () => {
                 <SummaryRow
                   icon={<Clock size={20} className="text-on-primary-fixed-variant" strokeWidth={1.5} />}
                   label={t("bookingSuccess.summary.time")}
-                  value={booking.timeSlot}
+                  value={timeLabel}
                 />
               </div>
 

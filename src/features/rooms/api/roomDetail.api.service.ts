@@ -143,7 +143,7 @@ export const roomDetailApiService = {
 
   submitBooking: async (
     payload: BookingSubmitPayload
-  ): Promise<BookingConfirmation> => {
+  ): Promise<BookingConfirmation[]> => {
     const { token } = useAuthStore.getState();
     const response = await apiClient.post(
       BOOKINGS_ENDPOINTS.BASE,
@@ -157,7 +157,8 @@ export const roomDetailApiService = {
       },
       { ...getAuthConfig(token ?? null) }
     );
-    const raw = (response.data?.data ?? response.data) as CreateBookingResponseDataDto;
-    return adaptCreateBookingResponse(raw, payload);
+    const raw = response.data?.data ?? response.data;
+    const rows = Array.isArray(raw) ? (raw as CreateBookingResponseDataDto[]) : [raw as CreateBookingResponseDataDto];
+    return rows.map((r) => adaptCreateBookingResponse(r, payload));
   },
 };
