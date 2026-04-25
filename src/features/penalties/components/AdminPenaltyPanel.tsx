@@ -57,7 +57,8 @@ export function AdminPenaltyPanel({ userId, className }: { readonly userId: numb
   const typeLabel = activePenalty ? penaltyTitle(activePenalty) : null;
   const endIso = activePenalty ? penaltyEndIso(activePenalty) : null;
   const statusUpper = (activePenalty?.status ?? "").toString().toUpperCase();
-  const isRevoked = statusUpper === "REVOKED";
+  const actionUpper = (activePenalty?.action ?? "").toString().toUpperCase();
+  const isRevoked = statusUpper === "REVOKED" || actionUpper === "REVOKED";
   const actionsDisabled = busy || isRevoked;
 
   return (
