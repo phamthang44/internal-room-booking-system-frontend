@@ -56,6 +56,9 @@ export function AdminPenaltyPanel({ userId, className }: { readonly userId: numb
 
   const typeLabel = activePenalty ? penaltyTitle(activePenalty) : null;
   const endIso = activePenalty ? penaltyEndIso(activePenalty) : null;
+  const statusUpper = (activePenalty?.status ?? "").toString().toUpperCase();
+  const isRevoked = statusUpper === "REVOKED";
+  const actionsDisabled = busy || isRevoked;
 
   return (
     <section className={cn("rounded-2xl bg-surface-container-low/60 p-4", className)}>
@@ -106,7 +109,7 @@ export function AdminPenaltyPanel({ userId, className }: { readonly userId: numb
               <button
                 type="button"
                 onClick={() => setExtendOpen(true)}
-                disabled={busy}
+                disabled={actionsDisabled}
                 className="inline-flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50"
               >
                 <span className="material-symbols-outlined text-[18px]">calendar_add_on</span>
@@ -115,7 +118,7 @@ export function AdminPenaltyPanel({ userId, className }: { readonly userId: numb
               <button
                 type="button"
                 onClick={() => setRevokeOpen(true)}
-                disabled={busy}
+                disabled={actionsDisabled}
                 className="inline-flex items-center gap-2 rounded-xl bg-error-container/40 px-3 py-2 text-xs font-bold text-error hover:bg-error-container/60 disabled:opacity-50"
               >
                 <span className="material-symbols-outlined text-[18px]">undo</span>

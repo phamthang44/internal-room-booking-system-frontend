@@ -21,6 +21,32 @@ function formatInstant(iso: string, locale: string) {
   });
 }
 
+function penaltyStatusMeta(statusRaw: string): { toneClass: string; i18nKey: "adminPenalties.status.active" | "adminPenalties.status.expired" | "adminPenalties.status.revoked" | "adminPenalties.status.unknown" } {
+  const s = (statusRaw ?? "").toString().toUpperCase();
+  switch (s) {
+    case "ACTIVE":
+      return {
+        toneClass: "bg-tertiary-fixed/20 text-on-tertiary-fixed-variant ring-1 ring-tertiary-fixed/25",
+        i18nKey: "adminPenalties.status.active",
+      };
+    case "EXPIRED":
+      return {
+        toneClass: "bg-surface-container-high text-on-surface-variant ring-1 ring-outline-variant/30",
+        i18nKey: "adminPenalties.status.expired",
+      };
+    case "REVOKED":
+      return {
+        toneClass: "bg-error-container/35 text-error ring-1 ring-error/20",
+        i18nKey: "adminPenalties.status.revoked",
+      };
+    default:
+      return {
+        toneClass: "bg-surface-container-high text-on-surface-variant ring-1 ring-outline-variant/30",
+        i18nKey: "adminPenalties.status.unknown",
+      };
+  }
+}
+
 export function AdminUserPenaltiesPage() {
   const { t } = useI18n();
   const { userId } = useParams();
@@ -157,7 +183,8 @@ export function AdminUserPenaltiesPage() {
                   const startIso = (p.startDate ?? p.startTime) as string | undefined;
                   const start = startIso ? formatInstant(startIso, locale) : null;
                   const end = endIso ? formatInstant(endIso, locale) : null;
-                  const status = String(p.status ?? (isPenaltyActive(p) ? "ACTIVE" : "—"));
+                  const statusRaw = String(p.status ?? (isPenaltyActive(p) ? "ACTIVE" : "UNKNOWN"));
+                  const status = penaltyStatusMeta(statusRaw);
 
                   return (
                     <li key={String(p.id)} className="rounded-xl bg-surface-container-low p-4">
@@ -169,8 +196,13 @@ export function AdminUserPenaltiesPage() {
                             {end ? ` • ${t("penalties.labels.ends", { end })}` : ""}
                           </p>
                         </div>
-                        <span className="rounded-full bg-surface-container-high px-3 py-1 text-[10px] font-bold text-on-surface-variant">
-                          {status}
+                        <span
+                          className={cn(
+                            "rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide",
+                            status.toneClass,
+                          )}
+                        >
+                          {t(status.i18nKey)}
                         </span>
                       </div>
                       {p.reason ? <p className="mt-2 text-xs text-on-surface-variant">{p.reason}</p> : null}

@@ -220,6 +220,12 @@ export const vi = {
     title: "Quản lý hình phạt",
     loading: "Đang tải…",
     loadFailed: "Không thể tải dữ liệu hình phạt.",
+    status: {
+      active: "Đang áp dụng",
+      expired: "Hết hạn",
+      revoked: "Đã thu hồi",
+      unknown: "Không rõ",
+    },
     page: {
       title: "Vi phạm & hình phạt của người dùng",
       subtitle: "Xem và điều chỉnh hình phạt, đồng thời kiểm tra lịch sử vi phạm.",

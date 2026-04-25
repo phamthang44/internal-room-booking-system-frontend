@@ -219,6 +219,12 @@ export const en = {
     title: "Penalty management",
     loading: "Loading…",
     loadFailed: "Failed to load penalty data.",
+    status: {
+      active: "Active",
+      expired: "Expired",
+      revoked: "Revoked",
+      unknown: "Unknown",
+    },
     page: {
       title: "User penalties & violations",
       subtitle: "Review and adjust penalty records, and inspect violation history.",

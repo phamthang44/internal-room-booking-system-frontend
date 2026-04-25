@@ -27,10 +27,30 @@ interface AppToastState {
 }
 
 let idSeq = 0;
+const DEDUPE_MS = 2500;
+let lastPushFingerprint = "";
+let lastPushAt = 0;
+
+function fingerprintToast(item: Omit<AppToastItem, "id">): string {
+  const title = item.plainTitle ?? item.titleI18nKey;
+  const booking = item.bookingId == null ? "" : String(item.bookingId);
+  const icon = item.materialIcon ?? "";
+  const caption = item.caption ?? "";
+  const trace = item.traceId ?? "";
+  return `${item.tone ?? ""}|${title}|${item.message}|${booking}|${icon}|${caption}|${trace}`;
+}
 
 export const useAppToastStore = create<AppToastState>((set) => ({
   toasts: [],
   push: (item) => {
+    const fp = fingerprintToast(item);
+    const now = Date.now();
+    if (fp === lastPushFingerprint && now - lastPushAt < DEDUPE_MS) {
+      return;
+    }
+    lastPushFingerprint = fp;
+    lastPushAt = now;
+
     const id = ++idSeq;
     set((s) => ({ toasts: [...s.toasts, { ...item, id }] }));
   },

@@ -7,6 +7,9 @@ export function isPenaltyActive(p: PenaltyRecordResponse | null | undefined): bo
   if (p.isActive === true) return true;
   const status = (p.status ?? "").toString().toUpperCase();
   if (status === "ACTIVE") return true;
+  // Explicit non-active states should never be treated as active,
+  // even if end time is still in the future.
+  if (status === "REVOKED" || status === "EXPIRED") return false;
 
   // Some backends may omit status but include end time.
   const endIso = (p.endDate ?? p.endTime) as string | null | undefined;
