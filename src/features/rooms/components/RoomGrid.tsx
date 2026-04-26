@@ -112,9 +112,17 @@ interface RoomGridProps {
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
+  onCheckAvailability?: (roomId: string) => void;
 }
 
-export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGridProps) => {
+export const RoomGrid = ({
+  rooms,
+  total,
+  isLoading,
+  isError,
+  onRetry,
+  onCheckAvailability,
+}: RoomGridProps) => {
   const {
     activeFilterCount,
     search,
@@ -223,7 +231,13 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
           ) : !rawRooms.length ? (
             <EmptyState hasFilters={hasFilters} />
           ) : (
-            displayRooms.map((room) => <RoomCard key={room.id} room={room} />)
+            displayRooms.map((room) => (
+              <RoomCard
+                key={room.id}
+                room={room}
+                onCheckAvailability={onCheckAvailability}
+              />
+            ))
           )}
         </div>
       ) : (
@@ -237,7 +251,13 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
           ) : !rawRooms.length ? (
             <EmptyState hasFilters={hasFilters} />
           ) : (
-            displayRooms.map((room) => <RoomCardList key={room.id} room={room} />)
+            displayRooms.map((room) => (
+              <RoomCardList
+                key={room.id}
+                room={room}
+                onCheckAvailability={onCheckAvailability}
+              />
+            ))
           )}
         </div>
       )}

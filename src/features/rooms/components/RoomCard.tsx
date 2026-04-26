@@ -8,11 +8,12 @@ import { RoomStatusChip, roomStatusCardClasses } from "./RoomStatusChip";
 
 interface RoomCardProps {
   room: RoomUI;
+  onCheckAvailability?: (roomId: string) => void;
 }
 
 const formatClock = (t: string) => (t.length >= 5 ? t.slice(0, 5) : t);
 
-export const RoomCard = ({ room }: RoomCardProps) => {
+export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
   const { t } = useI18n();
   const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
   const slotsToRender =
@@ -148,12 +149,22 @@ export const RoomCard = ({ room }: RoomCardProps) => {
 
         {/* Actions */}
         <div className="mt-auto flex gap-2 pt-1">
-          <Link
-            to={`/rooms/${room.id}`}
-            className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
-          >
-            {t("rooms.card.checkAvailability")}
-          </Link>
+          {onCheckAvailability ? (
+            <button
+              type="button"
+              onClick={() => onCheckAvailability(room.id)}
+              className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+            >
+              {t("rooms.card.checkAvailability")}
+            </button>
+          ) : (
+            <Link
+              to={`/rooms/${room.id}`}
+              className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+            >
+              {t("rooms.card.checkAvailability")}
+            </Link>
+          )}
           <Link
             to={`/rooms/${room.id}`}
             className="rounded-xl border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
@@ -168,7 +179,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
 
 // ── List row (used in list view) ──────────────────────────────────────────────
 
-export const RoomCardList = ({ room }: RoomCardProps) => {
+export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
   const { t } = useI18n();
   const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
   const slotsToRender =
@@ -287,12 +298,22 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
 
       {/* Actions */}
       <div className="flex shrink-0 flex-col gap-2">
-        <Link
-          to={`/rooms/${room.id}`}
-          className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
-        >
-          {t("rooms.card.checkAvailability")}
-        </Link>
+        {onCheckAvailability ? (
+          <button
+            type="button"
+            onClick={() => onCheckAvailability(room.id)}
+            className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+          >
+            {t("rooms.card.checkAvailability")}
+          </button>
+        ) : (
+          <Link
+            to={`/rooms/${room.id}`}
+            className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+          >
+            {t("rooms.card.checkAvailability")}
+          </Link>
+        )}
         <Link
           to={`/rooms/${room.id}`}
           className="rounded-xl border border-outline-variant px-4 py-2 text-center text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
