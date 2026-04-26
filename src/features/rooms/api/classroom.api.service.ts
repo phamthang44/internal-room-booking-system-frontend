@@ -61,7 +61,10 @@ const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): Ro
         slots: (raw.dailySchedule.slots ?? []).map(adaptSlot),
       }
     : undefined,
-  availableForQuery: raw.availableForQuery,
+  queriedSlotsStatus: (raw.queriedSlotsStatus ?? []).map(adaptSlot),
+  availableSlotCount: raw.availableSlotCount,
+  totalQueriedSlots: raw.totalQueriedSlots,
+  availableForQuery: raw.isAvailableForQuery ?? raw.availableForQuery,
 });
 
 // ── API service ───────────────────────────────────────────────────────────────
@@ -75,18 +78,25 @@ export const classroomApiService = {
   searchRooms: async (params: RoomSearchParams = {}): Promise<RoomsPageUI> => {
     const { token } = useAuthStore.getState();
 
-    // Remove undefined values to keep URL clean
-    const cleanParams = Object.fromEntries(
-      Object.entries(params).filter(([, v]) => v !== undefined && v !== "")
-    ) as Record<string, string | number>;
-
-    const response = await apiClient.get<ApiResultClassroomList>(
-      ROOMS_ENDPOINTS.LIST,
-      {
-        params: cleanParams,
-        ...getAuthConfig(token ?? null),
+    // Build query string manually so arrays serialize as repeated params:
+    // timeSlotIds=1&timeSlotIds=2 (best practice for Spring-style backends).
+    const qs = new URLSearchParams();
+    (Object.entries(params) as Array<[string, unknown]>).forEach(([k, v]) => {
+      if (v === undefined || v === "") return;
+      if (Array.isArray(v)) {
+        v.forEach((item) => qs.append(k, String(item)));
+        return;
       }
-    );
+      qs.set(k, String(v));
+    });
+
+    const url = qs.toString()
+      ? `${ROOMS_ENDPOINTS.LIST}?${qs.toString()}`
+      : ROOMS_ENDPOINTS.LIST;
+
+    const response = await apiClient.get<ApiResultClassroomList>(url, {
+      ...getAuthConfig(token ?? null),
+    });
 
     const { data: rooms = [], meta = {} } = response.data;
 

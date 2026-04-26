@@ -341,7 +341,7 @@ export const en = {
       availability: "Availability",
       pickDate: "Pick Date",
       timeSlot: "Time Slot",
-      timeSlotHint: "Only rooms that are free for this time slot are shown.",
+      timeSlotHint: "Only rooms that are free for all selected slots are shown.",
       anyTime: "Any time",
       capacity: "Capacity (Seats)",
       status: "Status",
@@ -383,6 +383,8 @@ export const en = {
       seats: "seats",
       more: "more",
       schedule: "Schedule",
+      queriedSlots: "Selected slots",
+      free: "free",
       notMatchingFilters: "This room may not match your current filters.",
     },
     grid: {
@@ -390,7 +392,7 @@ export const en = {
       showing: "Showing {{shown}} of {{total}} rooms",
       showingOne: "Showing {{shown}} of {{total}} room",
       showingSlotPage:
-        "{{count}} rooms available for this time slot on this page",
+        "{{count}} rooms available for the selected slots on this page",
     },
     empty: {
       title: "No rooms found",

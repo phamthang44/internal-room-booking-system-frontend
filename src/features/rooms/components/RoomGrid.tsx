@@ -122,14 +122,14 @@ export const RoomGrid = ({ rooms, total, isLoading, isError, onRetry }: RoomGrid
     setViewMode,
     sort,
     setSort,
-    timeSlotId,
+    timeSlotIds,
   } = useRoomFilterStore();
   const { t } = useI18n();
   const hasFilters = activeFilterCount() > 0 || search.length > 0;
   const isGrid = viewMode === "grid";
 
   const rawRooms = rooms ?? [];
-  const slotFilterActive = timeSlotId > 0;
+  const slotFilterActive = timeSlotIds.length > 0;
 
   /**
    * With a time slot selected, omit rows where `availableForQuery` is false.

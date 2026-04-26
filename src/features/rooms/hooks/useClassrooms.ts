@@ -20,7 +20,7 @@ export const useClassrooms = (page = 1) => {
   const {
     search,
     bookingDate,
-    timeSlotId,
+    timeSlotIds,
     minCapacity,
     equipmentId,
     roomStatus,
@@ -30,7 +30,7 @@ export const useClassrooms = (page = 1) => {
   const params: RoomSearchParams = {
     ...(search && { keyword: search }),
     ...(bookingDate && { bookingDate }),
-    ...(timeSlotId > 0 && { timeSlotId }),
+    ...(timeSlotIds.length > 0 && { timeSlotIds }),
     ...(minCapacity !== "" && { capacity: Number(minCapacity) }),
     ...(equipmentId > 0 && { equipmentId }),
     ...(roomStatus && { roomStatus }),

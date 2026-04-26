@@ -10,13 +10,6 @@ import {
   PopoverTrigger,
 } from "@shared/components/ui/popover";
 import { Calendar } from "@shared/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@shared/components/ui/select";
 import { format, parseISO } from "date-fns";
 import type { RoomStatusApi } from "../types/classroom.api.types";
 
@@ -55,12 +48,13 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
   const { user } = useAuthStore();
   const {
     bookingDate,
-    timeSlotId,
+    timeSlotIds,
     minCapacity,
     maxCapacity,
     equipmentId,
     setBookingDate,
-    setTimeSlotId,
+    toggleTimeSlotId,
+    clearTimeSlots,
     setCapacityRange,
     setEquipmentId,
     roomStatus,
@@ -178,41 +172,7 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
             <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/50">
               {t("rooms.filters.timeSlot")}
             </label>
-            <Select
-              value={String(timeSlotId)}
-              onValueChange={(val) => setTimeSlotId(Number(val))}
-            >
-              <SelectTrigger className="flex h-11 w-full items-center justify-between rounded-xl border border-outline-variant/40 bg-surface px-3 py-2 text-sm transition-all focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10 hover:border-outline-variant data-[placeholder]:text-on-surface-variant/50">
-                <div className="flex items-center gap-2">
-                  <span className="text-on-surface-variant/50">
-                    <svg
-                      width="15"
-                      height="15"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="8" cy="8" r="6.5" />
-                      <path d="M8 4.5V8l2.5 2" />
-                    </svg>
-                  </span>
-                  <SelectValue placeholder={t("rooms.filters.anyTime")} />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">{t("rooms.filters.anyTime")}</SelectItem>
-                {TIME_SLOTS.map((slot) => (
-                  <SelectItem key={slot.id} value={String(slot.id)}>
-                    {slot.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Quick-pick chips */}
+            {/* Multi-select chips */}
             <div className="mt-2 flex flex-wrap gap-1.5">
               {[
                 { id: 0, label: t("rooms.filters.anyTime") },
@@ -220,10 +180,14 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
               ].map((slot) => (
                 <button
                   key={slot.id}
-                  onClick={() => setTimeSlotId(slot.id)}
+                  onClick={() =>
+                    slot.id === 0 ? clearTimeSlots() : toggleTimeSlotId(slot.id)
+                  }
                   className={cn(
                     "rounded-full border px-3 py-1 text-xs transition-all",
-                    timeSlotId === slot.id
+                    (slot.id === 0
+                      ? timeSlotIds.length === 0
+                      : timeSlotIds.includes(slot.id))
                       ? "border-outline-variant bg-surface-variant font-medium text-on-surface"
                       : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant/60 hover:text-on-surface",
                   )}
@@ -232,7 +196,7 @@ export const FilterSidebar = ({ className }: FilterSidebarProps) => {
                 </button>
               ))}
             </div>
-            {timeSlotId > 0 ? (
+            {timeSlotIds.length > 0 ? (
               <p className="text-[11px] leading-snug text-on-surface-variant/90">
                 {t("rooms.filters.timeSlotHint")}
               </p>

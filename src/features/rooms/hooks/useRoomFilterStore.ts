@@ -17,7 +17,7 @@ export interface RoomFilterState {
   // ── Filter values ──────────────────────────────────────────────────────────
   search: string;
   bookingDate: string;      // yyyy-MM-dd; "" = no filter
-  timeSlotId: number;       // 0 = all; maps to API `timeSlotId`
+  timeSlotIds: number[];    // [] = all; maps to API `timeSlotIds[]`
   minCapacity: number | "";
   maxCapacity: number | ""; // UI-only; API has no maxCapacity param
   equipmentId: number;      // 0 = all; API accepts single int32
@@ -30,7 +30,8 @@ export interface RoomFilterState {
   // ── Actions ────────────────────────────────────────────────────────────────
   setSearch: (search: string) => void;
   setBookingDate: (date: string) => void;
-  setTimeSlotId: (id: number) => void;
+  toggleTimeSlotId: (id: number) => void;
+  clearTimeSlots: () => void;
   setCapacityRange: (min: number | "", max: number | "") => void;
   setEquipmentId: (id: number) => void;
   setRoomStatus: (status: RoomStatusApi | "") => void;
@@ -42,13 +43,13 @@ export interface RoomFilterState {
 
 const DEFAULT_FILTER: Pick<
   RoomFilterState,
-  | "search" | "bookingDate" | "timeSlotId"
+  | "search" | "bookingDate" | "timeSlotIds"
   | "minCapacity" | "maxCapacity" | "equipmentId" | "roomStatus" | "sort"
   | "viewMode"
 > = {
   search: "",
   bookingDate: "",
-  timeSlotId: 0,
+  timeSlotIds: [],
   minCapacity: "",
   maxCapacity: "",
   equipmentId: 0,
@@ -62,7 +63,15 @@ export const useRoomFilterStore = create<RoomFilterState>((set, get) => ({
 
   setSearch: (search) => set({ search }),
   setBookingDate: (bookingDate) => set({ bookingDate }),
-  setTimeSlotId: (id) => set({ timeSlotId: get().timeSlotId === id ? 0 : id }),
+  toggleTimeSlotId: (id) =>
+    set(() => {
+      if (id === 0) return { timeSlotIds: [] };
+      const curr = get().timeSlotIds;
+      return curr.includes(id)
+        ? { timeSlotIds: curr.filter((x) => x !== id) }
+        : { timeSlotIds: [...curr, id].sort((a, b) => a - b) };
+    }),
+  clearTimeSlots: () => set({ timeSlotIds: [] }),
   setCapacityRange: (minCapacity, maxCapacity) => set({ minCapacity, maxCapacity }),
   setEquipmentId: (id) => set({ equipmentId: get().equipmentId === id ? 0 : id }),
   setRoomStatus: (status) => set({ roomStatus: get().roomStatus === status ? "" : status }),
@@ -72,10 +81,10 @@ export const useRoomFilterStore = create<RoomFilterState>((set, get) => ({
   clearAll: () => set(DEFAULT_FILTER),
 
   activeFilterCount: () => {
-    const { bookingDate, timeSlotId, minCapacity, maxCapacity, equipmentId, roomStatus, sort } = get();
+    const { bookingDate, timeSlotIds, minCapacity, maxCapacity, equipmentId, roomStatus, sort } = get();
     let count = 0;
     if (bookingDate) count++;
-    if (timeSlotId > 0) count++;
+    if (timeSlotIds.length > 0) count++;
     if (minCapacity !== "" || maxCapacity !== "") count++;
     if (equipmentId > 0) count++;
     if (roomStatus !== "") count++;

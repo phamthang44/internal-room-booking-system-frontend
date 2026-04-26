@@ -91,12 +91,29 @@ export interface ClassroomListResponse {
   status?: RoomStatusApi;
   equipments?: EquipmentResponse[];
   roomType?: string;
+  /**
+   * True when ALL queried time-slots are free on the given bookingDate.
+   * (Backend field name as of the enriched contract.)
+   */
+  isAvailableForQuery?: boolean;
+  /**
+   * Backward-compatible fallback (older contract).
+   * Prefer `isAvailableForQuery` when present.
+   */
+  availableForQuery?: boolean;
   /** Primary room image URL (if available) */
   imageUrl?: string;
   /** Present when the API returns per-day slot availability for the query */
   dailySchedule?: DailyScheduleResponse;
-  /** When false, listing row may not satisfy the active filter query */
-  availableForQuery?: boolean;
+  /**
+   * Per-slot breakdown for only the slots the user selected.
+   * Empty when no timeSlotIds filter was applied (show full dailySchedule instead).
+   */
+  queriedSlotsStatus?: ClassroomScheduleSlotResponse[];
+  /** How many of the queried slots are still available (quick badge helper). */
+  availableSlotCount?: number;
+  /** Total number of slots queried (= timeSlotIds.size(), 0 when not filtered). */
+  totalQueriedSlots?: number;
 }
 
 /** Full API response shape for GET /api/v1/rooms */
@@ -112,7 +129,11 @@ export interface RoomSearchParams {
   keyword?: string;
   roomStatus?: RoomStatusApi;
   bookingDate?: string;        // format: date (yyyy-MM-dd)
-  timeSlotId?: number;         // int32
+  /**
+   * Multi-slot filter. When present, the backend evaluates ALL slots.
+   * Query encoding should be repeated params: timeSlotIds=1&timeSlotIds=2
+   */
+  timeSlotIds?: number[];      // int32[]
   capacity?: number;           // int32 — minimum capacity required
   equipmentId?: number;        // int32 — single equipment filter
   /** 0-based page index (Spring-style); UI pages use 1-based in RoomListPage */
@@ -164,6 +185,15 @@ export interface RoomUI {
     date: string;
     slots: RoomScheduleSlotUI[];
   };
+  /**
+   * When slot filter is active, backend can return only the selected slots.
+   * Prefer rendering this over dailySchedule.slots when present.
+   */
+  queriedSlotsStatus?: RoomScheduleSlotUI[];
+  /** How many of the queried slots are still available (quick badge helper). */
+  availableSlotCount?: number;
+  /** Total number of slots queried (= timeSlotIds.length, 0 when not filtered). */
+  totalQueriedSlots?: number;
   /** When false, row may not match current filters */
   availableForQuery?: boolean;
 }

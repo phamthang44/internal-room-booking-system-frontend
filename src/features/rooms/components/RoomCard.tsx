@@ -14,6 +14,11 @@ const formatClock = (t: string) => (t.length >= 5 ? t.slice(0, 5) : t);
 
 export const RoomCard = ({ room }: RoomCardProps) => {
   const { t } = useI18n();
+  const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
+  const slotsToRender =
+    hasQueriedSlots && room.queriedSlotsStatus && room.queriedSlotsStatus.length > 0
+      ? room.queriedSlotsStatus
+      : room.dailySchedule?.slots;
 
   return (
     <div
@@ -99,13 +104,24 @@ export const RoomCard = ({ room }: RoomCardProps) => {
           </div>
         )}
 
-        {room.dailySchedule && room.dailySchedule.slots.length > 0 && (
+        {hasQueriedSlots && room.totalQueriedSlots != null && (
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-surface-container-low px-3 py-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+              {t("rooms.card.queriedSlots")}
+            </span>
+            <span className="text-[10px] font-black tracking-wide text-on-surface">
+              {(room.availableSlotCount ?? 0)}/{room.totalQueriedSlots} {t("rooms.card.free")}
+            </span>
+          </div>
+        )}
+
+        {slotsToRender && slotsToRender.length > 0 && (
           <div className="space-y-1.5 border-t border-outline-variant/40 pt-2">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
               {t("rooms.card.schedule")}
             </p>
             <div className="flex flex-wrap gap-1">
-              {room.dailySchedule.slots.map((slot) => (
+              {slotsToRender.map((slot) => (
                 <span
                   key={slot.slotId}
                   title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
@@ -154,6 +170,11 @@ export const RoomCard = ({ room }: RoomCardProps) => {
 
 export const RoomCardList = ({ room }: RoomCardProps) => {
   const { t } = useI18n();
+  const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
+  const slotsToRender =
+    hasQueriedSlots && room.queriedSlotsStatus && room.queriedSlotsStatus.length > 0
+      ? room.queriedSlotsStatus
+      : room.dailySchedule?.slots;
 
   return (
     <div
@@ -223,12 +244,23 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
           )}
         </div>
 
-        {room.dailySchedule && room.dailySchedule.slots.length > 0 && (
+        {hasQueriedSlots && room.totalQueriedSlots != null && (
+          <div className="mt-2 flex items-center justify-between gap-2 rounded-xl bg-surface-container-low px-3 py-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+              {t("rooms.card.queriedSlots")}
+            </span>
+            <span className="text-[10px] font-black tracking-wide text-on-surface">
+              {(room.availableSlotCount ?? 0)}/{room.totalQueriedSlots} {t("rooms.card.free")}
+            </span>
+          </div>
+        )}
+
+        {slotsToRender && slotsToRender.length > 0 && (
           <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-outline-variant/30 pt-2">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
               {t("rooms.card.schedule")}
             </span>
-            {room.dailySchedule.slots.map((slot) => (
+            {slotsToRender.map((slot) => (
               <span
                 key={slot.slotId}
                 title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
