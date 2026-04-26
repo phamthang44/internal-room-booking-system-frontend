@@ -112,7 +112,7 @@ interface RoomGridProps {
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
-  onCheckAvailability?: (roomId: string) => void;
+  onCheckAvailability?: (room: RoomUI) => void;
 }
 
 export const RoomGrid = ({

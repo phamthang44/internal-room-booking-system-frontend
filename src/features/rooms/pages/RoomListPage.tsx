@@ -4,15 +4,16 @@ import { useI18n } from "@shared/i18n/useI18n";
 import { SearchBar } from "../components/SearchBar";
 import { FilterSidebar } from "../components/FilterSidebar";
 import { RoomGrid } from "../components/RoomGrid";
-import { AvailabilityDrawer } from "../components/AvailabilityDrawer";
+import { AvailabilitySummaryModal } from "../components/AvailabilitySummaryModal";
 import { useClassrooms } from "../hooks/useClassrooms";
 import { useRoomFilterStore } from "../hooks/useRoomFilterStore";
 import { cn } from "@shared/utils/cn";
+import type { RoomUI } from "../types/classroom.api.types";
 
 export const RoomListPage = () => {
   const [page, setPage] = useState(1);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
-  const [availabilityRoomId, setAvailabilityRoomId] = useState<string | null>(null);
+  const [availabilityRoom, setAvailabilityRoom] = useState<RoomUI | null>(null);
   const { t } = useI18n();
 
   const { data, isLoading, isError, refetch } = useClassrooms(page);
@@ -93,7 +94,7 @@ export const RoomListPage = () => {
               isLoading={isLoading}
               isError={isError}
               onRetry={() => void refetch()}
-              onCheckAvailability={(roomId) => setAvailabilityRoomId(roomId)}
+              onCheckAvailability={(room) => setAvailabilityRoom(room)}
             />
 
             {/* Pagination */}
@@ -129,10 +130,10 @@ export const RoomListPage = () => {
         </div>
       </div>
 
-      <AvailabilityDrawer
-        open={availabilityRoomId != null}
-        roomId={availabilityRoomId}
-        onClose={() => setAvailabilityRoomId(null)}
+      <AvailabilitySummaryModal
+        open={availabilityRoom != null}
+        room={availabilityRoom}
+        onClose={() => setAvailabilityRoom(null)}
       />
     </AppLayout>
   );

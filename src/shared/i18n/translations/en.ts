@@ -387,6 +387,20 @@ export const en = {
       free: "free",
       notMatchingFilters: "This room may not match your current filters.",
     },
+    availabilitySummary: {
+      title: "Availability Summary",
+      selectedSlots: "Selected slots",
+      freeCount: "{{available}} / {{total}} slots free",
+      slotBreakdown: "Slot breakdown",
+      daySchedule: "Day schedule",
+      free: "Free",
+      occupied: "Occupied",
+      noSlotFilterHint: "Select a date and time slot(s) to see a focused summary.",
+      noSchedule: "No schedule data is available for this room.",
+      roomUnavailableTitle: "Room not available",
+      roomUnavailableDescription:
+        "This room is not AVAILABLE right now, so booking actions are disabled.",
+    },
     grid: {
       noResults: "No results",
       showing: "Showing {{shown}} of {{total}} rooms",

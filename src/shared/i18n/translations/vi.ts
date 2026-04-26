@@ -388,6 +388,20 @@ export const vi = {
       free: "trống",
       notMatchingFilters: "Phòng này có thể không khớp với bộ lọc hiện tại.",
     },
+    availabilitySummary: {
+      title: "Tóm tắt lịch trống",
+      selectedSlots: "Ca đã chọn",
+      freeCount: "{{available}} / {{total}} ca trống",
+      slotBreakdown: "Chi tiết theo ca",
+      daySchedule: "Lịch trong ngày",
+      free: "Trống",
+      occupied: "Đã bận",
+      noSlotFilterHint: "Hãy chọn ngày và ca học để xem tóm tắt nhanh.",
+      noSchedule: "Không có dữ liệu lịch cho phòng này.",
+      roomUnavailableTitle: "Phòng không khả dụng",
+      roomUnavailableDescription:
+        "Phòng này hiện không ở trạng thái AVAILABLE nên các thao tác đặt phòng đã bị vô hiệu hóa.",
+    },
     grid: {
       noResults: "Không có kết quả",
       showing: "Hiển thị {{shown}} trên {{total}} phòng",

@@ -8,13 +8,14 @@ import { RoomStatusChip, roomStatusCardClasses } from "./RoomStatusChip";
 
 interface RoomCardProps {
   room: RoomUI;
-  onCheckAvailability?: (roomId: string) => void;
+  onCheckAvailability?: (room: RoomUI) => void;
 }
 
 const formatClock = (t: string) => (t.length >= 5 ? t.slice(0, 5) : t);
 
 export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
   const { t } = useI18n();
+  const isActionable = room.availability === "available";
   const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
   const slotsToRender =
     hasQueriedSlots && room.queriedSlotsStatus && room.queriedSlotsStatus.length > 0
@@ -152,8 +153,12 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
           {onCheckAvailability ? (
             <button
               type="button"
-              onClick={() => onCheckAvailability(room.id)}
-              className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+              onClick={() => onCheckAvailability(room)}
+              disabled={!isActionable}
+              className={cn(
+                "flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity",
+                isActionable ? "hover:opacity-90" : "opacity-50 cursor-not-allowed"
+              )}
             >
               {t("rooms.card.checkAvailability")}
             </button>
@@ -165,12 +170,23 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
               {t("rooms.card.checkAvailability")}
             </Link>
           )}
-          <Link
-            to={`/rooms/${room.id}`}
-            className="rounded-xl border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
-          >
-            {t("rooms.card.viewDetails")}
-          </Link>
+          {isActionable ? (
+            <Link
+              to={`/rooms/${room.id}`}
+              className="rounded-xl border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
+            >
+              {t("rooms.card.viewDetails")}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="rounded-xl border border-outline-variant/40 px-3 py-2 text-xs font-semibold text-on-surface-variant/60 opacity-60 cursor-not-allowed"
+              title={t("rooms.availabilitySummary.roomUnavailableTitle")}
+            >
+              {t("rooms.card.viewDetails")}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -181,6 +197,7 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
 
 export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
   const { t } = useI18n();
+  const isActionable = room.availability === "available";
   const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
   const slotsToRender =
     hasQueriedSlots && room.queriedSlotsStatus && room.queriedSlotsStatus.length > 0
@@ -301,8 +318,12 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
         {onCheckAvailability ? (
           <button
             type="button"
-            onClick={() => onCheckAvailability(room.id)}
-            className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+            onClick={() => onCheckAvailability(room)}
+            disabled={!isActionable}
+            className={cn(
+              "rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity",
+              isActionable ? "hover:opacity-90" : "opacity-50 cursor-not-allowed"
+            )}
           >
             {t("rooms.card.checkAvailability")}
           </button>
@@ -314,12 +335,23 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
             {t("rooms.card.checkAvailability")}
           </Link>
         )}
-        <Link
-          to={`/rooms/${room.id}`}
-          className="rounded-xl border border-outline-variant px-4 py-2 text-center text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
-        >
-          {t("rooms.card.viewDetails")}
-        </Link>
+        {isActionable ? (
+          <Link
+            to={`/rooms/${room.id}`}
+            className="rounded-xl border border-outline-variant px-4 py-2 text-center text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
+          >
+            {t("rooms.card.viewDetails")}
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="rounded-xl border border-outline-variant/40 px-4 py-2 text-center text-xs font-semibold text-on-surface-variant/60 opacity-60 cursor-not-allowed"
+            title={t("rooms.availabilitySummary.roomUnavailableTitle")}
+          >
+            {t("rooms.card.viewDetails")}
+          </button>
+        )}
       </div>
     </div>
   );

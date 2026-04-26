@@ -2,10 +2,12 @@
 // RoomDetailPage — Main page: 7/12 + 5/12 asymmetric layout
 // Route: /rooms/:roomId
 // ─────────────────────────────────────────────────────────────────────────────
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { RefreshCw } from "lucide-react";
 import { AppLayout } from "@shared/components/AppLayout";
 import { useI18n } from "@shared/i18n/useI18n";
+import { ConfirmDialog } from "@shared/components/ConfirmDialog";
 import { useRoomDetail } from "../hooks/useRoomDetail";
 import { RoomHeroImage } from "../components/detail/RoomHeroImage";
 import { RoomInfoBento } from "../components/detail/RoomInfoBento";
@@ -15,8 +17,17 @@ import { RoomDetailSkeleton } from "../components/detail/RoomDetailSkeleton";
 export const RoomDetailPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const { t } = useI18n();
+  const navigate = useNavigate();
+  const [unavailableOpen, setUnavailableOpen] = useState(false);
 
   const { data: room, isLoading, isError, refetch } = useRoomDetail(roomId ?? "");
+
+  useEffect(() => {
+    if (!room) return;
+    if (room.availability !== "available") {
+      setUnavailableOpen(true);
+    }
+  }, [room]);
 
   return (
     <AppLayout>
@@ -67,6 +78,16 @@ export const RoomDetailPage = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={unavailableOpen}
+        title={t("rooms.availabilitySummary.roomUnavailableTitle")}
+        description={t("rooms.availabilitySummary.roomUnavailableDescription")}
+        confirmLabel={t("roomDetail.backToRooms")}
+        cancelLabel={t("common.errors.http.dismiss")}
+        onConfirm={() => navigate("/rooms")}
+        onCancel={() => navigate("/rooms")}
+      />
     </AppLayout>
   );
 };
