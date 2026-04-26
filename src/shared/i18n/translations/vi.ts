@@ -390,8 +390,8 @@ export const vi = {
     },
     availabilitySummary: {
       title: "Tóm tắt lịch trống",
-      selectedSlots: "Ca đã chọn",
-      freeCount: "{{available}} / {{total}} ca trống",
+      selectedSlots: "Ca đang lọc",
+      freeCount: "Trống {{available}}/{{total}} ca",
       slotBreakdown: "Chi tiết theo ca",
       daySchedule: "Lịch trong ngày",
       free: "Trống",
