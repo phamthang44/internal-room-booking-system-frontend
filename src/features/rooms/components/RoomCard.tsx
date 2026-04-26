@@ -129,7 +129,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
                     "max-w-full truncate rounded-lg px-2 py-0.5 text-[10px] font-medium",
                     slot.isAvailable
                       ? "bg-primary/12 text-primary"
-                      : "bg-surface-container text-on-surface-variant opacity-80"
+                      : "bg-error-container/70 text-error border border-error/20"
                   )}
                 >
                   {slot.slotName}
@@ -268,7 +268,7 @@ export const RoomCardList = ({ room }: RoomCardProps) => {
                   "truncate rounded-md px-1.5 py-0.5 text-[10px] font-medium",
                   slot.isAvailable
                     ? "bg-primary/12 text-primary"
-                    : "bg-surface-container text-on-surface-variant opacity-80"
+                    : "bg-error-container/70 text-error border border-error/20"
                 )}
               >
                 {slot.slotName}
