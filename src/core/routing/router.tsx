@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage, useAuthStore, useInitAuth, useProfileStore } from "@features/auth";
 import { HomePage, LoadingScreen } from "@features/home";
-import { StudentDashboard } from "@features/dashboard";
+import { AdminDashboard, StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
 import { MyBookingsPage, BookingDetailPage, BookingCheckInPage } from "@features/bookings";
 import { AdminUserPenaltiesPage, MyPenaltiesPage } from "@features/penalties";
@@ -262,6 +262,14 @@ const RouterContent = () => {
           element={
             <StaffRoute>
               <AdminApprovalsPage />
+            </StaffRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <StaffRoute>
+              <AdminDashboard />
             </StaffRoute>
           }
         />

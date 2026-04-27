@@ -49,6 +49,13 @@ function useRouteHeader(pathname: string) {
       backTo: null,
     };
   }
+  if (matchPath({ path: "/admin/dashboard", end: true }, pathname)) {
+    return {
+      titleKey: "nav.admin.dashboard" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
   if (matchPath({ path: "/admin/users", end: true }, pathname)) {
     return {
       titleKey: "nav.admin.users" as const,
@@ -201,6 +208,11 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   ];
 
   const ADMIN_NAV_ITEMS = [
+    {
+      icon: "dashboard",
+      label: t("nav.admin.dashboard"),
+      to: "/admin/dashboard",
+    },
     { icon: "verified_user", label: t("nav.approvals"), to: "/admin/approvals" },
     ...(isAdmin
       ? ([

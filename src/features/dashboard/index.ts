@@ -23,3 +23,4 @@ export { UpcomingList } from "./components/recent-activity/UpcomingList";
 
 // Pages
 export { StudentDashboard } from "./pages/StudentDashboard";
+export { AdminDashboard } from "./pages/AdminDashboard";

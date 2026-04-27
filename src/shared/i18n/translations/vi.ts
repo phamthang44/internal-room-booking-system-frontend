@@ -139,6 +139,7 @@ export const vi = {
     settings: "Cài đặt",
     admin: {
       section: "Quản trị",
+      dashboard: "Bảng điều khiển (Quản trị)",
       users: "Người dùng (Quản trị)",
       userPenalties: "Vi phạm & hình phạt (người dùng)",
       rooms: "Phòng (Quản trị)",
@@ -326,6 +327,94 @@ export const vi = {
     error: {
       title: "Không thể tải dữ liệu bảng điều khiển",
       message: "Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
+    },
+  },
+  adminDashboard: {
+    hero: {
+      title: "Bảng điều khiển vận hành",
+      subtitle:
+        "Tổng quan nhanh về phê duyệt, đặt phòng, phòng học và các tín hiệu chính sách trong hôm nay.",
+      actions: {
+        goToApprovals: "Mở phê duyệt",
+        manageRooms: "Quản lý phòng",
+      },
+    },
+    kpis: {
+      labels: {
+        today: "Hôm nay",
+      },
+      pendingApprovals: "Yêu cầu chờ duyệt",
+      bookingsToday: "Đặt phòng hôm nay",
+      activeRooms: "Phòng đang hoạt động",
+      activePenalties: "Hình phạt đang áp dụng",
+    },
+    breakdown: {
+      title: "Phân bổ trạng thái đặt phòng",
+      subtitle: "Phân bố các trạng thái đặt phòng trong hệ thống",
+      empty: "Chưa có dữ liệu phân bổ trạng thái đặt phòng.",
+      aria: {
+        stackedBar: "Thanh xếp chồng thể hiện phân bổ trạng thái đặt phòng",
+      },
+      status: {
+        APPROVED: "Đã duyệt",
+        CONFIRMED: "Đã xác nhận",
+        PENDING: "Chờ duyệt",
+        CHECKED_IN: "Đã check-in",
+        CHECKED_OUT: "Đã check-out",
+        CANCELLED: "Đã hủy",
+        REJECTED: "Đã từ chối",
+        EXPIRED: "Hết hạn",
+        COMPLETED: "Hoàn tất",
+      },
+    },
+    violations: {
+      title: "Vi phạm gần đây",
+      subtitle: "Các vi phạm chính sách mới nhất và điểm mức độ",
+      empty: "Không có vi phạm gần đây.",
+      columns: {
+        user: "Người dùng",
+        studentCode: "Mã sinh viên",
+        type: "Loại vi phạm",
+        points: "Điểm",
+      },
+      pointsLabel: "Điểm mức độ: {{count}}",
+    },
+    error: {
+      title: "Không thể tải dữ liệu bảng điều khiển quản trị",
+      message: "Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
+    },
+    analytics: {
+      title: "Phân tích",
+      subtitle: "Xu hướng và tín hiệu vận hành để ra quyết định nhanh",
+      range: {
+        last7d: "7 ngày",
+        last30d: "30 ngày",
+        last4w: "4 tuần",
+        last8w: "8 tuần",
+      },
+      bookingTrend: {
+        title: "Xu hướng đặt phòng",
+        caption: "Tổng số đặt phòng theo ngày",
+        empty: "Chưa đủ dữ liệu để hiển thị xu hướng.",
+        aria: "Biểu đồ đường thể hiện số đặt phòng theo thời gian",
+        stats: {
+          total: "Tổng",
+          peak: "Đỉnh",
+        },
+      },
+      roomStats: {
+        title: "Hiệu suất sử dụng phòng",
+        caption: "Các phòng được sử dụng nhiều nhất",
+        empty: "Chưa có dữ liệu sử dụng phòng.",
+        meta: "{{booked}} / {{total}} ca được đặt",
+      },
+      violationTrend: {
+        title: "Xu hướng vi phạm",
+        caption: "Các vi phạm thường gặp (tổng hợp)",
+        empty: "Chưa có dữ liệu xu hướng vi phạm.",
+        countLabel: "{{count}} lượt",
+        pointsLabel: "{{count}} điểm mức độ",
+      },
     },
   },
   rooms: {

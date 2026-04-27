@@ -138,6 +138,7 @@ export const en = {
     settings: "Settings",
     admin: {
       section: "Admin",
+      dashboard: "Admin Dashboard",
       users: "User Management",
       userPenalties: "User penalties",
       rooms: "Admin Rooms",
@@ -325,6 +326,94 @@ export const en = {
     error: {
       title: "Unable to load dashboard data",
       message: "Please try again later or contact support.",
+    },
+  },
+  adminDashboard: {
+    hero: {
+      title: "Operations Dashboard",
+      subtitle:
+        "A quick overview of approvals, bookings, rooms, and policy signals for today.",
+      actions: {
+        goToApprovals: "Open Approvals",
+        manageRooms: "Manage Rooms",
+      },
+    },
+    kpis: {
+      labels: {
+        today: "Today",
+      },
+      pendingApprovals: "Pending Approvals",
+      bookingsToday: "Bookings Today",
+      activeRooms: "Active Rooms",
+      activePenalties: "Active Penalties",
+    },
+    breakdown: {
+      title: "Booking Status Breakdown",
+      subtitle: "Distribution of booking states across the system",
+      empty: "No booking breakdown data available yet.",
+      aria: {
+        stackedBar: "Stacked bar of booking status distribution",
+      },
+      status: {
+        APPROVED: "Approved",
+        CONFIRMED: "Confirmed",
+        PENDING: "Pending",
+        CHECKED_IN: "Checked in",
+        CHECKED_OUT: "Checked out",
+        CANCELLED: "Cancelled",
+        REJECTED: "Rejected",
+        EXPIRED: "Expired",
+        COMPLETED: "Completed",
+      },
+    },
+    violations: {
+      title: "Recent Violations",
+      subtitle: "Latest policy issues and severity points",
+      empty: "No recent violations.",
+      columns: {
+        user: "User",
+        studentCode: "Student code",
+        type: "Violation type",
+        points: "Points",
+      },
+      pointsLabel: "Severity points: {{count}}",
+    },
+    error: {
+      title: "Unable to load admin dashboard data",
+      message: "Please try again later or contact support.",
+    },
+    analytics: {
+      title: "Analytics",
+      subtitle: "Trends and operational signals for quick decisions",
+      range: {
+        last7d: "Last 7d",
+        last30d: "Last 30d",
+        last4w: "Last 4w",
+        last8w: "Last 8w",
+      },
+      bookingTrend: {
+        title: "Booking Trend",
+        caption: "Total bookings per day",
+        empty: "Not enough data to render a trend yet.",
+        aria: "Line chart of bookings over time",
+        stats: {
+          total: "Total",
+          peak: "Peak",
+        },
+      },
+      roomStats: {
+        title: "Room Utilization",
+        caption: "Top utilized rooms",
+        empty: "No utilization data available.",
+        meta: "{{booked}} / {{total}} slots booked",
+      },
+      violationTrend: {
+        title: "Violation Trend",
+        caption: "Most frequent violations (aggregated)",
+        empty: "No violation trend data available.",
+        countLabel: "{{count}} issues",
+        pointsLabel: "{{count}} severity pts",
+      },
     },
   },
   rooms: {
