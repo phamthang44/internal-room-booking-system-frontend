@@ -275,6 +275,49 @@ export const en = {
       createBooking: "Create Booking",
       viewSchedule: "View Schedule",
     },
+    penalty: {
+      titles: {
+        warning: "Penalty warning",
+        requireApproval: "Approval required",
+        tempBan: "Temporary ban",
+        permanentBan: "Permanent ban",
+      },
+      messages: {
+        warning: "You currently have a penalty warning on your account.",
+        requireApproval:
+          "Your next bookings may require staff approval due to your penalty status.",
+        tempBan: "You are temporarily banned from creating new bookings.",
+        permanentBan: "You are permanently banned from creating new bookings.",
+      },
+      until: "Until {{value}}",
+    },
+    attendance: {
+      title: "Attendance",
+      percent: "{{value}}% Attendance",
+      subtitle: "Your attendance performance based on completed bookings.",
+      stats: {
+        noShow: "No-shows",
+        cancelledThisMonth: "Cancelled (30d)",
+        avgAttendees: "Avg attendees",
+        rate: "Rate",
+      },
+    },
+    recommendations: {
+      title: "Recommended rooms",
+      subtitle: "Suggested based on your activity and group size.",
+      attendees: "Attendees",
+      capacity: "Capacity {{value}}",
+      empty: "No recommendations available yet.",
+      status: {
+        AVAILABLE: "Available",
+        OCCUPIED: "Occupied",
+        MAINTENANCE: "Maintenance",
+      },
+      metrics: {
+        bookedTimes: "Booked",
+        avgAttendees: "Avg attendees",
+      },
+    },
     stats: {
       totalBookings: "Total Bookings",
       upcomingToday: "Upcoming Sessions",
@@ -326,6 +369,24 @@ export const en = {
     error: {
       title: "Unable to load dashboard data",
       message: "Please try again later or contact support.",
+    },
+  },
+  schedule: {
+    title: "My schedule",
+    subtitle: "Your upcoming bookings, grouped by day.",
+    count: "{{value}} bookings",
+    empty: "No upcoming bookings in your schedule.",
+    error: {
+      loadFailed: "Failed to load schedule. Please try again.",
+    },
+    actions: {
+      createBooking: "Create booking",
+    },
+  },
+  recommendation: {
+    reason: {
+      frequent: "You have booked this room {{0}} times before",
+      capacity_match: "Fits your group size of {{0}}",
     },
   },
   adminDashboard: {

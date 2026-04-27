@@ -3,6 +3,7 @@
  */
 export const DASHBOARD_ENDPOINTS = {
   STUDENT_DASHBOARD: "/students/dashboard",
+  STUDENT_RECOMMENDATIONS: "/students/recommendations",
   ADMIN_OVERVIEW: "/admin/dashboard/overview",
   ADMIN_BOOKING_TREND: "/admin/dashboard/trend",
   ADMIN_ROOM_STATS: "/admin/dashboard/room-stats",

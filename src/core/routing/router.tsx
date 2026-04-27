@@ -4,7 +4,7 @@ import { LoginPage, useAuthStore, useInitAuth, useProfileStore } from "@features
 import { HomePage, LoadingScreen } from "@features/home";
 import { AdminDashboard, StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
-import { MyBookingsPage, BookingDetailPage, BookingCheckInPage } from "@features/bookings";
+import { MyBookingsPage, MySchedulePage, BookingDetailPage, BookingCheckInPage } from "@features/bookings";
 import { AdminUserPenaltiesPage, MyPenaltiesPage } from "@features/penalties";
 import {
   AdminRoomAuditPanelPage,
@@ -160,6 +160,15 @@ const RouterContent = () => {
           element={
             <ProtectedRoute>
               <MyBookingsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/schedule"
+          element={
+            <ProtectedRoute>
+              <MySchedulePage />
             </ProtectedRoute>
           }
         />

@@ -37,12 +37,53 @@ export interface StudentDashboardData {
   pendingBookings: number;
   upcomingList: UpcomingBookingItem[];
   historyList: HistoryItem[];
+
+  // --- Attendance Stats (New) ---
+  attendanceRate?: number; // 0.0 to 1.0 (e.g., 0.85)
+  noShowCount?: number;
+  cancelledThisMonthCount?: number;
+
+  // --- Penalty Awareness (New) ---
+  hasPenalty?: boolean;
+  penaltyLevel?: "WARNING" | "REQUIRE_APPROVAL" | "BAN_TEMP" | "PERMANENT_BAN";
+  penaltyExpiresAt?: string;
+
+  // --- Quality Metrics (New) ---
+  avgActualAttendees?: number;
 }
 
 export interface StudentDashboardResponse {
   data: StudentDashboardData;
   meta: DashboardMeta;
 }
+
+export interface DashboardApiErrorDetail {
+  code?: string;
+  message?: string;
+  traceId?: string;
+  details?: unknown;
+}
+
+export interface DashboardApiResult<T> {
+  data?: T;
+  meta?: DashboardMeta;
+  error?: DashboardApiErrorDetail;
+}
+
+export interface RoomRecommendationResponse {
+  classroomId: number;
+  roomName: string;
+  buildingName: string;
+  roomTypeName: string;
+  capacity: number;
+  status: "AVAILABLE" | "OCCUPIED" | "MAINTENANCE";
+  bookingCount: number;
+  avgActualAttendees: number;
+  reasonKey: string;
+}
+
+export type StudentRecommendationsResult =
+  DashboardApiResult<RoomRecommendationResponse[]>;
 
 const USE_MOCK = false;
 
@@ -51,6 +92,11 @@ const MOCK_RESPONSE: StudentDashboardResponse = {
     totalBookings: 24,
     upcomingBookings: 2,
     pendingBookings: 1,
+    attendanceRate: 0.85,
+    noShowCount: 1,
+    cancelledThisMonthCount: 0,
+    hasPenalty: false,
+    avgActualAttendees: 4.6,
     upcomingList: [
       {
         bookingId: 20,
@@ -127,3 +173,21 @@ export const fetchStudentDashboard =
     );
     return response.data;
   };
+
+export async function fetchStudentRecommendations(params?: {
+  attendees?: number;
+  date?: string; // YYYY-MM-DD
+}): Promise<StudentRecommendationsResult> {
+  const { token } = useAuthStore.getState();
+  const response = await apiClient.get<StudentRecommendationsResult>(
+    DASHBOARD_ENDPOINTS.STUDENT_RECOMMENDATIONS,
+    {
+      ...getAuthConfig(token),
+      params: {
+        attendees: params?.attendees,
+        date: params?.date,
+      },
+    },
+  );
+  return response.data;
+}

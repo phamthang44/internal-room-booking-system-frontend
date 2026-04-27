@@ -14,7 +14,7 @@ export const HeroSection = ({ name }: HeroSectionProps) => {
   };
 
   const handleViewSchedule = () => {
-    navigate("/bookings");
+    navigate("/schedule");
   };
 
   return (

@@ -276,6 +276,49 @@ export const vi = {
       createBooking: "Đặt phòng",
       viewSchedule: "Xem lịch",
     },
+    penalty: {
+      titles: {
+        warning: "Cảnh báo hình phạt",
+        requireApproval: "Yêu cầu phê duyệt",
+        tempBan: "Cấm tạm thời",
+        permanentBan: "Cấm vĩnh viễn",
+      },
+      messages: {
+        warning: "Tài khoản của bạn hiện đang có cảnh báo hình phạt.",
+        requireApproval:
+          "Các lần đặt phòng tiếp theo có thể cần nhân viên phê duyệt do trạng thái hình phạt.",
+        tempBan: "Bạn đang bị cấm tạm thời tạo đặt phòng mới.",
+        permanentBan: "Bạn đang bị cấm vĩnh viễn tạo đặt phòng mới.",
+      },
+      until: "Đến {{value}}",
+    },
+    attendance: {
+      title: "Chuyên cần",
+      percent: "Chuyên cần {{value}}%",
+      subtitle: "Hiệu suất chuyên cần dựa trên các đặt phòng đã hoàn tất.",
+      stats: {
+        noShow: "Vắng mặt",
+        cancelledThisMonth: "Hủy (30 ngày)",
+        avgAttendees: "TB người tham dự",
+        rate: "Tỉ lệ",
+      },
+    },
+    recommendations: {
+      title: "Phòng gợi ý",
+      subtitle: "Đề xuất dựa trên lịch sử và quy mô nhóm của bạn.",
+      attendees: "Số người",
+      capacity: "Sức chứa {{value}}",
+      empty: "Chưa có gợi ý phù hợp.",
+      status: {
+        AVAILABLE: "Còn trống",
+        OCCUPIED: "Đang sử dụng",
+        MAINTENANCE: "Bảo trì",
+      },
+      metrics: {
+        bookedTimes: "Đã đặt",
+        avgAttendees: "TB người tham dự",
+      },
+    },
     stats: {
       totalBookings: "Tổng đặt phòng",
       upcomingToday: "Lịch đặt sắp tới",
@@ -327,6 +370,24 @@ export const vi = {
     error: {
       title: "Không thể tải dữ liệu bảng điều khiển",
       message: "Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
+    },
+  },
+  schedule: {
+    title: "Lịch của tôi",
+    subtitle: "Các đặt phòng sắp tới, được nhóm theo ngày.",
+    count: "{{value}} đặt phòng",
+    empty: "Không có đặt phòng sắp tới trong lịch của bạn.",
+    error: {
+      loadFailed: "Không thể tải lịch. Vui lòng thử lại.",
+    },
+    actions: {
+      createBooking: "Tạo đặt phòng",
+    },
+  },
+  recommendation: {
+    reason: {
+      frequent: "Bạn đã đặt phòng này {{0}} lần trước đây",
+      capacity_match: "Phù hợp với nhóm {{0}} người của bạn",
     },
   },
   adminDashboard: {

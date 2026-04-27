@@ -1,4 +1,5 @@
 export { MyBookingsPage } from "./pages/MyBookingsPage";
+export { MySchedulePage } from "./pages/MySchedulePage";
 export { BookingDetailPage } from "./pages/BookingDetailPage";
 export { BookingCheckInPage } from "./pages/BookingCheckInPage";
 export { useMyBookings } from "./hooks/useMyBookings";

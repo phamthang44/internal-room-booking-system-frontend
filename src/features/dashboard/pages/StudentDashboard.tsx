@@ -7,6 +7,9 @@ import { HeroSection } from "../components/recent-activity/HeroSection";
 import { SummaryBento } from "../components/recent-activity/SummaryBento";
 import { ActivityCarousel } from "../components/recent-activity/ActivityCarousel";
 import { UpcomingList } from "../components/recent-activity/UpcomingList";
+import { PenaltyBanner } from "../components/student/PenaltyBanner";
+import { AttendanceCard } from "../components/student/AttendanceCard";
+import { RecommendationsSection } from "../components/student/RecommendationsSection";
 
 export const StudentDashboard = () => {
   const { user } = useAuthStore();
@@ -34,7 +37,19 @@ export const StudentDashboard = () => {
           </div>
         ) : (
           <>
+            <PenaltyBanner
+              hasPenalty={data?.data?.hasPenalty}
+              penaltyLevel={data?.data?.penaltyLevel}
+              penaltyExpiresAt={data?.data?.penaltyExpiresAt}
+            />
             <SummaryBento data={data?.data} />
+            <AttendanceCard
+              attendanceRate={data?.data?.attendanceRate}
+              noShowCount={data?.data?.noShowCount}
+              cancelledThisMonthCount={data?.data?.cancelledThisMonthCount}
+              avgActualAttendees={data?.data?.avgActualAttendees}
+            />
+            <RecommendationsSection />
             <ActivityCarousel historyList={data?.data?.historyList} />
             <UpcomingList upcomingList={data?.data?.upcomingList} />
           </>
