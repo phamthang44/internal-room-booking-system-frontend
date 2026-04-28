@@ -1,23 +1,12 @@
 import { useMemo } from "react";
 import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
+import ReactECharts from "echarts-for-react";
 import type {
   DailyBookingTrendResponse,
   RoomUtilizationResponse,
   ViolationTrendResponse,
 } from "../../types/adminDashboard.types";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  BarChart,
-  Bar,
-  Legend,
-} from "recharts";
 
 function clamp(v: number, min: number, max: number) {
   return Math.max(min, Math.min(max, v));
@@ -28,6 +17,17 @@ function formatDateLabel(date: string) {
   const parts = date.split("-");
   if (parts.length !== 3) return date;
   return `${parts[1]}/${parts[2]}`;
+}
+
+function normalizeViolationTypeKey(key: string): string {
+  return key.trim().toUpperCase();
+}
+
+function getViolationTypeLabel(typeKey: string, t: (k: string) => string) {
+  const k = normalizeViolationTypeKey(typeKey || "UNKNOWN");
+  const mapKey = `penalties.violationTypes.${k}`;
+  const translated = t(mapKey);
+  return translated === mapKey ? k.replace(/_/g, " ") : translated;
 }
 
 function TogglePills<T extends string>({
@@ -152,9 +152,6 @@ export function AdminAnalyticsSection({
   }, [roomStats]);
 
   const violationTimeSeries = useMemo(() => {
-    // Recharts stacked bar expects one row per date, with keys per type.
-    // This is a small, direct grouping to pivot the chart-ready list.
-    // Keep counts in a dedicated object to stay type-safe (no string index on row).
     const byDate = new Map<
       string,
       { date: string; dateLabel: string; counts: Record<string, number> }
@@ -162,7 +159,7 @@ export function AdminAnalyticsSection({
     const types = new Set<string>();
     for (const v of violationTrend ?? []) {
       const date = v.date;
-      const type = (v.violationType ?? "UNKNOWN").toString();
+      const type = normalizeViolationTypeKey((v.violationType ?? "UNKNOWN").toString());
       const count = Number(v.violationCount ?? 0);
       types.add(type);
       const row =
@@ -180,6 +177,158 @@ export function AdminAnalyticsSection({
     const typeList = Array.from(types.values()).sort();
     return { series, typeList };
   }, [violationTrend]);
+
+  const bookingTrendOption = useMemo(() => {
+    const categories = trendSeries.map((p) => p.dateLabel);
+    const values = trendSeries.map((p) => p.totalBookings);
+    return {
+      animation: true,
+      grid: { left: 8, right: 12, top: 18, bottom: 8, containLabel: true },
+      xAxis: {
+        type: "category",
+        data: categories,
+        boundaryGap: false,
+        axisTick: { show: false },
+        axisLine: { lineStyle: { color: "rgba(0,0,0,0.12)" } },
+        axisLabel: { fontSize: 11, color: "rgba(0,0,0,0.6)" },
+      },
+      yAxis: {
+        type: "value",
+        splitNumber: 4,
+        axisLabel: { fontSize: 11, color: "rgba(0,0,0,0.6)" },
+        splitLine: { lineStyle: { color: "rgba(0,0,0,0.06)" } },
+      },
+      tooltip: {
+        trigger: "axis",
+        backgroundColor: "rgba(255,255,255,0.92)",
+        borderColor: "rgba(0,0,0,0.10)",
+        borderWidth: 1,
+        textStyle: { color: "rgba(0,0,0,0.86)" },
+        axisPointer: { type: "line", lineStyle: { color: "rgba(103,80,164,0.35)" } },
+      },
+      series: [
+        {
+          name: t("adminDashboard.analytics.bookingTrend.caption"),
+          type: "line",
+          smooth: 0.35,
+          data: values,
+          symbol: "circle",
+          symbolSize: 6,
+          showSymbol: false,
+          lineStyle: { width: 3, color: "#6750A4" },
+          areaStyle: {
+            opacity: 0.18,
+            color: {
+              type: "linear",
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: "rgba(103,80,164,0.35)" },
+                { offset: 1, color: "rgba(103,80,164,0)" },
+              ],
+            },
+          },
+        },
+      ],
+    } as const;
+  }, [trendSeries, t]);
+
+  const roomUtilizationOption = useMemo(() => {
+    const data = [...topRooms].reverse();
+    const categories = data.map((r) => r.roomName);
+    const values = data.map((r) => Number(r.utilizationPct ?? 0));
+    return {
+      animation: true,
+      grid: { left: 12, right: 12, top: 8, bottom: 8, containLabel: true },
+      xAxis: {
+        type: "value",
+        min: 0,
+        max: 100,
+        axisLabel: { fontSize: 11, color: "rgba(0,0,0,0.6)", formatter: "{value}%" },
+        splitLine: { lineStyle: { color: "rgba(0,0,0,0.06)" } },
+      },
+      yAxis: {
+        type: "category",
+        data: categories,
+        axisTick: { show: false },
+        axisLine: { lineStyle: { color: "rgba(0,0,0,0.12)" } },
+        axisLabel: { fontSize: 11, color: "rgba(0,0,0,0.7)", width: 88, overflow: "truncate" },
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        backgroundColor: "rgba(255,255,255,0.92)",
+        borderColor: "rgba(0,0,0,0.10)",
+        borderWidth: 1,
+        textStyle: { color: "rgba(0,0,0,0.86)" },
+        valueFormatter: (value: unknown) => `${Number(value ?? 0).toFixed(1)}%`,
+      },
+      series: [
+        {
+          name: t("adminDashboard.analytics.roomStats.title"),
+          type: "bar",
+          data: values,
+          barWidth: 14,
+          itemStyle: { color: "#6750A4", borderRadius: [10, 10, 10, 10] },
+          emphasis: { focus: "series" },
+        },
+      ],
+    } as const;
+  }, [topRooms, t]);
+
+  const violationTrendOption = useMemo(() => {
+    const palette = ["#D32F2F", "#EF6C00", "#F9A825", "#1976D2", "#2E7D32", "#6A1B9A", "#546E7A"];
+    const types = violationTimeSeries.typeList.slice(0, 6);
+    const dates = violationTimeSeries.series.map((r) => r.dateLabel);
+
+    return {
+      animation: true,
+      grid: { left: 8, right: 12, top: 32, bottom: 8, containLabel: true },
+      legend: {
+        top: 0,
+        left: 0,
+        itemWidth: 10,
+        itemHeight: 10,
+        textStyle: { fontSize: 11, color: "rgba(0,0,0,0.7)" },
+        formatter: (name: string) => getViolationTypeLabel(name, t),
+      },
+      xAxis: {
+        type: "category",
+        data: dates,
+        axisTick: { show: false },
+        axisLine: { lineStyle: { color: "rgba(0,0,0,0.12)" } },
+        axisLabel: { fontSize: 11, color: "rgba(0,0,0,0.6)" },
+      },
+      yAxis: {
+        type: "value",
+        splitNumber: 4,
+        axisLabel: { fontSize: 11, color: "rgba(0,0,0,0.6)" },
+        splitLine: { lineStyle: { color: "rgba(0,0,0,0.06)" } },
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        backgroundColor: "rgba(255,255,255,0.92)",
+        borderColor: "rgba(0,0,0,0.10)",
+        borderWidth: 1,
+        textStyle: { color: "rgba(0,0,0,0.86)" },
+      },
+      series: types.map((type, idx) => ({
+        name: type,
+        type: "bar",
+        stack: "violations",
+        barWidth: 18,
+        itemStyle: {
+          color: palette[idx] ?? "#9E9E9E",
+          borderRadius: idx === types.length - 1 ? [8, 8, 0, 0] : 0,
+        },
+        emphasis: { focus: "series" as const },
+        data: violationTimeSeries.series.map((row) => row.counts[type] ?? 0),
+      })),
+    } as const;
+  }, [t, violationTimeSeries.series, violationTimeSeries.typeList]);
 
   return (
     <section className="space-y-6">
@@ -229,29 +378,11 @@ export function AdminAnalyticsSection({
               </div>
             ) : (
               <div className="h-[180px]" aria-label={t("adminDashboard.analytics.bookingTrend.aria")}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trendSeries} margin={{ top: 10, right: 10, bottom: 0, left: -10 }}>
-                    <CartesianGrid stroke="rgba(0,0,0,0.06)" strokeDasharray="3 3" />
-                    <XAxis dataKey="dateLabel" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} width={34} />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: "1px solid rgba(0,0,0,0.08)",
-                      }}
-                      labelFormatter={(label) => `${t("adminDashboard.analytics.bookingTrend.caption")} • ${label}`}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="totalBookings"
-                      name={t("adminDashboard.analytics.bookingTrend.caption")}
-                      stroke="#6750A4"
-                      strokeWidth={3}
-                      dot={false}
-                      activeDot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <ReactECharts
+                  option={bookingTrendOption}
+                  style={{ height: "100%", width: "100%" }}
+                  opts={{ renderer: "svg" }}
+                />
               </div>
             )}
           </div>
@@ -287,30 +418,11 @@ export function AdminAnalyticsSection({
               </div>
             ) : (
               <div className="h-[260px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[...topRooms].reverse()}
-                    layout="vertical"
-                    margin={{ top: 6, right: 12, bottom: 6, left: 90 }}
-                  >
-                    <CartesianGrid stroke="rgba(0,0,0,0.06)" strokeDasharray="3 3" />
-                    <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11 }} />
-                    <YAxis
-                      type="category"
-                      dataKey="roomName"
-                      width={90}
-                      tick={{ fontSize: 11 }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: "1px solid rgba(0,0,0,0.08)",
-                      }}
-                      formatter={(value: any) => [`${Number(value).toFixed(1)}%`, t("adminDashboard.analytics.roomStats.title")]}
-                    />
-                    <Bar dataKey="utilizationPct" name={t("adminDashboard.analytics.roomStats.title")} fill="#6750A4" radius={[8, 8, 8, 8]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <ReactECharts
+                  option={roomUtilizationOption}
+                  style={{ height: "100%", width: "100%" }}
+                  opts={{ renderer: "svg" }}
+                />
               </div>
             )}
           </div>
@@ -346,32 +458,11 @@ export function AdminAnalyticsSection({
           </div>
         ) : (
           <div className="h-[280px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={violationTimeSeries.series} margin={{ top: 10, right: 16, bottom: 0, left: -10 }}>
-                <CartesianGrid stroke="rgba(0,0,0,0.06)" strokeDasharray="3 3" />
-                <XAxis dataKey="dateLabel" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} width={34} />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: 12,
-                    border: "1px solid rgba(0,0,0,0.08)",
-                  }}
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                {violationTimeSeries.typeList.slice(0, 6).map((type, idx) => (
-                  <Bar
-                    key={type}
-                    name={type}
-                    dataKey={(row: { counts: Record<string, number> }) =>
-                      row.counts[type] ?? 0
-                    }
-                    stackId="violations"
-                    fill={["#D32F2F", "#EF6C00", "#F9A825", "#1976D2", "#2E7D32", "#6A1B9A"][idx] ?? "#9E9E9E"}
-                    radius={idx === violationTimeSeries.typeList.length - 1 ? [8, 8, 0, 0] : 0}
-                  />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
+            <ReactECharts
+              option={violationTrendOption}
+              style={{ height: "100%", width: "100%" }}
+              opts={{ renderer: "svg" }}
+            />
           </div>
         )}
       </div>

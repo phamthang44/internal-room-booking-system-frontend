@@ -22,6 +22,13 @@ export function RecentViolationsCard({ violations }: RecentViolationsCardProps) 
 
   const rows = useMemo(() => (violations ?? []).slice(0, 6), [violations]);
 
+  const getViolationLabel = (typeKey: string) => {
+    const k = String(typeKey ?? "UNKNOWN").trim().toUpperCase();
+    const mapKey = `penalties.violationTypes.${k}`;
+    const translated = t(mapKey);
+    return translated === mapKey ? k.replace(/_/g, " ") : translated;
+  };
+
   if (!rows.length) {
     return (
       <section className="space-y-4">
@@ -90,7 +97,7 @@ export function RecentViolationsCard({ violations }: RecentViolationsCardProps) 
                   </div>
                   <div className="col-span-4 min-w-0">
                     <span className="truncate text-sm text-on-surface">
-                      {v.violationType}
+                      {getViolationLabel(v.violationType)}
                     </span>
                   </div>
                   <div className="col-span-2 flex items-center justify-end">
@@ -137,7 +144,9 @@ export function RecentViolationsCard({ violations }: RecentViolationsCardProps) 
                     {v.severityPoints}
                   </span>
                 </div>
-                <p className="text-sm text-on-surface">{v.violationType}</p>
+                <p className="text-sm text-on-surface">
+                  {getViolationLabel(v.violationType)}
+                </p>
               </div>
             );
           })}
