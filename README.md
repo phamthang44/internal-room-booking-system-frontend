@@ -242,6 +242,56 @@ console.log(ENV.isProduction)   // true|false
 
 ## 🔄 Development Workflow
 
+### `/daily` Command Cheat Sheet
+
+Use these as your default Graphify-powered routine.
+
+#### Morning Start (or start of a new task)
+
+```bash
+# pick one scope
+graphify src/core
+# or
+graphify src/features/<feature-name>
+
+# map the flow before editing
+graphify query "How does <feature flow> work?"
+graphify path "<entry point>" "<target module>"
+```
+
+#### Mid-Task Safety Check (after each edit batch)
+
+```bash
+graphify --update src/features/<feature-name>
+npm run type-check
+```
+
+For infra-heavy work:
+
+```bash
+graphify --update src/core
+npm run type-check
+```
+
+#### End-of-Day / Pre-Commit Closeout
+
+```bash
+graphify --update src/features/<feature-name>  # or src/core
+npm run type-check
+npm run build  # optional but recommended for risky changes
+```
+
+Then quickly review `graphify-out/GRAPH_REPORT.md`:
+- God Nodes changed intentionally
+- Surprising Connections are expected
+- Suggested Questions align with your feature intent
+
+#### Voice-Friendly Prompts
+
+- "Start feature kickoff for `<feature>`"
+- "Run safe refactor workflow for `<symbol/module>`"
+- "Do daily closeout check for `<scope>`"
+
 ### Adding a New Feature
 
 1. **Create feature folder**:
