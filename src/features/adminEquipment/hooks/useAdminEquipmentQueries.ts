@@ -6,6 +6,7 @@ import {
 } from "../api/adminEquipment.api.service";
 import type { EquipmentRequest } from "../types/adminEquipment.api.types";
 import { presentAppSuccess } from "@shared/errors/presentAppSuccess";
+import { presentAppError } from "@shared/errors/presentAppError";
 
 export const adminEquipmentQueryKeys = {
   all: ["admin", "equipment"] as const,
@@ -58,9 +59,10 @@ export function useAdminEquipmentCreateMutation() {
     mutationFn: (payload: EquipmentRequest) => adminEquipmentApiService.create(payload),
     meta: { skipGlobalError: true },
     onSuccess: (message) => {
-      if (message) presentAppSuccess(message);
+      presentAppSuccess(message ?? "Equipment type created.");
       void qc.invalidateQueries({ queryKey: adminEquipmentQueryKeys.all });
     },
+    onError: (error) => presentAppError(error),
   });
 }
 
@@ -71,9 +73,10 @@ export function useAdminEquipmentUpdateMutation() {
       adminEquipmentApiService.update(payload.id, payload.body),
     meta: { skipGlobalError: true },
     onSuccess: (message) => {
-      if (message) presentAppSuccess(message);
+      presentAppSuccess(message ?? "Equipment type updated.");
       void qc.invalidateQueries({ queryKey: adminEquipmentQueryKeys.all });
     },
+    onError: (error) => presentAppError(error),
   });
 }
 
@@ -83,9 +86,10 @@ export function useAdminEquipmentDeactivateMutation() {
     mutationFn: (id: number) => adminEquipmentApiService.deactivate(id),
     meta: { skipGlobalError: true },
     onSuccess: (message) => {
-      if (message) presentAppSuccess(message);
+      presentAppSuccess(message ?? "Equipment type deactivated.");
       void qc.invalidateQueries({ queryKey: adminEquipmentQueryKeys.all });
     },
+    onError: (error) => presentAppError(error),
   });
 }
 
@@ -95,9 +99,10 @@ export function useAdminEquipmentReactivateMutation() {
     mutationFn: (id: number) => adminEquipmentApiService.reactivate(id),
     meta: { skipGlobalError: true },
     onSuccess: (message) => {
-      if (message) presentAppSuccess(message);
+      presentAppSuccess(message ?? "Equipment type reactivated.");
       void qc.invalidateQueries({ queryKey: adminEquipmentQueryKeys.all });
     },
+    onError: (error) => presentAppError(error),
   });
 }
 

@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin";
 import { useLoginSchema } from "../hooks/useLoginSchema";
 import { useI18n } from "@shared/i18n/useI18n";
@@ -84,12 +85,12 @@ export const LoginForm = () => {
 
       {/* Forgot Password Link */}
       <div className="text-right">
-        <a
-          href="#forgot-password"
+        <Link
+          to="/forgot-password"
           className="text-xs font-semibold text-primary hover:text-primary-dark transition-colors"
         >
           {t("auth.login.forgotPassword")}
-        </a>
+        </Link>
       </div>
 
       {/* API Error */}

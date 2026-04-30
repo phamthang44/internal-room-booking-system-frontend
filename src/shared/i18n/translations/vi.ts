@@ -48,6 +48,116 @@ export const vi = {
         unknown: "Đã xảy ra lỗi. Vui lòng thử lại.",
       },
     },
+    forgotPassword: {
+      title: "Quên mật khẩu",
+      subtitle: "Nhập email của bạn và chúng tôi sẽ gửi mã đặt lại.",
+      email: {
+        label: "Địa chỉ Email",
+        placeholder: "ví dụ: j.smith@university.edu",
+      },
+      submit: {
+        send: "Gửi mã đặt lại",
+        sending: "Đang gửi...",
+      },
+      resend: {
+        label: "Gửi lại mã",
+        cooldown: "Gửi lại sau {seconds}s",
+      },
+      backToLogin: "Quay lại đăng nhập",
+      validation: {
+        emailRequired: "Email là bắt buộc.",
+        emailInvalid: "Vui lòng nhập địa chỉ email hợp lệ.",
+        emailTooLong: "Email không được vượt quá 255 ký tự.",
+      },
+    },
+    resetPassword: {
+      title: "Đặt lại mật khẩu",
+      subtitle: "Nhập mã 6 chữ số được gửi đến email của bạn và chọn mật khẩu mới.",
+      sendingTo: "Mã đã gửi đến:",
+      otp: {
+        label: "Mã xác nhận",
+        placeholder: "123456",
+      },
+      newPassword: {
+        label: "Mật khẩu mới",
+        placeholder: "Tối thiểu 10 ký tự, chữ hoa, chữ thường, số, ký tự đặc biệt",
+      },
+      confirmPassword: {
+        label: "Xác nhận mật khẩu mới",
+        placeholder: "Nhập lại mật khẩu mới",
+      },
+      submit: {
+        reset: "Đặt lại mật khẩu",
+        resetting: "Đang đặt lại...",
+      },
+      requestNewOtp: "Yêu cầu mã mới",
+      validation: {
+        otpLength: "Mã phải đúng 6 chữ số.",
+        passwordRequired: "Mật khẩu là bắt buộc.",
+        passwordWeak: "Mật khẩu phải có ít nhất 10 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+        confirmRequired: "Vui lòng xác nhận mật khẩu của bạn.",
+        passwordMismatch: "Mật khẩu không khớp.",
+      },
+    },
+  },
+  settings: {
+    title: "Cài đặt",
+    subtitle: "Quản lý hồ sơ, bảo mật và tùy chọn của bạn.",
+    tabs: {
+      profile: "Hồ sơ",
+      security: "Bảo mật",
+      appearance: "Giao diện",
+    },
+    profile: {
+      sectionTitle: "Hồ sơ của tôi",
+      sectionDescription: "Cập nhật tên hiển thị và xem thông tin tài khoản của bạn.",
+      accountInfo: "Thông tin tài khoản",
+      editableInfo: "Thông tin có thể chỉnh sửa",
+      editNote: "Chỉ có thể chỉnh sửa tên hiển thị tại đây.",
+      fields: {
+        fullName: "Họ và tên",
+        fullNamePlaceholder: "ví dụ: Nguyễn Văn A",
+        username: "Tên đăng nhập",
+        email: "Địa chỉ Email",
+        studentCode: "Mã sinh viên",
+        role: "Vai trò",
+      },
+      submit: {
+        save: "Lưu thay đổi",
+        saving: "Đang lưu...",
+      },
+      validation: {
+        fullNameMin: "Tên phải có ít nhất 2 ký tự.",
+        fullNameMax: "Tên không được vượt quá 100 ký tự.",
+      },
+    },
+    security: {
+      sectionTitle: "Bảo mật",
+      sectionDescription: "Quản lý mật khẩu và các phiên đăng nhập của bạn.",
+      changePassword: {
+        title: "Đổi mật khẩu",
+        description: "Sử dụng quy trình OTP bảo mật để đặt lại mật khẩu qua xác minh email.",
+        action: "Đổi mật khẩu",
+      },
+      sessions: {
+        title: "Phiên đăng nhập",
+        description: "Bạn hiện đang đăng nhập trên thiết bị này.",
+        active: "Đang hoạt động",
+      },
+    },
+    appearance: {
+      sectionTitle: "Giao diện",
+      sectionDescription: "Tùy chỉnh ngôn ngữ và giao diện của ứng dụng.",
+      language: {
+        title: "Ngôn ngữ hiển thị",
+        description: "Chọn giữa tiếng Anh và tiếng Việt. Điều này ảnh hưởng đến toàn bộ văn bản trong ứng dụng.",
+      },
+      theme: {
+        title: "Chủ đề màu sắc",
+        description: "Chế độ sáng và tối sẽ có trong bản cập nhật tương lai.",
+        comingSoon: "Sắp ra mắt",
+      },
+    },
   },
   common: {
     appName: "Scholarly Sanctuary",
@@ -1053,6 +1163,55 @@ export const vi = {
         runAudit: "Chạy kiểm kê",
       },
     },
+    upsert: {
+      createTitle: "Thêm loại thiết bị",
+      editTitle: "Chỉnh sửa loại thiết bị",
+      subtitle: "Nhập tên tiếng Việt và tiếng Anh cho loại thiết bị này.",
+      fields: {
+        nameVi: "Tên (Tiếng Việt)",
+        nameEn: "Tên (Tiếng Anh)",
+        descVi: "Mô tả (Tiếng Việt)",
+        descEn: "Mô tả (Tiếng Anh)",
+      },
+      errors: {
+        name: "Tên phải có từ 2 đến 120 ký tự.",
+      },
+    },
+    actions: {
+      close: "Đóng",
+      cancel: "Hủy",
+      create: "Tạo mới",
+      save: "Lưu thay đổi",
+      saving: "Đang lưu…",
+      edit: "Chỉnh sửa",
+    },
+    confirm: {
+      deactivate: {
+        title: "Vô hiệu hóa loại thiết bị?",
+        description: "Loại thiết bị này sẽ bị ẩn khỏi biểu mẫu cấu hình phòng. Các phòng đã được gán vẫn không bị ảnh hưởng.",
+        confirm: "Vô hiệu hóa",
+        cancel: "Giữ nguyên",
+      },
+      reactivate: {
+        title: "Kích hoạt lại loại thiết bị?",
+        description: "Loại thiết bị này sẽ xuất hiện trở lại trong biểu mẫu cấu hình phòng.",
+        confirm: "Kích hoạt lại",
+        cancel: "Hủy",
+      },
+    },
+    toasts: {
+      createSuccess: "Đã tạo loại thiết bị.",
+      updateSuccess: "Đã cập nhật loại thiết bị.",
+      deactivateSuccess: "Đã vô hiệu hóa loại thiết bị.",
+      reactivateSuccess: "Đã kích hoạt lại loại thiết bị.",
+      createError: "Không thể tạo loại thiết bị.",
+      updateError: "Không thể cập nhật loại thiết bị.",
+      deactivateError: "Không thể vô hiệu hóa loại thiết bị.",
+      reactivateError: "Không thể kích hoạt lại loại thiết bị.",
+    },
+    empty: "Không tìm thấy loại thiết bị nào.",
+    loading: "Đang tải thiết bị…",
+    loadError: "Không thể tải danh sách thiết bị.",
   },
   adminUsers: {
     title: "Quản lý người dùng",

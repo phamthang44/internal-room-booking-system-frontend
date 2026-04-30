@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { LoginPage, useAuthStore, useInitAuth, useProfileStore } from "@features/auth";
+import { LoginPage, useAuthStore, useInitAuth, useProfileStore, ForgotPasswordPage, ResetPasswordPage } from "@features/auth";
 import { HomePage, LoadingScreen } from "@features/home";
 import { AdminDashboard, StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
@@ -14,6 +14,7 @@ import {
 import { AdminApprovalsPage } from "@features/approvals";
 import { AdminBookingDetailPage } from "@features/adminBookings";
 import { AdminEquipmentListPage } from "@features/adminEquipment";
+import { SettingsPage } from "@features/settings";
 import { AdminUsersPage } from "@features/adminUsers";
 import { NotFoundPage } from "@features/error";
 import { AppToastStack } from "@shared/components/AppToastStack";
@@ -108,6 +109,8 @@ const RouterContent = () => {
       <Routes>
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Protected Routes */}
         <Route
@@ -196,6 +199,15 @@ const RouterContent = () => {
           element={
             <ProtectedRoute>
               <BookingCheckInPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />

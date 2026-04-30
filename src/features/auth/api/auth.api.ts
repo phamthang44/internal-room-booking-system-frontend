@@ -3,6 +3,8 @@ import type {
   LoginRequest,
   LoginResponse,
   LoginResponseData,
+  OtpRequestPayload,
+  ResetPasswordPayload,
   User,
   ApiResponse,
 } from "../types/auth.types";
@@ -89,16 +91,35 @@ export const authApi = {
     return response.data;
   },
 
-  /**
-   * Refresh access token using refresh token
-   * Auth is handled by httpOnly cookie only (no Bearer header)
-   * Header clearing is already handled by refreshClient interceptor
-   */
   refreshToken: async (): Promise<ApiResponse<LoginResponseData>> => {
     const response = await refreshClient.post<ApiResponse<LoginResponseData>>(
       AUTH_ENDPOINTS.REFRESH,
     );
     return response.data;
+  },
+
+  requestRegistrationOtp: async (payload: OtpRequestPayload): Promise<string> => {
+    const response = await apiClient.post<ApiResponse<null>>(
+      AUTH_ENDPOINTS.OTP_REQUEST,
+      payload,
+    );
+    return response.data.meta.message;
+  },
+
+  forgotPassword: async (payload: OtpRequestPayload): Promise<string> => {
+    const response = await apiClient.post<ApiResponse<null>>(
+      AUTH_ENDPOINTS.FORGOT_PASSWORD,
+      payload,
+    );
+    return response.data.meta.message;
+  },
+
+  resetPassword: async (payload: ResetPasswordPayload): Promise<string> => {
+    const response = await apiClient.post<ApiResponse<null>>(
+      AUTH_ENDPOINTS.RESET_PASSWORD,
+      payload,
+    );
+    return response.data.meta.message;
   },
 };
 

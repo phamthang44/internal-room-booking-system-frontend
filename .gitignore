@@ -50,3 +50,10 @@ graphify-out/manifest.json
 
 # local token tracking, not useful to share
 graphify-out/cost.json
+
+# graphify scratch files (intermediate pipeline state, never commit)
+.graphify_*.json
+.graphify_python
+
+# accidental nested graphify outputs inside feature folders
+src/**/graphify-out/

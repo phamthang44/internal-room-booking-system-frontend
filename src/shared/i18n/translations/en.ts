@@ -47,6 +47,116 @@ export const en = {
         unknown: "An error occurred. Please try again.",
       },
     },
+    forgotPassword: {
+      title: "Forgot Password",
+      subtitle: "Enter your email and we'll send you a reset code.",
+      email: {
+        label: "Email Address",
+        placeholder: "e.g. j.smith@university.edu",
+      },
+      submit: {
+        send: "Send Reset Code",
+        sending: "Sending...",
+      },
+      resend: {
+        label: "Resend Code",
+        cooldown: "Resend available in {seconds}s",
+      },
+      backToLogin: "Back to Sign In",
+      validation: {
+        emailRequired: "Email is required.",
+        emailInvalid: "Please enter a valid email address.",
+        emailTooLong: "Email must be 255 characters or fewer.",
+      },
+    },
+    resetPassword: {
+      title: "Reset Password",
+      subtitle: "Enter the 6-digit code sent to your email and choose a new password.",
+      sendingTo: "Code sent to:",
+      otp: {
+        label: "Verification Code",
+        placeholder: "123456",
+      },
+      newPassword: {
+        label: "New Password",
+        placeholder: "Min 10 chars, upper, lower, number, symbol",
+      },
+      confirmPassword: {
+        label: "Confirm New Password",
+        placeholder: "Repeat your new password",
+      },
+      submit: {
+        reset: "Reset Password",
+        resetting: "Resetting...",
+      },
+      requestNewOtp: "Request a new code",
+      validation: {
+        otpLength: "Code must be exactly 6 digits.",
+        passwordRequired: "Password is required.",
+        passwordWeak: "Password must be at least 10 characters and include uppercase, lowercase, number, and special character.",
+        confirmRequired: "Please confirm your password.",
+        passwordMismatch: "Passwords do not match.",
+      },
+    },
+  },
+  settings: {
+    title: "Settings",
+    subtitle: "Manage your profile, security, and preferences.",
+    tabs: {
+      profile: "Profile",
+      security: "Security",
+      appearance: "Appearance",
+    },
+    profile: {
+      sectionTitle: "My Profile",
+      sectionDescription: "Update your display name and view your account details.",
+      accountInfo: "Account Information",
+      editableInfo: "Editable Information",
+      editNote: "Only your display name can be edited here.",
+      fields: {
+        fullName: "Full Name",
+        fullNamePlaceholder: "e.g. Jane Smith",
+        username: "Username",
+        email: "Email Address",
+        studentCode: "Student ID",
+        role: "Role",
+      },
+      submit: {
+        save: "Save Changes",
+        saving: "Saving...",
+      },
+      validation: {
+        fullNameMin: "Name must be at least 2 characters.",
+        fullNameMax: "Name must be 100 characters or fewer.",
+      },
+    },
+    security: {
+      sectionTitle: "Security",
+      sectionDescription: "Manage your password and active sessions.",
+      changePassword: {
+        title: "Change Password",
+        description: "Use our secure OTP flow to reset your password via email verification.",
+        action: "Change Password",
+      },
+      sessions: {
+        title: "Active Sessions",
+        description: "You are currently signed in on this device.",
+        active: "Active",
+      },
+    },
+    appearance: {
+      sectionTitle: "Appearance",
+      sectionDescription: "Customize the language and look of the app.",
+      language: {
+        title: "Display Language",
+        description: "Choose between English and Vietnamese. This affects all text in the app.",
+      },
+      theme: {
+        title: "Color Theme",
+        description: "Light and dark mode toggle will be available in a future release.",
+        comingSoon: "Coming soon",
+      },
+    },
   },
   common: {
     appName: "Scholarly Sanctuary",
@@ -1052,6 +1162,55 @@ export const en = {
         runAudit: "Run Full Audit",
       },
     },
+    upsert: {
+      createTitle: "Add Equipment Type",
+      editTitle: "Edit Equipment Type",
+      subtitle: "Define the Vietnamese and English names for this equipment type.",
+      fields: {
+        nameVi: "Name (Vietnamese)",
+        nameEn: "Name (English)",
+        descVi: "Description (Vietnamese)",
+        descEn: "Description (English)",
+      },
+      errors: {
+        name: "Name must be between 2 and 120 characters.",
+      },
+    },
+    actions: {
+      close: "Close",
+      cancel: "Cancel",
+      create: "Create",
+      save: "Save changes",
+      saving: "Saving…",
+      edit: "Edit",
+    },
+    confirm: {
+      deactivate: {
+        title: "Deactivate equipment type?",
+        description: "This type will be hidden from room setup forms. Existing room assignments are not affected.",
+        confirm: "Deactivate",
+        cancel: "Keep active",
+      },
+      reactivate: {
+        title: "Reactivate equipment type?",
+        description: "This type will become available again in room setup forms.",
+        confirm: "Reactivate",
+        cancel: "Cancel",
+      },
+    },
+    toasts: {
+      createSuccess: "Equipment type created.",
+      updateSuccess: "Equipment type updated.",
+      deactivateSuccess: "Equipment type deactivated.",
+      reactivateSuccess: "Equipment type reactivated.",
+      createError: "Failed to create equipment type.",
+      updateError: "Failed to update equipment type.",
+      deactivateError: "Failed to deactivate equipment type.",
+      reactivateError: "Failed to reactivate equipment type.",
+    },
+    empty: "No equipment types found.",
+    loading: "Loading equipment…",
+    loadError: "Failed to load equipment.",
   },
   adminUsers: {
     title: "User Management",

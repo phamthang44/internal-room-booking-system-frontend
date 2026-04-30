@@ -1,25 +1,105 @@
+import { useState } from "react";
 import { AppLayout } from "@shared/components/AppLayout";
 import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
+import { ConfirmDialog } from "@shared/components/ConfirmDialog";
+import {
+  useAdminEquipmentListQuery,
+  useAdminEquipmentCreateMutation,
+  useAdminEquipmentUpdateMutation,
+  useAdminEquipmentDeactivateMutation,
+  useAdminEquipmentReactivateMutation,
+} from "../hooks/useAdminEquipmentQueries";
+import {
+  AdminEquipmentUpsertModal,
+  type AdminEquipmentUpsertValue,
+} from "../components/AdminEquipmentUpsertModal";
+import type { EquipmentListItem } from "../types/adminEquipment.api.types";
+
+const PAGE_SIZE = 10;
+
+type ConfirmAction =
+  | { type: "deactivate"; item: EquipmentListItem }
+  | { type: "reactivate"; item: EquipmentListItem };
 
 export const AdminEquipmentListPage = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+
+  const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState("");
+
+  const [upsertOpen, setUpsertOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<EquipmentListItem | null>(null);
+
+  const [confirm, setConfirm] = useState<ConfirmAction | null>(null);
+
+  const listQuery = useAdminEquipmentListQuery({
+    keyword,
+    page,
+    size: PAGE_SIZE,
+    sort: "id,asc",
+  });
+
+  const createMutation = useAdminEquipmentCreateMutation();
+  const updateMutation = useAdminEquipmentUpdateMutation();
+  const deactivateMutation = useAdminEquipmentDeactivateMutation();
+  const reactivateMutation = useAdminEquipmentReactivateMutation();
+
+  const rows = listQuery.data?.rows ?? [];
+  const totalPages = listQuery.data?.totalPages ?? 1;
+  const totalElements = listQuery.data?.totalElements ?? 0;
+  const from = totalElements === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(page * PAGE_SIZE, totalElements);
+
+  function openCreate() {
+    setEditTarget(null);
+    setUpsertOpen(true);
+  }
+
+  function openEdit(item: EquipmentListItem) {
+    setEditTarget(item);
+    setUpsertOpen(true);
+  }
+
+  function handleUpsertSubmit(value: AdminEquipmentUpsertValue) {
+    if (editTarget) {
+      updateMutation.mutate(
+        { id: editTarget.id, body: value },
+        { onSuccess: () => setUpsertOpen(false) },
+      );
+    } else {
+      createMutation.mutate(value, { onSuccess: () => setUpsertOpen(false) });
+    }
+  }
+
+  function handleConfirm() {
+    if (!confirm) return;
+    if (confirm.type === "deactivate") {
+      deactivateMutation.mutate(confirm.item.id, { onSuccess: () => setConfirm(null) });
+    } else {
+      reactivateMutation.mutate(confirm.item.id, { onSuccess: () => setConfirm(null) });
+    }
+  }
+
+  const upsertBusy = createMutation.isPending || updateMutation.isPending;
+  const confirmBusy = deactivateMutation.isPending || reactivateMutation.isPending;
 
   return (
     <AppLayout>
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+        {/* Header */}
         <div className="mb-10 flex items-end justify-between gap-6">
           <div>
             <h1 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">
-            {t("adminEquipment.list.title")}
-          </h1>
+              {t("adminEquipment.list.title")}
+            </h1>
             <p className="mt-2 text-sm text-on-surface-variant">
               {t("adminEquipment.list.subtitle")}
             </p>
           </div>
-
           <button
             type="button"
+            onClick={openCreate}
             className={cn(
               "inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-on-primary",
               "shadow-lg hover:shadow-xl active:scale-[0.99] transition-all",
@@ -30,264 +110,186 @@ export const AdminEquipmentListPage = () => {
           </button>
         </div>
 
-        {/* Metrics */}
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { labelKey: "adminEquipment.list.metrics.totalItems", value: "1,428", badge: "+12%" },
-            { labelKey: "adminEquipment.list.metrics.deploymentRate", value: "84.2%", badge: null },
-            { labelKey: "adminEquipment.list.metrics.inMaintenance", value: "24", badge: null },
-            { labelKey: "adminEquipment.list.metrics.activeRequests", value: "09", badge: null },
-          ].map((m) => (
-            <div
-              key={m.labelKey}
-              className="flex h-32 flex-col justify-between rounded-2xl bg-surface-container-lowest p-6 shadow-[0_2px_12px_rgba(24,28,30,0.06)]"
-            >
-              <span className="text-sm font-medium text-on-surface-variant">
-                {t(m.labelKey as any)}
-              </span>
-              <div className="flex items-end justify-between">
-                <span className="font-headline text-3xl font-extrabold text-on-surface">
-                  {m.value}
-                </span>
-                {m.badge ? (
-                  <span className="rounded-full bg-tertiary-container px-2 py-1 text-xs font-bold text-tertiary-fixed-dim">
-                    {m.badge}
-                  </span>
-                ) : null}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Table + tabs */}
+        {/* Table card */}
         <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_2px_12px_rgba(24,28,30,0.06)]">
+          {/* Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-3 bg-surface-container-low/30 p-6">
-            <div className="flex flex-wrap gap-2">
-              {[
-                { key: "all", label: t("adminEquipment.list.tabs.all") },
-                { key: "av", label: t("adminEquipment.list.tabs.av") },
-                { key: "furniture", label: t("adminEquipment.list.tabs.furniture") },
-                { key: "computing", label: t("adminEquipment.list.tabs.computing") },
-              ].map((tab, idx) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  className={cn(
-                    "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-                    idx === 0
-                      ? "bg-white text-primary shadow-sm font-bold"
-                      : "text-on-surface-variant hover:bg-white/50",
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-primary transition-colors"
-            >
-              <span className="material-symbols-outlined text-[20px]">
-                filter_list
-              </span>
-              {t("adminEquipment.list.advancedFilters")}
-            </button>
+            <input
+              type="search"
+              value={keyword}
+              onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
+              placeholder={t("adminEquipment.list.advancedFilters")}
+              className="rounded-xl border border-outline-variant/30 bg-surface px-4 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
           </div>
 
+          {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-left">
+            <table className="w-full min-w-[640px] text-left">
               <thead>
                 <tr className="bg-surface-container-low text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                   <th className="px-6 py-4">{t("adminEquipment.list.table.name")}</th>
-                  <th className="px-6 py-4">{t("adminEquipment.list.table.category")}</th>
-                  <th className="px-6 py-4">{t("adminEquipment.list.table.stock")}</th>
                   <th className="px-6 py-4">{t("adminEquipment.list.table.assignedTo")}</th>
                   <th className="px-6 py-4">{t("adminEquipment.list.table.health")}</th>
                   <th className="px-6 py-4 text-right">{t("adminEquipment.list.table.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
-                {[
-                  {
-                    icon: "tv",
-                    name: 'Sony Bravia 4K 75"',
-                    asset: "AV-75-004",
-                    category: "AV",
-                    stock: "42 Units",
-                    assigned: "38 Rooms (90%)",
-                    health: { dot: "bg-tertiary-fixed-dim", label: "Optimal" },
-                  },
-                  {
-                    icon: "chair",
-                    name: "Herman Miller Aeron",
-                    asset: "FR-HM-991",
-                    category: "Furniture",
-                    stock: "112 Units",
-                    assigned: "12 Rooms (10%)",
-                    health: { dot: "bg-tertiary-fixed-dim", label: "Optimal" },
-                  },
-                  {
-                    icon: "laptop_chromebook",
-                    name: "Mac Studio M2 Ultra",
-                    asset: "CP-MS-002",
-                    category: "Computing",
-                    stock: "18 Units",
-                    assigned: "3 Rooms (16%)",
-                    health: { dot: "bg-amber-400", label: "Checking" },
-                  },
-                  {
-                    icon: "settings_input_hdmi",
-                    name: "Crestron NVX E30",
-                    asset: "AV-CR-110",
-                    category: "AV",
-                    stock: "65 Units",
-                    assigned: "62 Rooms (95%)",
-                    health: { dot: "bg-error", label: "Critical", tone: "text-error" },
-                  },
-                ].map((row) => (
-                  <tr key={row.asset} className="hover:bg-surface-container-low transition-colors">
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-container-low">
-                          <span className="material-symbols-outlined text-on-surface-variant">
-                            {row.icon}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-bold text-on-surface">{row.name}</p>
-                          <p className="text-xs text-on-surface-variant">
-                            Asset-ID: {row.asset}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
-                        {row.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5 font-headline font-bold text-on-surface">
-                      {row.stock}
-                    </td>
-                    <td className="px-6 py-5 text-sm text-on-surface-variant">
-                      {row.assigned}
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-2">
-                        <div className={cn("h-2 w-2 rounded-full", row.health.dot)} />
-                        <span className={cn("text-sm font-medium", row.health.tone)}>
-                          {row.health.label}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <button className="rounded-full p-2 text-slate-400 hover:bg-surface-container-high transition-colors">
-                        <span className="material-symbols-outlined">more_vert</span>
-                      </button>
+                {listQuery.isPending && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-sm text-on-surface-variant">
+                      {t("adminEquipment.loading")}
                     </td>
                   </tr>
-                ))}
+                )}
+                {listQuery.isError && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-sm text-error">
+                      {t("adminEquipment.loadError")}
+                    </td>
+                  </tr>
+                )}
+                {listQuery.isSuccess && rows.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-sm text-on-surface-variant">
+                      {t("adminEquipment.empty")}
+                    </td>
+                  </tr>
+                )}
+                {rows.map((row) => {
+                  const name = language === "vi" ? row.nameVi : row.nameEn;
+                  return (
+                    <tr key={row.id} className="hover:bg-surface-container-low transition-colors">
+                      <td className="px-6 py-5">
+                        <div>
+                          <p className="font-bold text-on-surface">{name}</p>
+                          <p className="text-xs text-on-surface-variant">{row.nameKey}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 text-sm text-on-surface-variant">
+                        {row.classroomCount} {row.classroomCount === 1 ? "Room" : "Rooms"}
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2">
+                          <div className={cn("h-2 w-2 rounded-full", row.isActive ? "bg-tertiary-fixed-dim" : "bg-outline")} />
+                          <span className="text-sm font-medium text-on-surface-variant">
+                            {row.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => openEdit(row)}
+                            className="rounded-xl px-3 py-1.5 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                          >
+                            {t("adminEquipment.actions.edit")}
+                          </button>
+                          {row.isActive ? (
+                            <button
+                              onClick={() => setConfirm({ type: "deactivate", item: row })}
+                              className="rounded-xl bg-error-container px-3 py-1.5 text-xs font-bold text-error hover:bg-error/20 transition-colors"
+                            >
+                              {t("adminEquipment.confirm.deactivate.confirm")}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setConfirm({ type: "reactivate", item: row })}
+                              className="rounded-xl bg-secondary-container px-3 py-1.5 text-xs font-bold text-on-secondary-container hover:bg-secondary/20 transition-colors"
+                            >
+                              {t("adminEquipment.confirm.reactivate.confirm")}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
+          {/* Pagination */}
           <div className="flex items-center justify-between border-t border-outline-variant/10 bg-surface-container-low/30 px-6 py-4">
             <p className="text-xs font-medium text-on-surface-variant">
-              {t("adminEquipment.list.pagination.showing", { from: 1, to: 10, total: 42 })}
+              {t("adminEquipment.list.pagination.showing", { from, to, total: totalElements })}
             </p>
             <div className="flex items-center gap-2">
-              <button className="rounded-xl border border-outline-variant/20 p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                <span className="material-symbols-outlined text-[18px]">
-                  chevron_left
-                </span>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="rounded-xl border border-outline-variant/20 p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors disabled:opacity-40"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
               </button>
-              <button className="rounded-xl bg-primary px-3 py-1 text-xs font-bold text-on-primary">
-                1
-              </button>
-              <button className="rounded-xl px-3 py-1 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                2
-              </button>
-              <button className="rounded-xl px-3 py-1 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                3
-              </button>
-              <button className="rounded-xl border border-outline-variant/20 p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                <span className="material-symbols-outlined text-[18px]">
-                  chevron_right
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom area */}
-        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div className="md:col-span-2">
-            <h2 className="mb-3 font-headline text-lg font-bold">
-              {t("adminEquipment.list.recent.title")}
-            </h2>
-            <div className="space-y-1 rounded-2xl bg-surface-container-lowest p-2 shadow-[0_2px_12px_rgba(24,28,30,0.06)]">
-              {[
-                {
-                  iconWrap: "bg-secondary-container",
-                  icon: "move_up",
-                  title: "5x Sony Bravia assigned to West Wing",
-                  meta: "Requested by Dr. Aris | 2 hours ago",
-                  cta: "View Ticket",
-                },
-                {
-                  iconWrap: "bg-error-container",
-                  icon: "report",
-                  title: "Mac Studio #4 reported faulty",
-                  meta: "Lab 302 | 5 hours ago",
-                  cta: "Dispatch Tech",
-                },
-              ].map((it) => (
-                <div
-                  key={it.title}
-                  className="group flex items-center justify-between gap-4 rounded-xl p-4 hover:bg-surface-container-low transition-colors"
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={cn(
+                    "rounded-xl px-3 py-1 text-xs font-medium transition-colors",
+                    p === page
+                      ? "bg-primary text-on-primary font-bold"
+                      : "text-on-surface-variant hover:bg-surface-container-high",
+                  )}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className={cn("flex h-8 w-8 items-center justify-center rounded-full", it.iconWrap)}>
-                      <span className="material-symbols-outlined text-[16px] text-primary">
-                        {it.icon}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-on-surface">{it.title}</p>
-                      <p className="text-xs text-on-surface-variant">{it.meta}</p>
-                    </div>
-                  </div>
-                  <button className="text-xs font-bold text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                    {it.cta}
-                  </button>
-                </div>
+                  {p}
+                </button>
               ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="mb-3 font-headline text-lg font-bold">
-              {t("adminEquipment.list.quickStats.title")}
-            </h2>
-            <div className="relative overflow-hidden rounded-2xl bg-primary p-6 text-white shadow-xl shadow-primary/20">
-              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-primary-fixed-dim">
-                {t("adminEquipment.list.quickStats.healthLabel")}
-              </p>
-              <p className="mb-4 font-headline text-4xl font-extrabold">98.2%</p>
-              <p className="mb-6 text-sm opacity-80">
-                {t("adminEquipment.list.quickStats.healthHint")}
-              </p>
-              <button className="w-full rounded-xl bg-white/10 py-3 text-sm font-bold backdrop-blur transition-colors hover:bg-white/20">
-                {t("adminEquipment.list.quickStats.runAudit")}
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => p + 1)}
+                className="rounded-xl border border-outline-variant/20 p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors disabled:opacity-40"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
               </button>
-              <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/5 blur-3xl" />
-              <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-on-primary-container/10 blur-2xl" />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Create / Edit modal */}
+      <AdminEquipmentUpsertModal
+        open={upsertOpen}
+        mode={editTarget ? "edit" : "create"}
+        busy={upsertBusy}
+        initialValue={
+          editTarget
+            ? {
+                nameVi: editTarget.nameVi,
+                nameEn: editTarget.nameEn,
+              }
+            : undefined
+        }
+        onClose={() => !upsertBusy && setUpsertOpen(false)}
+        onSubmit={handleUpsertSubmit}
+      />
+
+      {/* Deactivate confirmation */}
+      <ConfirmDialog
+        open={confirm?.type === "deactivate"}
+        title={t("adminEquipment.confirm.deactivate.title")}
+        description={t("adminEquipment.confirm.deactivate.description")}
+        confirmLabel={t("adminEquipment.confirm.deactivate.confirm")}
+        cancelLabel={t("adminEquipment.confirm.deactivate.cancel")}
+        tone="danger"
+        busy={confirmBusy}
+        onConfirm={handleConfirm}
+        onCancel={() => !confirmBusy && setConfirm(null)}
+      />
+
+      {/* Reactivate confirmation */}
+      <ConfirmDialog
+        open={confirm?.type === "reactivate"}
+        title={t("adminEquipment.confirm.reactivate.title")}
+        description={t("adminEquipment.confirm.reactivate.description")}
+        confirmLabel={t("adminEquipment.confirm.reactivate.confirm")}
+        cancelLabel={t("adminEquipment.confirm.reactivate.cancel")}
+        tone="neutral"
+        busy={confirmBusy}
+        onConfirm={handleConfirm}
+        onCancel={() => !confirmBusy && setConfirm(null)}
+      />
     </AppLayout>
   );
 };
-

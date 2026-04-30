@@ -55,6 +55,16 @@ export interface LoginResponseData {
  */
 export type LoginResponse = ApiResponse<LoginResponseData>;
 
+export interface OtpRequestPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  otp: string;
+  newPassword: string;
+}
+
 export interface AuthState {
   user: User | null;
   token: string | null;

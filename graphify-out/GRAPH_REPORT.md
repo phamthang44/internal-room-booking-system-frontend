@@ -1,11 +1,11 @@
-# Graph Report - room-booking-frontend  (2026-04-30)
+# Graph Report - src/features/adminEquipment  (2026-04-30)
 
 ## Corpus Check
-- 241 files · ~187,050 words
+- 7 files · ~2,200 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 580 nodes · 465 edges · 26 communities detected
+- 587 nodes · 475 edges · 27 communities detected
 - Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 65 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -17,12 +17,13 @@
 - [[_COMMUNITY_Community 4|Community 4]]
 - [[_COMMUNITY_Community 5|Community 5]]
 - [[_COMMUNITY_Community 6|Community 6]]
-- [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 7|Community 7]]
 - [[_COMMUNITY_Community 9|Community 9]]
 - [[_COMMUNITY_Community 10|Community 10]]
 - [[_COMMUNITY_Community 11|Community 11]]
 - [[_COMMUNITY_Community 12|Community 12]]
 - [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
 - [[_COMMUNITY_Community 15|Community 15]]
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 18|Community 18]]
@@ -31,11 +32,11 @@
 - [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 22|Community 22]]
 - [[_COMMUNITY_Community 25|Community 25]]
-- [[_COMMUNITY_Community 26|Community 26]]
-- [[_COMMUNITY_Community 29|Community 29]]
-- [[_COMMUNITY_Community 32|Community 32]]
-- [[_COMMUNITY_Community 37|Community 37]]
+- [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 38|Community 38]]
+- [[_COMMUNITY_Community 39|Community 39]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `t()` - 27 edges
@@ -91,7 +92,7 @@ Nodes (9): adaptBookingDetail(), adaptMyBookings(), canCancelFromStatus(), iconF
 Cohesion: 0.23
 Nodes (8): getLanguageFromStorage(), formatDisplayDate(), formatIsoRelativeCaption(), getRelativeTime(), fingerprint(), mapTypeToMaterialIcon(), mapTypeToTone(), presentBookingNotification()
 
-### Community 8 - "Community 8"
+### Community 7 - "Community 7"
 Cohesion: 0.25
 Nodes (8): extractApiErrorMessage(), getApiErrorCode(), isValidationApiError(), getNestedValue(), interpolate(), translate(), extractAdminRoomsErrorCode(), messageForAdminRoomsError()
 
@@ -112,6 +113,10 @@ Cohesion: 0.25
 Nodes (2): useInitAuth(), RouterContent()
 
 ### Community 13 - "Community 13"
+Cohesion: 0.43
+Nodes (6): useAdminEquipmentCreateMutation(), useAdminEquipmentDeactivateMutation(), useAdminEquipmentDetailQuery(), useAdminEquipmentListQuery(), useAdminEquipmentReactivateMutation(), useAdminEquipmentUpdateMutation()
+
+### Community 14 - "Community 14"
 Cohesion: 0.36
 Nodes (5): useAdminRoomsService(), useAdminRoomCreateMutation(), useAdminRoomDetailQuery(), useAdminRoomStatusMutation(), useAdminRoomUpdateMutation()
 
@@ -145,25 +150,25 @@ Nodes (2): isSelected(), toggleEquipment()
 
 ### Community 25 - "Community 25"
 Cohesion: 0.5
-Nodes (3): adminBookingDetailQueryKey(), useAdminBookingDetailDisclosure(), useDebouncedValue()
-
-### Community 26 - "Community 26"
-Cohesion: 0.5
 Nodes (2): handleRowKeyDown(), openRow()
 
-### Community 29 - "Community 29"
+### Community 27 - "Community 27"
+Cohesion: 0.5
+Nodes (3): adminBookingDetailQueryKey(), useAdminBookingDetailDisclosure(), useDebouncedValue()
+
+### Community 30 - "Community 30"
 Cohesion: 0.67
 Nodes (2): unwrapApiResult(), unwrapCreateResult()
 
-### Community 32 - "Community 32"
+### Community 33 - "Community 33"
 Cohesion: 0.67
 Nodes (2): cn(), t()
 
-### Community 37 - "Community 37"
+### Community 38 - "Community 38"
 Cohesion: 1.0
 Nodes (2): useAdminRoomUpsertForm(), useAdminRoomUpsertSchema()
 
-### Community 38 - "Community 38"
+### Community 39 - "Community 39"
 Cohesion: 1.0
 Nodes (2): decodeJWT(), isTokenExpired()
 
@@ -176,22 +181,22 @@ Nodes (2): decodeJWT(), isTokenExpired()
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 22`** (5 nodes): `getQuantity()`, `isSelected()`, `setEquipmentQuantity()`, `toggleEquipment()`, `RoomEquipmentSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (5 nodes): `fallbackStyles()`, `handleRowKeyDown()`, `mapToChipStatus()`, `openRow()`, `BookingActivityRow.tsx`
+- **Thin community `Community 25`** (5 nodes): `fallbackStyles()`, `handleRowKeyDown()`, `mapToChipStatus()`, `openRow()`, `BookingActivityRow.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (4 nodes): `assertApiSuccess()`, `unwrapApiResult()`, `unwrapCreateResult()`, `adminRooms.api.service.ts`
+- **Thin community `Community 30`** (4 nodes): `assertApiSuccess()`, `unwrapApiResult()`, `unwrapCreateResult()`, `adminRooms.api.service.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (4 nodes): `cn()`, `status()`, `t()`, `MyBookingsPage.tsx`
+- **Thin community `Community 33`** (4 nodes): `cn()`, `status()`, `t()`, `MyBookingsPage.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (3 nodes): `useAdminRoomUpsertForm()`, `useAdminRoomUpsertSchema()`, `useAdminRoomUpsertForm.ts`
+- **Thin community `Community 38`** (3 nodes): `useAdminRoomUpsertForm()`, `useAdminRoomUpsertSchema()`, `useAdminRoomUpsertForm.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (3 nodes): `jwt.ts`, `decodeJWT()`, `isTokenExpired()`
+- **Thin community `Community 39`** (3 nodes): `jwt.ts`, `decodeJWT()`, `isTokenExpired()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `t()` connect `Community 0` to `Community 1`, `Community 6`, `Community 9`, `Community 10`, `Community 11`, `Community 16`?**
-  _High betweenness centrality (0.069) - this node is a cross-community bridge._
+  _High betweenness centrality (0.067) - this node is a cross-community bridge._
 - **Why does `getRelativeTime()` connect `Community 6` to `Community 0`?**
   _High betweenness centrality (0.028) - this node is a cross-community bridge._
 - **Are the 26 inferred relationships involving `t()` (e.g. with `cn()` and `cn()`) actually correct?**

@@ -133,6 +133,13 @@ function useRouteHeader(pathname: string) {
       backTo: null,
     };
   }
+  if (matchPath({ path: "/settings", end: true }, pathname)) {
+    return {
+      titleKey: "nav.settings" as const,
+      showBack: false,
+      backTo: null,
+    };
+  }
   if (matchPath({ path: "/admin/approvals", end: true }, pathname)) {
     return {
       titleKey: "nav.approvals" as const,
@@ -379,7 +386,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             {t(routeHeader.titleKey)}
           </p>
 
-          {/* Language switcher — wired to i18n context */}
+          {/* Language switcher — abbreviated on mobile, full on sm+ */}
           <div className="flex items-center gap-1.5 rounded-full bg-surface-container px-3 py-1.5 text-xs font-medium">
             <button
               onClick={() => handleLanguageChange("en")}
@@ -409,19 +416,19 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           {/* Notifications */}
           <NotificationsPopover />
 
-          {/* Divider */}
-          <div className="mx-2 h-8 w-[1px] bg-outline-variant/30" />
+          {/* Divider — hidden on mobile */}
+          <div className="hidden sm:block mx-2 h-8 w-[1px] bg-outline-variant/30" />
 
-          {/* User Profile Info */}
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col items-end text-right">
-              <span className="text-sm font-semibold text-on-surface">{profile?.fullName || user?.fullName || "Student"}</span>
-              <span className="text-xs text-on-surface-variant">Student ID: {profile?.studentCode || "N/A"}</span>
+          {/* User Profile Info — text hidden on mobile, avatar always visible */}
+          <div className="flex items-center gap-2.5">
+            <div className="hidden sm:flex flex-col items-end text-right">
+              <span className="text-sm font-semibold text-on-surface leading-tight">{profile?.fullName || user?.fullName || "Student"}</span>
+              <span className="text-xs text-on-surface-variant">ID: {profile?.studentCode || "N/A"}</span>
             </div>
             {profile?.avatar || user?.avatar ? (
-              <img src={profile?.avatar || user?.avatar} alt="User avatar" className="h-10 w-10 rounded-full object-cover shadow-sm" />
+              <img src={profile?.avatar || user?.avatar} alt="User avatar" className="h-9 w-9 rounded-full object-cover shadow-sm" />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed shadow-sm">
                 {(profile?.fullName || user?.fullName)?.charAt(0) ?? "U"}
               </div>
             )}
