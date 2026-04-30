@@ -1,7 +1,7 @@
-# Graph Report - room-booking-frontend  (2026-04-29)
+# Graph Report - room-booking-frontend  (2026-04-30)
 
 ## Corpus Check
-- 241 files · ~187,004 words
+- 241 files · ~187,050 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -58,8 +58,8 @@
   src\features\auth\hooks\useGoogleLogin.ts → src\features\penalties\components\AdminPenaltyPanel.tsx
 - `t()` --calls--> `handleConfirm()`  [INFERRED]
   src\features\penalties\components\AdminPenaltyPanel.tsx → src\features\rooms\components\detail\BookingSidebar.tsx
-- `formatDisplayDate()` --calls--> `t()`  [INFERRED]
-  src\shared\utils\date.ts → src\features\penalties\components\AdminPenaltyPanel.tsx
+- `t()` --calls--> `formatDisplayDate()`  [INFERRED]
+  src\features\penalties\components\AdminPenaltyPanel.tsx → src\shared\utils\date.ts
 
 ## Communities
 
