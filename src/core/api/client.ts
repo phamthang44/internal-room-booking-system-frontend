@@ -119,6 +119,14 @@ apiClient.interceptors.request.use(
     // Idempotency: attach a unique key for non-GET requests if none provided.
     // Backend uses this to dedupe duplicate submits (e.g., double click, retry).
     const method = (config.method ?? "get").toLowerCase();
+
+    // Tell the browser to revalidate GET responses with the server every time.
+    // Without this, browsers serve a 304 from disk cache even after backend data
+    // changes, because the ETag still matches the cached response.
+    if (method === "get") {
+      config.headers["Cache-Control"] = "no-cache";
+    }
+
     const isIdempotencyEligible =
       method !== "get" && method !== "head" && method !== "options";
     if (isIdempotencyEligible) {
