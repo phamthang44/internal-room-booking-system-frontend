@@ -85,7 +85,7 @@ export function BookingActivityRow({
         </div>
       </div>
 
-      <div className="flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
         {chipStatus ? (
           <StatusChip
             status={chipStatus}
@@ -109,13 +109,11 @@ export function BookingActivityRow({
               e.stopPropagation();
               onCancel(item.id);
             }}
-            className="text-error font-bold text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+            className="text-error font-bold text-xs opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block"
           >
             {t("bookings.detail.actions.cancelBooking")}
           </button>
-        ) : (
-          <span className="w-[88px]" aria-hidden="true" />
-        )}
+        ) : null}
       </div>
     </div>
   );

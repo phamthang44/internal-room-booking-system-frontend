@@ -23,7 +23,7 @@ export function RecentActivityCard({
   className,
 }: Readonly<RecentActivityCardProps>) {
   return (
-    <section className={["bg-surface-container-low p-8 rounded-2xl", className].filter(Boolean).join(" ")}>
+    <section className={["bg-surface-container-low p-4 sm:p-6 md:p-8 rounded-2xl", className].filter(Boolean).join(" ")}>
       <div className="flex justify-between items-center mb-6 gap-4">
         <h3 className="text-lg font-bold font-headline text-on-surface">{title}</h3>
         <button

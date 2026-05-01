@@ -125,8 +125,8 @@ export const RecommendationsSection = () => {
                     {t("dashboard.recommendations.capacity", { value: room.capacity })}
                   </span>
                   {chip ? (
-                    <span className="text-xs font-bold rounded-full bg-primary px-3 py-1 text-on-primary inline-flex items-center gap-1.5 border border-primary/20 shadow-sm">
-                      <span className="material-symbols-outlined text-[16px]">
+                    <span className="text-xs font-bold rounded-full bg-primary px-3 py-1 text-on-primary inline-flex items-center gap-1.5 border border-primary/20 shadow-sm min-w-0 max-w-full overflow-hidden">
+                      <span className="material-symbols-outlined text-[16px] shrink-0">
                         auto_awesome
                       </span>
                       <span className="truncate">{chip}</span>
