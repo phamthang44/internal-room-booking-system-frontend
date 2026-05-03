@@ -11,7 +11,7 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (payload: UpdateProfilePayload) => settingsApi.updateProfile(payload),
     meta: { skipGlobalError: true },
-    onSuccess: async (message) => {
+    onSuccess: async ({ message }) => {
       presentAppSuccess(message ?? "Profile updated successfully.");
       await fetchProfile();
     },

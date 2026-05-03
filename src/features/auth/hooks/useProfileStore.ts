@@ -2,21 +2,14 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { apiClient } from "@core/api";
 import { getAuthConfig } from "@core/api/helpers";
+import type { UserProfileResponse } from "../types/auth.types";
 import { useAuthStore } from "./useAuthStore";
 import { AUTH_ENDPOINTS } from "../constants/auth.constants";
 
-export interface UserProfileData {
-  id: number;
-  fullName: string;
-  username: string;
-  roleName: string;
-  email: string;
-  studentCode: string;
-  avatar?: string; // in case google returns avatar later
-}
+export type UserProfileData = UserProfileResponse;
 
 interface ProfileApiResponse {
-  data: UserProfileData;
+  data: UserProfileResponse;
   meta: {
     apiVersion: string;
     message: string;
@@ -26,7 +19,7 @@ interface ProfileApiResponse {
 }
 
 interface ProfileState {
-  profile: UserProfileData | null;
+  profile: UserProfileResponse | null;
   isLoading: boolean;
   error: string | null;
   fetchProfile: () => Promise<void>;
