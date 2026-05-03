@@ -109,13 +109,15 @@ export const en = {
     },
     profile: {
       sectionTitle: "My Profile",
-      sectionDescription: "Update your display name and view your account details.",
+      sectionDescription: "Update your display name, phone number, and view your account details.",
       accountInfo: "Account Information",
       editableInfo: "Editable Information",
-      editNote: "Only your display name can be edited here.",
+      editNote: "You can edit your display name and phone number here.",
       fields: {
         fullName: "Full Name",
         fullNamePlaceholder: "e.g. Jane Smith",
+        phoneNumber: "Phone Number",
+        phoneNumberPlaceholder: "e.g. 0912 345 678",
         username: "Username",
         email: "Email Address",
         studentCode: "Student ID",
@@ -128,6 +130,9 @@ export const en = {
       validation: {
         fullNameMin: "Name must be at least 2 characters.",
         fullNameMax: "Name must be 100 characters or fewer.",
+        phoneMin: "Phone number must be at least 8 characters.",
+        phoneMax: "Phone number must be 20 characters or fewer.",
+        phoneFormat: "Use digits with optional + at the start; spaces or hyphens are allowed.",
       },
     },
     security: {

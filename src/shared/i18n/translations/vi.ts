@@ -110,13 +110,15 @@ export const vi = {
     },
     profile: {
       sectionTitle: "Hồ sơ của tôi",
-      sectionDescription: "Cập nhật tên hiển thị và xem thông tin tài khoản của bạn.",
+      sectionDescription: "Cập nhật tên hiển thị, số điện thoại và xem thông tin tài khoản của bạn.",
       accountInfo: "Thông tin tài khoản",
       editableInfo: "Thông tin có thể chỉnh sửa",
-      editNote: "Chỉ có thể chỉnh sửa tên hiển thị tại đây.",
+      editNote: "Bạn có thể chỉnh sửa họ tên và số điện thoại tại đây.",
       fields: {
         fullName: "Họ và tên",
         fullNamePlaceholder: "ví dụ: Nguyễn Văn A",
+        phoneNumber: "Số điện thoại",
+        phoneNumberPlaceholder: "ví dụ: 0912 345 678",
         username: "Tên đăng nhập",
         email: "Địa chỉ Email",
         studentCode: "Mã sinh viên",
@@ -129,6 +131,9 @@ export const vi = {
       validation: {
         fullNameMin: "Tên phải có ít nhất 2 ký tự.",
         fullNameMax: "Tên không được vượt quá 100 ký tự.",
+        phoneMin: "Số điện thoại phải có ít nhất 8 ký tự.",
+        phoneMax: "Số điện thoại không được vượt quá 20 ký tự.",
+        phoneFormat: "Chỉ dùng chữ số, có thể bắt đầu bằng +; cho phép khoảng trắng hoặc dấu gạch ngang.",
       },
     },
     security: {

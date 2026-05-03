@@ -52,11 +52,18 @@ export const ProfileSection = () => {
     formState: { errors, isDirty },
   } = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { fullName: profile?.fullName ?? "" },
+    defaultValues: {
+      fullName: profile?.fullName ?? "",
+      phoneNumber: profile?.phoneNumber ?? "",
+    },
   });
 
   useEffect(() => {
-    if (profile) reset({ fullName: profile.fullName });
+    if (profile)
+      reset({
+        fullName: profile.fullName,
+        phoneNumber: profile.phoneNumber ?? "",
+      });
   }, [profile, reset]);
 
   const onSubmit = (data: UpdateProfileFormValues) => {
@@ -121,6 +128,22 @@ export const ProfileSection = () => {
                 type="text"
                 placeholder={t("settings.profile.fields.fullNamePlaceholder")}
                 isError={!!errors.fullName}
+                disabled={mutation.isPending}
+              />
+            </FormField>
+
+            <FormField
+              label={t("settings.profile.fields.phoneNumber")}
+              error={errors.phoneNumber?.message}
+              required
+            >
+              <Input
+                {...register("phoneNumber")}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder={t("settings.profile.fields.phoneNumberPlaceholder")}
+                isError={!!errors.phoneNumber}
                 disabled={mutation.isPending}
               />
             </FormField>

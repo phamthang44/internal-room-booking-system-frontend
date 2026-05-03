@@ -66,7 +66,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Staff/admin route wrapper (requires authenticated user with role ADMIN or STAFF)
+// Staff/admin route wrapper (requires authenticated user with role ADMIN or FACILITY_STAFF)
 const StaffRoute = ({ children }: { children: React.ReactNode }) => {
   const { token, hasInitialized } = useAuthStore();
   const { profile, isLoading, fetchProfile } = useProfileStore();
@@ -90,7 +90,7 @@ const StaffRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   const role = profile.roleName;
-  if (role !== "ADMIN" && role !== "STAFF") {
+  if (role !== "ADMIN" && role !== "FACILITY_STAFF") {
     return <Navigate to="/404" replace />;
   }
 

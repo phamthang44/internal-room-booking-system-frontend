@@ -20,6 +20,14 @@ export interface User {
   avatar?: string;
 }
 
+/**
+ * GET /profile and PUT /profile response body (`data` field of {@link ApiResponse}).
+ * `phoneNumber` may be omitted on older API responses until populated.
+ */
+export interface UserProfileResponse extends User {
+  phoneNumber?: string;
+}
+
 export interface LoginRequest {
   identifier: string; // Can be email or username
   password: string;

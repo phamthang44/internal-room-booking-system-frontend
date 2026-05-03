@@ -165,7 +165,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const queryClient = useQueryClient();
 
   const roleName = profile?.roleName ?? user?.roleName;
-  const canSeeAdminSection = roleName === "ADMIN" || roleName === "STAFF";
+  const canSeeAdminSection = roleName === "ADMIN" || roleName === "FACILITY_STAFF";
   const isAdmin = roleName === "ADMIN";
 
   // Close drawer on mobile when route changes
