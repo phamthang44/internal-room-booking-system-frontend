@@ -1,0 +1,358 @@
+# Instincts generated from https://github.com/phamthang44/internal-room-booking-system-frontend
+# Generated: 2026-05-03T03:20:52.207Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: internal-room-booking-system-frontend-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: chore, feat
+
+## Evidence
+
+- 2 commits analyzed
+- Detected conventional commit pattern
+- Examples: chore(graphify): refresh GRAPH_REPORT.md, feat(profile): update user profile full name and phone number
+
+---
+id: internal-room-booking-system-frontend-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Commit Length
+
+## Action
+
+Write moderate-length commit messages (~51 characters)
+
+## Evidence
+
+- Average commit message length: 51 chars
+- Based on 2 commits
+
+---
+id: internal-room-booking-system-frontend-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: internal-room-booking-system-frontend-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: internal-room-booking-system-frontend-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: internal-room-booking-system-frontend-arch-feature-based
+trigger: "when adding a new feature"
+confidence: 0.85
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Arch Feature Based
+
+## Action
+
+Create a new folder in src/features/ with all related code colocated
+
+## Evidence
+
+- Feature-based module organization detected
+- Structure: src/features/[feature-name]/
+
+---
+id: internal-room-booking-system-frontend-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: internal-room-booking-system-frontend-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct File Naming
+
+## Action
+
+Name the file using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.files
+
+---
+id: internal-room-booking-system-frontend-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: internal-room-booking-system-frontend-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: internal-room-booking-system-frontend-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: internal-room-booking-system-frontend-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in importStyle
+
+---
+id: internal-room-booking-system-frontend-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle
+
+---
+id: internal-room-booking-system-frontend-instinct-test-location
+trigger: "When adding new tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Test Location
+
+## Action
+
+Place test files in a separate test location, not mixed with source files
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: internal-room-booking-system-frontend-instinct-feature-module-organization
+trigger: "When adding new features or modules"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Feature Module Organization
+
+## Action
+
+Organize code by feature within the 'features' directory
+
+## Evidence
+
+- Pattern in architecture.moduleOrganization
+- Pattern in architecture.folderStructure.srcLayout
+
+---
+id: internal-room-booking-system-frontend-instinct-commit-format
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Commit Format
+
+## Action
+
+Use the conventional commit format with a prefix (e.g., 'feat', 'chore'), optional scope, and a concise message
+
+## Evidence
+
+- Seen in commit 'chore(graphify): refresh GRAPH_REPORT.md'
+- Seen in commit 'feat(profile): update user profile full name and phone number'
+
+---
+id: internal-room-booking-system-frontend-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Commit Length
+
+## Action
+
+Keep the commit message around 50 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength
+
+---
+id: internal-room-booking-system-frontend-instinct-error-handling
+trigger: "When handling errors in code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: phamthang44/internal-room-booking-system-frontend
+---
+
+# Internal Room Booking System Frontend Instinct Error Handling
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- Pattern in errorHandling.style
+
