@@ -1,7 +1,7 @@
-# Graph Report - room-booking-frontend  (2026-05-03)
+# Graph Report - room-booking-frontend  (2026-05-22)
 
 ## Corpus Check
-- 249 files · ~191,809 words
+- 249 files · ~191,953 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
