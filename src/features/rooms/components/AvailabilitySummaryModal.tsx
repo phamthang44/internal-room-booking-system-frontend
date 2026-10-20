@@ -50,7 +50,6 @@ export function AvailabilitySummaryModal({
     : "";
 
   const allSlotsPassed = slots.length > 0 && slots.every((s) => s.isPast || (scheduleDate && isSlotInPast(scheduleDate, s.startTime)));
-  const noAvailableSlots = slots.length > 0 && slots.every((s) => !s.isAvailable || s.isPast || (scheduleDate && isSlotInPast(scheduleDate, s.startTime)));
 
   return (
     <div
