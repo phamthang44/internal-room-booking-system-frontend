@@ -1,3 +1,5 @@
+> **Production:** frontend chạy trong stack Docker Compose ở repo `room-booking` bên cạnh. Xem [hướng dẫn triển khai](../room-booking/DEPLOYMENT.md). API dùng `/api/v1`, WebSocket dùng `wss://<domain>/ws`.
+
 # Smart Classroom Booking Frontend
 
 Production-ready React + Vite frontend for the Smart Classroom Booking System ("Scholarly Sanctuary").
