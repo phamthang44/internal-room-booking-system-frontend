@@ -375,14 +375,18 @@ export const vi = {
     },
     revoke: {
       title: "Thu hồi hình phạt",
-      reasonPlaceholder: "Lý do thu hồi hình phạt?",
-      confirm: "Thu hồi",
+      subtitle: "Khôi phục lại quyền đặt phòng cho người dùng ngay lập tức.",
+      reasonPlaceholder: "Nhập lý do thu hồi hình phạt (bắt buộc)…",
+      confirm: "Xác nhận thu hồi",
     },
     extend: {
       title: "Gia hạn hình phạt",
-      reasonPlaceholder: "Lý do gia hạn hình phạt?",
-      confirm: "Gia hạn",
-      dateHint: "Ngày kết thúc sẽ được gửi theo định dạng ISO-8601 (UTC) tới hệ thống.",
+      subtitle: "Kéo dài thời gian áp dụng chế tài và hạn chế quyền đặt phòng của người dùng.",
+      currentEnd: "Thời hạn hiện tại:",
+      quickPresets: "Chọn nhanh thời gian gia hạn:",
+      reasonPlaceholder: "Nhập lý do gia hạn hình phạt (bắt buộc)…",
+      confirm: "Xác nhận gia hạn",
+      dateHint: "Ngày kết thúc mới sẽ có hiệu lực ngay khi xác nhận.",
     },
   },
   dashboard: {

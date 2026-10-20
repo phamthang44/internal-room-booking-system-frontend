@@ -374,14 +374,18 @@ export const en = {
     },
     revoke: {
       title: "Revoke penalty",
-      reasonPlaceholder: "Why are you revoking this penalty?",
-      confirm: "Revoke",
+      subtitle: "Immediately restore user booking privileges and lift restrictions.",
+      reasonPlaceholder: "Why are you revoking this penalty? (required)",
+      confirm: "Confirm Revocation",
     },
     extend: {
       title: "Extend penalty",
-      reasonPlaceholder: "Why are you extending this penalty?",
-      confirm: "Extend",
-      dateHint: "End date will be sent as ISO-8601 (UTC) to the backend.",
+      subtitle: "Extend disciplinary restriction period and booking limitations.",
+      currentEnd: "Current expiration:",
+      quickPresets: "Quick extension presets:",
+      reasonPlaceholder: "Why are you extending this penalty? (required)",
+      confirm: "Confirm Extension",
+      dateHint: "The new expiration date will take effect immediately upon confirmation.",
     },
   },
   dashboard: {
