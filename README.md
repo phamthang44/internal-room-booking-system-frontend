@@ -1,3 +1,5 @@
+> **Production:** frontend deploy trên Vercel; API/WebSocket qua Cloudflare Tunnel tới Docker backend. Xem [hướng dẫn triển khai](../room-booking/DEPLOYMENT.md).
+
 # Smart Classroom Booking Frontend
 
 Production-ready React + Vite frontend for the Smart Classroom Booking System ("Scholarly Sanctuary").

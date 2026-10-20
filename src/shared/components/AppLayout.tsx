@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { matchPath, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@shared/utils/cn";
@@ -156,6 +156,7 @@ function useRouteHeader(pathname: string) {
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const { isOpen, toggle, close } = useSidebarStore();
+  const sidebarRef = useRef<HTMLElement>(null);
   const { user, isAuthenticated, clearAuth } = useAuthStore();
   const { profile, fetchProfile, clearProfile } = useProfileStore();
   const { pathname } = useLocation();
@@ -178,6 +179,32 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       fetchProfile();
     }
   }, [isAuthenticated, profile, fetchProfile]);
+
+  useLayoutEffect(() => {
+    if (!isOpen || window.innerWidth >= 1024) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusables = () => Array.from(sidebarRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []);
+    // Let the browser release the closed drawer's inert subtree before focusing it.
+    const focusTimer = window.setTimeout(() => focusables()[0]?.focus(), 0);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); close(); }
+      if (event.key !== "Tab") return;
+      const items = focusables();
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+      previousFocus?.focus();
+    };
+  }, [isOpen, close]);
 
   const handleLanguageChange = (lang: "en" | "vi") => {
     if (language === lang) return;
@@ -235,11 +262,12 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-surface font-body">
+    <div className="app-shell font-body">
+      <a className="app-skip-link" href="#main-content">{t("nav.skipToContent")}</a>
       {/* ── Overlay (mobile only) ── */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-20 bg-on-surface/30 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-[55] bg-on-surface/25 lg:hidden"
           onClick={close}
           aria-hidden="true"
         />
@@ -247,18 +275,19 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
       {/* ── Sidebar Drawer ── */}
       <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-30 flex w-64 flex-col bg-surface-container-low transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "-translate-x-full",
-        )}
+        ref={sidebarRef}
+        id="app-sidebar"
+        aria-label={t("nav.portal")}
+        aria-hidden={!isOpen}
+        {...(!isOpen ? { inert: "" } : {})}
+        className={cn("app-sidebar", isOpen && "is-open")}
       >
         {/* Brand */}
-        <div className="flex h-16 items-center gap-3 border-b border-outline-variant/20 px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-container">
-            <span className="material-symbols-outlined text-sm text-on-primary">
-              school
-            </span>
-          </div>
+        <div className="app-brand">
+          <svg className="app-brand-mark" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+            <rect x="4" y="4" width="28" height="28" rx="9" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M12 27V10h12v17M16 10v17M20 19h1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
           <div>
             <p className="font-headline text-sm font-bold leading-tight text-on-surface">
               {t("nav.brand")}
@@ -268,7 +297,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <nav className="app-nav">
           <ul className="space-y-1">
             {NAV_ITEMS.map((item) => (
               <li key={item.to}>
@@ -276,10 +305,10 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
                   to={item.to}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                      "app-nav-link",
                       isActive
-                        ? "bg-primary text-on-primary shadow-sm"
-                        : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface",
+                        ? "is-active"
+                        : "",
                     )
                   }
                 >
@@ -294,8 +323,8 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
           {canSeeAdminSection ? (
             <>
-              <div className="my-4 h-px bg-outline-variant/20" />
-              <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+              <div className="mx-3 mt-5 h-px bg-outline-variant/20" />
+              <p className="app-nav-label">
                 {t("nav.admin.section")}
               </p>
               <ul className="space-y-1">
@@ -305,10 +334,10 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
                       to={item.to}
                       className={({ isActive }) =>
                         cn(
-                          "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                          "app-nav-link",
                           isActive
-                            ? "bg-primary text-on-primary shadow-sm"
-                            : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface",
+                            ? "is-active"
+                            : "",
                         )
                       }
                     >
@@ -354,14 +383,16 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       {/* ── Main content area ── */}
       <div
         className={cn(
-          "flex min-h-screen flex-col transition-[margin] duration-300 ease-in-out",
-          isOpen ? "lg:ml-64" : "lg:ml-0",
+          "app-body flex min-h-[100dvh] flex-col",
+          isOpen && "has-sidebar",
         )}
       >
         {/* Top bar */}
-        <header className="sticky top-0 z-50 flex h-16 min-w-0 items-center gap-3 border-b border-outline-variant/20 bg-surface-container-lowest/80 px-4 backdrop-blur-sm lg:gap-4 lg:px-6">
+        <header className="app-topbar">
           <button
             id="sidebar-toggle"
+            aria-controls="app-sidebar"
+            aria-expanded={isOpen}
             onClick={toggle}
             aria-label={t("nav.toggleSidebar")}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
@@ -382,7 +413,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             </button>
           ) : null}
 
-          <p className="min-w-0 flex-1 truncate font-headline text-lg font-semibold leading-tight text-on-surface">
+          <p className="min-w-0 flex-1 truncate font-headline text-sm font-semibold leading-tight text-on-surface">
             {t(routeHeader.titleKey)}
           </p>
 
@@ -436,7 +467,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">
+        <main id="main-content" tabIndex={-1} className="app-page flex-1">
           <PenaltyBanner className="mb-4" />
           {children}
         </main>

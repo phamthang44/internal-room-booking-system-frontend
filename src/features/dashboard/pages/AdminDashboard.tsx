@@ -1,6 +1,6 @@
 import { AppLayout } from "@shared/components/AppLayout";
 import { useI18n } from "@shared/i18n/useI18n";
-import { LoadingScreen } from "@features/home";
+import { DashboardSkeleton } from "../components/DashboardSkeleton";
 import { AdminDashboardHero } from "../components/admin/AdminDashboardHero";
 import { AdminKpiBento } from "../components/admin/AdminKpiBento";
 import { BookingStatusBreakdownCard } from "../components/admin/BookingStatusBreakdownCard";
@@ -14,16 +14,16 @@ export function AdminDashboard() {
   const { data, isLoading, error } = useAdminDashboardOverview();
   const analytics = useAdminDashboardAnalytics();
 
-  if (isLoading) return <LoadingScreen />;
-
   const payload = data?.data;
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+      <div className="page-frame space-y-7 dashboard-section">
         <AdminDashboardHero />
 
-        {error ? (
+        {isLoading ? (
+          <DashboardSkeleton variant="admin" />
+        ) : error ? (
           <div className="rounded-2xl border border-error-container bg-error-container/20 p-6 text-center text-error">
             <span className="material-symbols-outlined text-[32px] mb-2 block">
               error_outline
@@ -39,6 +39,10 @@ export function AdminDashboard() {
               activeRoomsCount={payload?.activeRoomsCount ?? 0}
               activePenaltyCount={payload?.activePenaltyCount ?? 0}
             />
+            <div className="dashboard-work-grid">
+              <BookingStatusBreakdownCard breakdown={payload?.bookingStatusBreakdown} />
+              <RecentViolationsCard violations={payload?.recentViolations} />
+            </div>
             <AdminAnalyticsSection
               bookingTrend={analytics.bookingTrend}
               roomStats={analytics.roomStats}
@@ -51,8 +55,6 @@ export function AdminDashboard() {
               setViolationWeeks={analytics.setViolationWeeks}
               isLoading={analytics.isLoading}
             />
-            <BookingStatusBreakdownCard breakdown={payload?.bookingStatusBreakdown} />
-            <RecentViolationsCard violations={payload?.recentViolations} />
           </>
         )}
       </div>

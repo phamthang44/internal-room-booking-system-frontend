@@ -142,7 +142,7 @@ export const AdminRoomsListPage = () => {
         {/* Header */}
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">
+            <h1 className="page-title">
               {t("adminRooms.list.title")}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-on-surface-variant">

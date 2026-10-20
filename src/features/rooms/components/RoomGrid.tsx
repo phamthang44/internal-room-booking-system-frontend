@@ -179,6 +179,7 @@ export const RoomGrid = ({
           <div className="flex items-center gap-2 text-sm text-on-surface-variant z-10">
             <span className="font-medium text-on-surface">{t("rooms.sort.title")}</span>
             <CustomSelect
+              ariaLabel={t("rooms.sort.title")}
               value={sort}
               onChange={(val) => setSort(val as typeof sort)}
               options={SORT_OPTIONS}
@@ -194,7 +195,7 @@ export const RoomGrid = ({
               onClick={() => setViewMode("grid")}
               title={t("rooms.view.grid")}
               className={cn(
-                "flex h-8 w-8 items-center justify-center transition-colors",
+                "flex h-11 w-11 items-center justify-center transition-colors",
                 isGrid
                   ? "bg-primary text-on-primary"
                   : "bg-surface text-on-surface-variant hover:bg-surface-container"
@@ -207,7 +208,7 @@ export const RoomGrid = ({
               onClick={() => setViewMode("list")}
               title={t("rooms.view.list")}
               className={cn(
-                "flex h-8 w-8 items-center justify-center transition-colors",
+                "flex h-11 w-11 items-center justify-center transition-colors",
                 !isGrid
                   ? "bg-primary text-on-primary"
                   : "bg-surface text-on-surface-variant hover:bg-surface-container"

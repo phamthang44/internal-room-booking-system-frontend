@@ -66,6 +66,8 @@ export function useAdminRoomCreateMutation() {
 
   return useMutation({
     mutationFn: (payload: CreateClassroomRequest) => service.create(payload),
+    // The upsert form presents its own translated error toast.
+    meta: { skipGlobalError: true },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminRoomsQueryKeys.all });
     },
@@ -78,6 +80,7 @@ export function useAdminRoomUpdateMutation() {
 
   return useMutation({
     mutationFn: (payload: UpdateClassroomRequest) => service.update(payload),
+    meta: { skipGlobalError: true },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminRoomsQueryKeys.all });
     },

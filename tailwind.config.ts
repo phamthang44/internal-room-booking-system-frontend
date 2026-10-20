@@ -25,7 +25,7 @@ export default {
         "on-surface-variant": "#43474e",
         "on-primary-fixed-variant": "#2d476f",
         "surface-container": "#ebeef0",
-        primary: "#002045",
+        primary: "#173b58",
         "error-container": "#ffdad6",
         "on-secondary-fixed-variant": "#3e4758",
         "surface-tint": "#455f88",
@@ -56,8 +56,8 @@ export default {
       },
       fontFamily: {
         headline: ["Manrope", "sans-serif"],
-        body: ["Inter", "sans-serif"],
-        label: ["Inter", "sans-serif"],
+        body: ["Manrope", "sans-serif"],
+        label: ["Manrope", "sans-serif"],
       },
       borderRadius: {
         DEFAULT: "0.25rem",

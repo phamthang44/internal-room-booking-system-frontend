@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { useRoomFilterStore } from "../hooks/useRoomFilterStore";
+import { buildRoomBookingUrl } from "../utils/roomBookingIntent";
 import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
 import type { RoomUI } from "../types/classroom.api.types";
-import { RoomStatusChip, roomStatusCardClasses } from "./RoomStatusChip";
+import { RoomStatusChip } from "./RoomStatusChip";
 
 // ── Grid card (3-col default) ─────────────────────────────────────────────────
 
@@ -15,6 +17,8 @@ const formatClock = (t: string) => (t.length >= 5 ? t.slice(0, 5) : t);
 
 export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
   const { t } = useI18n();
+  const filters = useRoomFilterStore();
+  const detailUrl = buildRoomBookingUrl(room.id, filters);
   const isActionable = room.availability === "available";
   const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
   const slotsToRender =
@@ -26,14 +30,13 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
     <div
       id={`room-card-${room.id}`}
       className={cn(
-        "group flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_2px_12px_rgba(24,28,30,0.06)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(24,28,30,0.10)]",
-        roomStatusCardClasses[room.availability],
+        "room-card group",
       )}
     >
-      {/* ── Image / gradient ─────────────────────────────────────────── */}
+      <div className="room-card-core">
+      {/* Room photography, with a text fallback when no image exists. */}
       <div
-        className="relative h-44 w-full overflow-hidden"
-        style={{ background: room.imageGradient }}
+        className="room-card-media"
       >
         {room.imageUrl ? (
           <img
@@ -41,10 +44,10 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
             alt={room.name}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-        ) : null}
+        ) : <div className="room-card-placeholder" aria-hidden="true">{room.name}</div>}
         {/* Building badge — top-left */}
         {room.building && (
-          <span className="absolute left-3 top-3 rounded-full bg-surface-container-lowest/85 px-2.5 py-0.5 font-headline text-[10px] font-bold uppercase tracking-wider text-on-surface backdrop-blur-sm">
+          <span className="absolute left-3 top-3 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-on-surface">
             {room.building}
           </span>
         )}
@@ -53,9 +56,9 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
           <RoomStatusChip status={room.availability} />
         </div>
         {/* Decorative room-type overlay (bottom strip) */}
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent px-3 pb-2 pt-6">
+        <div className="room-type-label">
           {room.roomType && (
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/80">
+            <span className="text-xs font-medium">
               {room.roomType}
             </span>
           )}
@@ -63,16 +66,16 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
       </div>
 
       {/* ── Body ─────────────────────────────────────────────────────── */}
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="room-card-body">
         {/* Room code + name */}
         <div>
           <div className="flex items-baseline justify-between gap-2">
-            <h3 className="font-headline text-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+            <h3 className="font-headline text-base font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
               {room.name}
             </h3>
             <span className="shrink-0 text-xs font-semibold text-on-surface-variant">
               {room.capacity}
-              <span className="ml-0.5 text-[10px] font-normal">
+              <span className="ml-0.5 text-xs font-normal">
                 {t("rooms.card.seats")}
               </span>
             </span>
@@ -91,15 +94,16 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
               <span
                 key={name}
                 title={name}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container text-on-surface-variant"
+                className="flex items-center gap-1 text-on-surface-variant text-xs"
               >
                 <span className="material-symbols-outlined text-[14px]">
                   {getEquipmentIcon(name)}
                 </span>
+                <span>{name}</span>
               </span>
             ))}
             {room.equipmentNames.length > 4 && (
-              <span className="flex h-7 items-center rounded-full bg-surface-container px-2 text-[10px] font-medium text-on-surface-variant">
+              <span className="flex h-7 items-center rounded-full bg-surface-container px-2 text-xs font-medium text-on-surface-variant">
                 +{room.equipmentNames.length - 4}
               </span>
             )}
@@ -108,10 +112,10 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
 
         {hasQueriedSlots && room.totalQueriedSlots != null && (
           <div className="flex items-center justify-between gap-2 rounded-xl bg-surface-container-low px-3 py-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               {t("rooms.card.queriedSlots")}
             </span>
-            <span className="text-[10px] font-black tracking-wide text-on-surface">
+            <span className="text-xs font-black tracking-wide text-on-surface">
               {(room.availableSlotCount ?? 0)}/{room.totalQueriedSlots} {t("rooms.card.free")}
             </span>
           </div>
@@ -119,7 +123,7 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
 
         {slotsToRender && slotsToRender.length > 0 && (
           <div className="space-y-1.5 border-t border-outline-variant/40 pt-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               {t("rooms.card.schedule")}
             </p>
             <div className="flex flex-wrap gap-1">
@@ -128,7 +132,7 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
                   key={slot.slotId}
                   title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
                   className={cn(
-                    "max-w-full truncate rounded-lg px-2 py-0.5 text-[10px] font-medium",
+                    "max-w-full truncate rounded-lg px-2 py-0.5 text-xs font-medium",
                     slot.isAvailable
                       ? "bg-primary/12 text-primary"
                       : "bg-error-container/70 text-error border border-error/20"
@@ -142,52 +146,64 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
         )}
 
         {room.availableForQuery === false && (
-          <p className="flex items-start gap-1 text-[10px] leading-snug text-amber-700 dark:text-amber-400">
+          <p className="flex items-start gap-1 text-xs leading-snug text-amber-700 dark:text-amber-400">
             <span className="material-symbols-outlined shrink-0 text-[14px]">info</span>
             {t("rooms.card.notMatchingFilters")}
           </p>
         )}
 
         {/* Actions */}
-        <div className="mt-auto flex gap-2 pt-1">
+        <div className="room-card-actions">
           {onCheckAvailability ? (
             <button
               type="button"
               onClick={() => onCheckAvailability(room)}
               disabled={!isActionable}
-              className={cn(
-                "flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity",
-                isActionable ? "hover:opacity-90" : "opacity-50 cursor-not-allowed"
-              )}
+              className="room-action-availability"
             >
-              {t("rooms.card.checkAvailability")}
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="16" rx="3" />
+                <path d="M16 3v4M8 3v4M3 11h18m-13 5 2 2 4-4" />
+              </svg>
+              <span>{t("rooms.card.checkAvailability")}</span>
             </button>
           ) : (
             <Link
-              to={`/rooms/${room.id}`}
-              className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-container py-2 text-center text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+              to={detailUrl}
+              className="room-action-availability"
             >
-              {t("rooms.card.checkAvailability")}
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="16" rx="3" />
+                <path d="M16 3v4M8 3v4M3 11h18m-13 5 2 2 4-4" />
+              </svg>
+              <span>{t("rooms.card.checkAvailability")}</span>
             </Link>
           )}
           {isActionable ? (
             <Link
-              to={`/rooms/${room.id}`}
-              className="rounded-xl border border-outline-variant px-3 py-2 text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
+              to={detailUrl}
+              className="room-action-details"
             >
-              {t("rooms.card.viewDetails")}
+              <span>{t("rooms.card.viewDetails")}</span>
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14m-5-5 5 5-5 5" />
+              </svg>
             </Link>
           ) : (
             <button
               type="button"
               disabled
-              className="rounded-xl border border-outline-variant/40 px-3 py-2 text-xs font-semibold text-on-surface-variant/60 opacity-60 cursor-not-allowed"
+              className="room-action-details"
               title={t("rooms.availabilitySummary.roomUnavailableTitle")}
             >
-              {t("rooms.card.viewDetails")}
+              <span>{t("rooms.card.viewDetails")}</span>
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14m-5-5 5 5-5 5" />
+              </svg>
             </button>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
@@ -197,6 +213,8 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
 
 export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
   const { t } = useI18n();
+  const filters = useRoomFilterStore();
+  const detailUrl = buildRoomBookingUrl(room.id, filters);
   const isActionable = room.availability === "available";
   const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
   const slotsToRender =
@@ -208,14 +226,12 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
     <div
       id={`room-list-${room.id}`}
       className={cn(
-        "group flex items-center gap-4 rounded-2xl bg-surface-container-lowest p-4 shadow-[0_1px_6px_rgba(24,28,30,0.05)] transition-all hover:shadow-[0_4px_20px_rgba(24,28,30,0.08)]",
-        roomStatusCardClasses[room.availability],
+        "group flex flex-wrap items-center gap-4 rounded-2xl bg-surface-container-lowest p-5 ring-1 ring-primary/5",
       )}
     >
       {/* Thumbnail */}
       <div
-        className="h-20 w-28 shrink-0 rounded-xl overflow-hidden"
-        style={{ background: room.imageGradient }}
+        className="hidden sm:block h-20 w-24 shrink-0 rounded-xl overflow-hidden bg-surface-container-low"
       >
         {room.imageUrl ? (
           <img
@@ -230,7 +246,7 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h3 className="font-headline text-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+            <h3 className="font-headline text-base font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
               {room.name}
             </h3>
             {room.building && (
@@ -274,10 +290,10 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
 
         {hasQueriedSlots && room.totalQueriedSlots != null && (
           <div className="mt-2 flex items-center justify-between gap-2 rounded-xl bg-surface-container-low px-3 py-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               {t("rooms.card.queriedSlots")}
             </span>
-            <span className="text-[10px] font-black tracking-wide text-on-surface">
+            <span className="text-xs font-black tracking-wide text-on-surface">
               {(room.availableSlotCount ?? 0)}/{room.totalQueriedSlots} {t("rooms.card.free")}
             </span>
           </div>
@@ -285,7 +301,7 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
 
         {slotsToRender && slotsToRender.length > 0 && (
           <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-outline-variant/30 pt-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               {t("rooms.card.schedule")}
             </span>
             {slotsToRender.map((slot) => (
@@ -293,7 +309,7 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
                 key={slot.slotId}
                 title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
                 className={cn(
-                  "truncate rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                  "truncate rounded-md px-1.5 py-0.5 text-xs font-medium",
                   slot.isAvailable
                     ? "bg-primary/12 text-primary"
                     : "bg-error-container/70 text-error border border-error/20"
@@ -306,7 +322,7 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
         )}
 
         {room.availableForQuery === false && (
-          <p className="mt-1 flex items-start gap-1 text-[10px] text-amber-700 dark:text-amber-400">
+          <p className="mt-1 flex items-start gap-1 text-xs text-amber-700 dark:text-amber-400">
             <span className="material-symbols-outlined shrink-0 text-[14px]">info</span>
             {t("rooms.card.notMatchingFilters")}
           </p>
@@ -314,42 +330,53 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
       </div>
 
       {/* Actions */}
-      <div className="flex shrink-0 flex-col gap-2">
+      <div className="room-card-actions room-card-actions-list">
         {onCheckAvailability ? (
           <button
             type="button"
             onClick={() => onCheckAvailability(room)}
             disabled={!isActionable}
-            className={cn(
-              "rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity",
-              isActionable ? "hover:opacity-90" : "opacity-50 cursor-not-allowed"
-            )}
+            className="room-action-availability"
           >
-            {t("rooms.card.checkAvailability")}
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="16" rx="3" />
+                <path d="M16 3v4M8 3v4M3 11h18m-13 5 2 2 4-4" />
+              </svg>
+              <span>{t("rooms.card.checkAvailability")}</span>
           </button>
         ) : (
           <Link
-            to={`/rooms/${room.id}`}
-            className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-4 py-2 text-xs font-semibold text-on-primary transition-opacity hover:opacity-90"
+            to={detailUrl}
+            className="room-action-availability"
           >
-            {t("rooms.card.checkAvailability")}
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="16" rx="3" />
+                <path d="M16 3v4M8 3v4M3 11h18m-13 5 2 2 4-4" />
+              </svg>
+              <span>{t("rooms.card.checkAvailability")}</span>
           </Link>
         )}
         {isActionable ? (
           <Link
-            to={`/rooms/${room.id}`}
-            className="rounded-xl border border-outline-variant px-4 py-2 text-center text-xs font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-on-surface"
+            to={detailUrl}
+            className="room-action-details"
           >
-            {t("rooms.card.viewDetails")}
+            <span>{t("rooms.card.viewDetails")}</span>
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14m-5-5 5 5-5 5" />
+              </svg>
           </Link>
         ) : (
           <button
             type="button"
             disabled
-            className="rounded-xl border border-outline-variant/40 px-4 py-2 text-center text-xs font-semibold text-on-surface-variant/60 opacity-60 cursor-not-allowed"
+            className="room-action-details"
             title={t("rooms.availabilitySummary.roomUnavailableTitle")}
           >
-            {t("rooms.card.viewDetails")}
+            <span>{t("rooms.card.viewDetails")}</span>
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14m-5-5 5 5-5 5" />
+              </svg>
           </button>
         )}
       </div>

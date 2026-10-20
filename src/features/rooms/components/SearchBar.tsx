@@ -13,12 +13,8 @@ export const SearchBar = ({ className }: SearchBarProps) => {
   const [localValue, setLocalValue] = useState(search);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Debounce: commit to store 350ms after last keystroke
-  useEffect(() => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => setSearch(localValue), 350);
-    return () => clearTimeout(debounceRef.current);
-  }, [localValue, setSearch]);
+  useEffect(() => { clearTimeout(debounceRef.current); setLocalValue(search); }, [search]);
+  useEffect(() => () => clearTimeout(debounceRef.current), []);
 
   return (
     <div className={cn("relative", className)}>
@@ -27,15 +23,22 @@ export const SearchBar = ({ className }: SearchBarProps) => {
       </span>
       <input
         id="room-search-input"
-        type="text"
+        type="search"
+        aria-label={t("rooms.search.placeholder")}
         placeholder={t("rooms.search.placeholder")}
         value={localValue}
-        onChange={(e) => setLocalValue(e.target.value)}
-        className="w-full rounded-xl border border-outline-variant bg-surface-container-lowest py-2.5 pl-10 pr-10 text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+        onChange={(event) => {
+          const value = event.target.value;
+          setLocalValue(value);
+          clearTimeout(debounceRef.current);
+          debounceRef.current = setTimeout(() => setSearch(value), 350);
+        }}
+        className="workspace-field room-search-field"
       />
       {localValue && (
         <button
           onClick={() => {
+            clearTimeout(debounceRef.current);
             setLocalValue("");
             setSearch("");
           }}

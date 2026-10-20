@@ -18,28 +18,22 @@ export function ActiveReservoirCard({
   return (
     <section
       className={[
-        "bg-primary text-on-primary p-8 rounded-2xl flex flex-col justify-between",
+        "bg-surface-container-lowest text-on-surface p-6 rounded-2xl flex flex-col justify-between ring-1 ring-primary/5 self-start",
         className,
       ]
         .filter(Boolean)
         .join(" ")}
     >
       <div>
-        <span
-          className="material-symbols-outlined text-4xl mb-4"
-          style={{ fontVariationSettings: "'FILL' 1" }}
-        >
-          calendar_month
-        </span>
-        <h3 className="text-xl font-bold mb-1 font-headline">{title}</h3>
-        <p className="text-on-primary-container text-sm opacity-80">{description}</p>
+        <h3 className="text-base font-semibold mb-2 font-headline">{title}</h3>
+        <p className="text-on-surface-variant text-sm leading-relaxed">{description}</p>
       </div>
 
-      <div className="mt-8">
-        <div className="text-4xl font-extrabold font-headline">
-          {String(reservedSlots).padStart(2, "0")}
+      <div className="mt-6">
+        <div className="text-3xl font-semibold font-headline text-primary">
+          {reservedSlots}
         </div>
-        <div className="text-xs uppercase tracking-widest opacity-60">
+        <div className="text-xs text-on-surface-variant mt-1">
           {t("bookings.summary.reservedSlotsLabel")}
         </div>
       </div>

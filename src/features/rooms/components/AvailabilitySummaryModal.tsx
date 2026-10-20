@@ -1,4 +1,7 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useRoomFilterStore } from "../hooks/useRoomFilterStore";
+import { buildRoomBookingUrl } from "../utils/roomBookingIntent";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import type { RoomUI } from "../types/classroom.api.types";
@@ -17,6 +20,7 @@ export function AvailabilitySummaryModal({
   onClose,
 }: AvailabilitySummaryModalProps) {
   const { t } = useI18n();
+  const filters = useRoomFilterStore();
 
   useEffect(() => {
     if (!open) return;
@@ -166,6 +170,13 @@ export function AvailabilitySummaryModal({
                 {t("rooms.availabilitySummary.noSchedule")}
               </p>
             </div>
+          )}
+
+          {room.availability === "available" && (
+            <Link className="action-primary w-full" to={buildRoomBookingUrl(room.id, filters)}>
+              {t("rooms.bookingSearch.continue")}
+              <span aria-hidden="true" className="action-arrow">↗</span>
+            </Link>
           )}
 
           {/* Note */}
