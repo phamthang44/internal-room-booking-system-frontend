@@ -1,4 +1,4 @@
-> **Production:** frontend chạy trong stack Docker Compose ở repo `room-booking` bên cạnh. Xem [hướng dẫn triển khai](../room-booking/DEPLOYMENT.md). API dùng `/api/v1`, WebSocket dùng `wss://<domain>/ws`.
+> **Production:** frontend deploy trên Vercel; API/WebSocket qua Cloudflare Tunnel tới Docker backend. Xem [hướng dẫn triển khai](../room-booking/DEPLOYMENT.md).
 
 # Smart Classroom Booking Frontend
 
