@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "../i18n/useI18n";
 
 export interface CustomSelectOption {
   value: string | number;
   label: string;
+  displayLabel?: string;
 }
-
 interface CustomSelectProps {
   value: string | number;
   options: CustomSelectOption[];
@@ -16,118 +16,89 @@ interface CustomSelectProps {
   triggerClassName?: string;
   placeholder?: string;
   menuClassName?: string;
-  /** When true, show error border on trigger. */
   isError?: boolean;
-  /** Optional hook for scroll/focus-to-field. */
   dataField?: string;
-  /** When true, the trigger is non-interactive and the menu cannot open. */
   disabled?: boolean;
+  id?: string;
+  ariaLabel?: string;
+  describedBy?: string;
 }
 
-export function CustomSelect({
-  value,
-  options,
-  onChange,
-  icon,
-  className,
-  triggerClassName,
-  placeholder,
-  menuClassName,
-  isError = false,
-  dataField,
-  disabled = false,
-}: CustomSelectProps) {
+export function CustomSelect({ value, options, onChange, icon, className, triggerClassName, placeholder, menuClassName, isError = false, dataField, disabled = false, id, ariaLabel, describedBy }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const typeAhead = useRef({ text: "", time: 0 });
+  const listId = useId();
   const { t } = useI18n();
-
-  const selectedOption = options.find((o) => o.value === value);
+  const selectedIndex = options.findIndex(option => option.value === value);
+  const selectedOption = options[selectedIndex];
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    const outside = (event: PointerEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) setIsOpen(false);
+    };
+    document.addEventListener("pointerdown", outside);
+    return () => document.removeEventListener("pointerdown", outside);
   }, []);
-
+  useEffect(() => { if (disabled) setIsOpen(false); }, [disabled]);
   useEffect(() => {
-    if (disabled) setIsOpen(false);
-  }, [disabled]);
+    if (!isOpen) return;
+    const option = document.getElementById(`${listId}-${activeIndex}`);
+    const list = option?.parentElement;
+    if (!option || !list) return;
+    const itemBox = option.getBoundingClientRect();
+    const listBox = list.getBoundingClientRect();
+    if (itemBox.top < listBox.top) list.scrollTop -= listBox.top - itemBox.top;
+    else if (itemBox.bottom > listBox.bottom) list.scrollTop += itemBox.bottom - listBox.bottom;
+  }, [isOpen, activeIndex, listId]);
 
-  return (
-    <div
-      ref={wrapperRef}
-      className={cn("relative", className)}
-      data-field={dataField}
-    >
-      <button
-        type="button"
-        disabled={disabled}
-        aria-disabled={disabled}
-        onMouseDown={(e) => {
-          if (disabled) return;
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
-        className={cn(
-          "flex w-full items-center justify-between rounded-xl border py-2 text-sm text-on-surface transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50",
-          isError
-            ? "border-error bg-error/5"
-            : isOpen
-              ? "border-primary bg-surface"
-              : "border-outline-variant bg-surface hover:border-primary/40",
-          icon ? "pl-8 pr-3" : "px-3",
-          triggerClassName,
-        )}
-      >
-        {icon && (
-          <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant pointer-events-none">
-            {icon}
-          </span>
-        )}
-        <span className="truncate">{t(selectedOption?.label ?? placeholder ?? "")}</span>
-        <span
-          className={cn(
-            "material-symbols-outlined text-[18px] text-on-surface-variant transition-transform duration-200 pointer-events-none",
-            isOpen ? "rotate-180" : ""
-          )}
-        >
-          expand_more
-        </span>
-      </button>
-
-      {/* Dropdown Menu */}
-      <div
-        className={cn(
-          "absolute left-0 right-0 top-[calc(100%+4px)] z-50 origin-top overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-lg transition-all duration-200 ease-out",
-          isOpen ? "scale-y-100 opacity-100" : "scale-y-95 opacity-0 pointer-events-none",
-          menuClassName
-        )}
-      >
-        <ul className="max-h-60 overflow-y-auto py-1">
-          {options.map((option) => (
-            <li
-              key={option.value}
-              onMouseDown={(e) => {
-                e.preventDefault(); 
-                onChange(option.value);
-                setIsOpen(false);
-              }}
-              className={cn(
-                "cursor-pointer px-3 py-2 text-sm transition-colors hover:bg-surface-container",
-                value === option.value
-                  ? "bg-primary/10 font-semibold text-primary"
-                  : "text-on-surface"
-              )}
-            >
-              {t(option.label)}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
+  return <div ref={wrapperRef} className={cn("custom-select", className)} data-field={dataField}
+    onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setIsOpen(false); }}>
+    <button ref={triggerRef} id={id} type="button" role="combobox" disabled={disabled}
+      aria-label={ariaLabel} aria-describedby={describedBy} aria-expanded={isOpen} aria-haspopup="listbox"
+      aria-controls={isOpen ? listId : undefined} aria-activedescendant={isOpen && options.length ? `${listId}-${activeIndex}` : undefined}
+      aria-invalid={isError || undefined}
+      onClick={() => { setActiveIndex(Math.max(0, selectedIndex)); setIsOpen(!isOpen); }}
+      onKeyDown={event => {
+        if (event.key === "Escape") { if (isOpen) { event.preventDefault(); event.stopPropagation(); setIsOpen(false); } return; }
+        if (event.key === "Tab") { setIsOpen(false); return; }
+        if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+          event.preventDefault();
+          const initial = Math.max(0, selectedIndex);
+          setActiveIndex(event.key === "Home" ? 0 : event.key === "End" ? Math.max(0, options.length - 1) : !isOpen ? initial : Math.max(0, Math.min(options.length - 1, activeIndex + (event.key === "ArrowDown" ? 1 : -1))));
+          setIsOpen(true); return;
+        }
+        if ((event.key === "Enter" || event.key === " ") && isOpen) {
+          event.preventDefault();
+          if (options[activeIndex]) onChange(options[activeIndex].value);
+          setIsOpen(false); return;
+        }
+        if (event.key.length === 1 && event.key !== " " && !event.ctrlKey && !event.metaKey && !event.altKey) {
+          const now = Date.now();
+          const text = (now - typeAhead.current.time < 700 ? typeAhead.current.text : "") + event.key.toLocaleLowerCase();
+          typeAhead.current = { text, time: now };
+          const index = options.findIndex(option => t(option.label).toLocaleLowerCase().startsWith(text));
+          if (index >= 0) { event.preventDefault(); setActiveIndex(index); setIsOpen(true); }
+        }
+      }}
+      className={cn("select-trigger", isError && "is-error", !selectedOption && "is-placeholder", triggerClassName)}>
+      {icon && <span aria-hidden="true" className="material-symbols-outlined select-leading-icon">{icon}</span>}
+      <span className="min-w-0 flex-1 truncate text-left">{t(selectedOption?.displayLabel ?? selectedOption?.label ?? placeholder ?? "")}</span>
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={cn("select-chevron", isOpen && "is-open")}><path d="m6 9 6 6 6-6" /></svg>
+    </button>
+    {isOpen && <div className={cn("select-menu", menuClassName)}>
+      <ul id={listId} role="listbox" aria-label={ariaLabel}>
+        {options.map((option, index) => <li key={option.value} id={`${listId}-${index}`} role="option" aria-selected={value === option.value}
+          onPointerDown={event => event.preventDefault()}
+          onPointerMove={() => setActiveIndex(index)}
+          onClick={() => { onChange(option.value); setIsOpen(false); triggerRef.current?.focus(); }}
+          className={cn("select-option", activeIndex === index && "is-highlighted")}>
+          <span>{t(option.label)}</span>
+          {value === option.value && <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m5 12 4 4L19 6" /></svg>}
+        </li>)}
+      </ul>
+    </div>}
+  </div>;
 }

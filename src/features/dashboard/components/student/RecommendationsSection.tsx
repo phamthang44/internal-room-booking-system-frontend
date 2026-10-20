@@ -78,11 +78,8 @@ export const RecommendationsSection = () => {
           ))}
         </div>
       ) : rooms.length === 0 ? (
-        <div className="bg-surface-container-lowest rounded-2xl p-10 text-center">
-          <span className="material-symbols-outlined text-5xl text-on-surface-variant/30 block mb-4">
-            auto_awesome
-          </span>
-          <p className="text-on-surface-variant font-body">
+        <div className="bg-surface-container-lowest rounded-2xl p-5">
+          <p className="text-sm text-on-surface-variant font-body">
             {t("dashboard.recommendations.empty")}
           </p>
         </div>

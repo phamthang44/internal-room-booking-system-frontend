@@ -18,10 +18,10 @@ export const AttendanceCard = (props: {
   const dashOffset = circumference * (1 - rate);
 
   return (
-    <section className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100/50">
+    <section className="bg-surface-container-lowest p-6 rounded-2xl ring-1 ring-primary/5">
       <div className="flex items-start justify-between gap-6">
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+          <p className="text-sm font-medium text-on-surface-variant">
             {t("dashboard.attendance.title")}
           </p>
           <p className="font-headline text-2xl font-extrabold text-on-surface mt-1">

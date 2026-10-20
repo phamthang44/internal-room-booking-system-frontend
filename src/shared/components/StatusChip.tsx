@@ -12,19 +12,19 @@ export type StatusChipVariant =
 
 const variantStyles: Record<StatusChipVariant, string> = {
   confirmed:
-    "bg-tertiary-fixed/20 text-on-tertiary-container border border-tertiary-fixed/30",
+    "bg-emerald-50 text-emerald-700",
   pending:
-    "bg-secondary-container text-on-secondary-container border border-secondary-fixed-dim/40",
+    "bg-amber-50 text-amber-700",
   cancelled:
-    "bg-error-container text-on-error-container border border-error/20",
+    "bg-rose-50 text-rose-700",
   rejected:
-    "bg-error-container text-on-error-container border border-error/20",
+    "bg-rose-50 text-rose-700",
   available:
-    "bg-tertiary-fixed/20 text-on-tertiary-container border border-tertiary-fixed/30",
+    "bg-emerald-50 text-emerald-700",
   occupied:
-    "bg-error-container text-on-error-container border border-error/20",
+    "bg-rose-50 text-rose-700",
   maintenance:
-    "bg-surface-container text-on-surface-variant border border-outline-variant",
+    "bg-amber-50 text-amber-700",
 };
 
 interface StatusChipProps {

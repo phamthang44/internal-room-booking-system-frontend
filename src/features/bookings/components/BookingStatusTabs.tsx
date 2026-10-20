@@ -22,18 +22,19 @@ export function BookingStatusTabs({
     ];
 
   return (
-    <div className={cn("flex gap-2 rounded-xl bg-surface-container-low p-1", className)}>
+    <div className={cn("status-tabs", className)}>
       {TABS.map((tab) => {
         const isActive = tab.value === value;
         return (
           <button
             key={tab.value}
             type="button"
+            aria-pressed={isActive}
             onClick={() => onChange(tab.value)}
             className={cn(
-              "px-6 py-2 text-sm rounded-lg transition-colors",
+              "status-tab",
               isActive
-                ? "bg-surface-container-lowest shadow-sm font-bold text-primary"
+                ? "font-semibold"
                 : "font-medium text-on-surface-variant hover:text-primary"
             )}
           >

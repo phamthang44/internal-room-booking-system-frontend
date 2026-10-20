@@ -30,13 +30,13 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
 
   if (!upcomingList || upcomingList.length === 0) {
     return (
-      <section className="space-y-6">
+      <section className="upcoming-section space-y-4">
         <div className="flex justify-between items-end">
           <h3 className="text-2xl font-bold font-headline text-on-surface tracking-tight">
             {t("dashboard.upcomingBookings.title")}
           </h3>
         </div>
-        <div className="bg-surface-container-lowest rounded-3xl p-12 text-center">
+        <div className="upcoming-surface p-8 text-center">
           <span className="material-symbols-outlined text-5xl text-on-surface-variant/30 block mb-4">
             event_busy
           </span>
@@ -52,21 +52,15 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="upcoming-section space-y-4">
       <div className="flex justify-between items-end">
         <h3 className="text-2xl font-bold font-headline text-on-surface tracking-tight">
           {t("dashboard.upcomingBookings.title")}
         </h3>
-        <div className="flex gap-2">
-          <button className="p-2 bg-surface-container-low rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
-            <span className="material-symbols-outlined" data-icon="filter_list">
-              filter_list
-            </span>
-          </button>
-        </div>
+        <button type="button" onClick={() => navigate("/bookings")} className="text-xs font-semibold text-primary hover:underline">{t("nav.myBookings")} ↗</button>
       </div>
 
-      <div className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm">
+      <div className="upcoming-surface">
         <div className="divide-y divide-slate-100">
           {upcomingList.map((booking) => {
             const { statusClass, statusLabel } = getStatusStyle(booking.status, t);
@@ -93,6 +87,7 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                   navigate(`/bookings/${encodeURIComponent(String(booking.bookingId))}`)
                 }
                 onKeyDown={(e) => {
+                  if (e.target !== e.currentTarget) return;
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     navigate(
@@ -100,11 +95,11 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                     );
                   }
                 }}
-                className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors cursor-pointer text-left"
+                className="booking-row text-left"
               >
-                <div className="flex items-start gap-4">
+                <div className="booking-row-identity">
                   <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 ${iconConfig.bgClass}`}
+                    className="booking-row-icon"
                   >
                     <span
                       className="material-symbols-outlined"
@@ -142,7 +137,7 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between md:justify-end gap-6">
+                <div className="booking-row-actions">
                   {showCheckInAction ? (
                     <button
                       type="button"
@@ -152,7 +147,7 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                           `/bookings/${encodeURIComponent(String(booking.bookingId))}/checkin`,
                         );
                       }}
-                      className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-on-primary hover:opacity-90 active:scale-95 transition-all"
+                      className="action-primary"
                     >
                       <span className="material-symbols-outlined text-[16px]">location_on</span>
                       {t("bookings.checkin.actions.primary")}
@@ -169,7 +164,7 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                         if (!Number.isFinite(id)) return;
                         void checkoutMutation.mutateAsync(id).catch(() => undefined);
                       }}
-                      className="hidden md:inline-flex items-center gap-2 rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-xs font-bold text-on-surface hover:bg-surface-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="action-secondary disabled:opacity-60 disabled:cursor-not-allowed"
                       title={
                         checkoutMutation.isError
                           ? normalizeApiError(checkoutMutation.error).message
@@ -184,27 +179,16 @@ export const UpcomingList = ({ upcomingList }: UpcomingListProps) => {
                   ) : null}
 
                   <span className="inline-flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                    <span className="sr-only">
                       {t("common.labels.status")}
                     </span>
                     <span
-                      className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${statusClass}`}
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${statusClass}`}
                     >
                       {statusLabel}
                     </span>
                   </span>
-                  <button
-                    type="button"
-                    onClick={(e) => e.stopPropagation()}
-                    className="p-2 text-on-surface-variant hover:bg-slate-100 rounded-full transition-colors"
-                  >
-                    <span
-                      className="material-symbols-outlined"
-                      data-icon="more_vert"
-                    >
-                      more_vert
-                    </span>
-                  </button>
+
                 </div>
               </div>
             );

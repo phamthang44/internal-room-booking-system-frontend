@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage, useAuthStore, useInitAuth, useProfileStore, ForgotPasswordPage, ResetPasswordPage } from "@features/auth";
-import { HomePage, LoadingScreen } from "@features/home";
+import { HomePage } from "@features/home";
 import { AdminDashboard, StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
 import { MyBookingsPage, MySchedulePage, BookingDetailPage, BookingCheckInPage } from "@features/bookings";
@@ -117,7 +117,7 @@ const RouterContent = () => {
           path="/loading"
           element={
             <ProtectedRoute>
-              <LoadingScreen />
+              <Navigate to="/dashboard" replace />
             </ProtectedRoute>
           }
         />
