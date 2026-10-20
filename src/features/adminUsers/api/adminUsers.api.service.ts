@@ -132,8 +132,9 @@ export const adminUsersApiService = {
   ): Promise<UserBasicResponse> => {
     const res = await apiClient.put<ApiResult<UserBasicResponse>>(
       ADMIN_USERS_ENDPOINTS.UPDATE_ROLE(userId),
-      null,
-      { params: { roleName } },
+      // Spring's @RequestBody String expects the raw role, not a query param or JSON object.
+      roleName,
+      { headers: { "Content-Type": "text/plain" } },
     );
     assertApiSuccess(res.data);
     return unwrapApiResult<UserBasicResponse>(res.data);
