@@ -1,7 +1,7 @@
 import { AppLayout } from "@shared/components/AppLayout";
 import { useAuthStore } from "@features/auth";
 import { useI18n } from "@shared/i18n/useI18n";
-import { LoadingScreen } from "@features/home";
+import { DashboardSkeleton } from "../components/DashboardSkeleton";
 import { useStudentDashboardRecentActivity } from "../hooks/useStudentDashboardRecentActivity";
 import { HeroSection } from "../components/recent-activity/HeroSection";
 import { SummaryBento } from "../components/recent-activity/SummaryBento";
@@ -16,18 +16,16 @@ export const StudentDashboard = () => {
   const { t } = useI18n();
   const { data, isLoading, error } = useStudentDashboardRecentActivity();
 
-  const firstName = user?.fullName?.split(" ")[0] ?? "Student";
-
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  const firstName = user?.fullName?.trim().split(/\s+/).slice(-1)[0] || t("nav.dashboard");
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+      <div className="page-frame space-y-7 dashboard-section">
         <HeroSection name={firstName} />
 
-        {error ? (
+        {isLoading ? (
+          <DashboardSkeleton />
+        ) : error ? (
           <div className="rounded-2xl border border-error-container bg-error-container/20 p-6 text-center text-error">
             <span className="material-symbols-outlined text-[32px] mb-2 block">
               error_outline
@@ -42,16 +40,18 @@ export const StudentDashboard = () => {
               penaltyLevel={data?.data?.penaltyLevel}
               penaltyExpiresAt={data?.data?.penaltyExpiresAt}
             />
-            <SummaryBento data={data?.data} />
+            <div className="dashboard-work-grid">
+              <UpcomingList upcomingList={data?.data?.upcomingList} />
+              <SummaryBento data={data?.data} />
+            </div>
+            <RecommendationsSection />
             <AttendanceCard
               attendanceRate={data?.data?.attendanceRate}
               noShowCount={data?.data?.noShowCount}
               cancelledThisMonthCount={data?.data?.cancelledThisMonthCount}
               avgActualAttendees={data?.data?.avgActualAttendees}
             />
-            <RecommendationsSection />
             <ActivityCarousel historyList={data?.data?.historyList} />
-            <UpcomingList upcomingList={data?.data?.upcomingList} />
           </>
         )}
       </div>

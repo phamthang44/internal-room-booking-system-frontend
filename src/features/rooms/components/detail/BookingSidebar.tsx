@@ -3,6 +3,8 @@
 // Data: room.schedule.availabilities from GET /rooms/:id
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import { readRoomBookingIntent } from "../../utils/roomBookingIntent";
 import { CheckCircle, CircleAlert } from "lucide-react";
 import { format, parseISO, isBefore, isSameDay, set } from "date-fns";
 import { cn } from "@shared/utils/cn";
@@ -204,7 +206,7 @@ const SlotRow = ({
         </div>
         <span
           className={cn(
-            "text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full",
+            "text-xs font-medium px-2.5 py-1 rounded-full",
             rowStyle.badge,
           )}
         >
@@ -218,11 +220,12 @@ const SlotRow = ({
     <button
       type="button"
       onClick={onSelect}
+      aria-pressed={isSelected}
       className={cn(
         "group flex items-center justify-between w-full p-4 rounded-xl border-2 transition-all duration-200 text-left",
         isSelected
-          ? "bg-primary-fixed border-primary shadow-[0_0_0_4px_rgba(173,199,247,0.3)]"
-          : "bg-surface-container-low border-transparent hover:border-tertiary-fixed-dim hover:shadow-[0_4px_16px_rgba(24,28,30,0.06)]"
+          ? "bg-primary/5 border-primary"
+          : "bg-surface-container-low/50 border-transparent hover:border-primary/25"
       )}
     >
       <div className="min-w-0 flex items-start gap-3">
@@ -230,8 +233,8 @@ const SlotRow = ({
           className={cn(
             "mt-1 w-2.5 h-2.5 rounded-full shrink-0 transition-all",
             isSelected
-              ? "bg-primary shadow-[0_0_8px_rgba(0,32,69,0.5)]"
-              : "bg-tertiary-fixed shadow-[0_0_8px_rgba(136,249,176,0.5)]"
+              ? "bg-primary"
+              : "bg-emerald-600"
           )}
         />
         <div className="min-w-0">
@@ -266,7 +269,7 @@ const SlotRow = ({
           <CheckCircle size={18} className="text-primary" />
         </span>
       ) : (
-        <span className="text-[10px] font-bold uppercase tracking-widest text-on-tertiary-fixed-variant bg-tertiary-fixed/20 px-2.5 py-1 rounded-full">
+        <span className="text-xs font-medium text-on-tertiary-fixed-variant bg-tertiary-fixed/20 px-2.5 py-1 rounded-full">
           {t("roomDetail.slots.available")}
         </span>
       )}
@@ -300,21 +303,37 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
     });
   }, [availabilities]);
 
-  const [selectedDate, setSelectedDate] = useState<string>(() => availabilities[0]?.date ?? "");
-  const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>([]);
+  const [searchParams] = useSearchParams();
+  const requested = useMemo(() => readRoomBookingIntent(searchParams), [searchParams]);
+  const initialDate = requested.date
+    ? (availabilities.some(day => day.date === requested.date) ? requested.date : "")
+    : availabilities[0]?.date ?? "";
+  const initialSlotIds = requested.slotIds.filter(id => {
+    const slot = availabilities.find(day => day.date === initialDate)?.slots.find(slot => String(slot.slotId) === id);
+    return slot && mapApiSlotToBookingSlot(slot, room.availability).status === "available" && !isSlotInPast(initialDate, slot.startTime, now);
+  });
+  const initialNotice = Boolean(
+    (searchParams.has("bookingDate") && (!requested.date || !initialDate)) ||
+    initialSlotIds.length !== requested.slotIds.length
+  );
+  const [showIntentNotice, setShowIntentNotice] = useState(initialNotice);
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+  const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>(initialSlotIds);
   const [purpose, setPurpose] = useState("");
-  const [attendeesInput, setAttendeesInput] = useState("");
+  const [attendeesInput, setAttendeesInput] = useState(requested.attendees);
   const [errors, setErrors] = useState<{ slot?: string; purpose?: string; attendees?: string }>(
     {}
   );
 
   useEffect(() => {
-    const first = room.schedule.availabilities[0]?.date ?? "";
-    setSelectedDate(first);
-    setSelectedSlotIds([]);
+    // A different room/link starts a new intent; background schedule refreshes keep the form.
+    setSelectedDate(initialDate);
+    setSelectedSlotIds(initialSlotIds);
+    setShowIntentNotice(initialNotice);
     setPurpose("");
-    setAttendeesInput("");
-  }, [room.id]);
+    setAttendeesInput(requested.attendees);
+    setErrors({});
+  }, [room.id, searchParams]);
 
   /** Horizontal strip: vertical wheel scrolls sideways; needs non-passive listener. */
   useEffect(() => {
@@ -346,8 +365,14 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
   /** Selected ids in day order (chronological) for API and display. */
   const orderedSelectedSlotIds = useMemo(() => {
     const selected = new Set(selectedSlotIds);
-    return slots.filter((s) => selected.has(s.id)).map((s) => s.id);
+    return slots.filter((s) => selected.has(s.id) && s.status === "available" && !s.disabledReason).map((s) => s.id);
   }, [slots, selectedSlotIds]);
+
+  useEffect(() => {
+    if (orderedSelectedSlotIds.length === selectedSlotIds.length) return;
+    setSelectedSlotIds(orderedSelectedSlotIds);
+    setShowIntentNotice(true);
+  }, [orderedSelectedSlotIds, selectedSlotIds]);
 
   const scheduleFull = room.schedule.isFull;
   const hasNoSchedule = dateOptions.length === 0;
@@ -391,19 +416,20 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
   };
 
   return (
-    <div className="bg-surface-container-lowest rounded-2xl shadow-[0_20px_50px_rgba(0,32,69,0.10)] overflow-hidden">
-      <div className="bg-gradient-to-r from-primary to-primary-container px-7 py-6 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-12 -mt-12 blur-2xl" />
+    <div className="booking-form-panel">
+      <div className="pb-6 border-b border-outline-variant/25 text-on-surface">
+
         <h2 className="text-xl font-headline font-extrabold tracking-tight relative z-10">
           {t("roomDetail.booking.title")}
         </h2>
-        <p className="text-on-primary-container text-sm mt-1 relative z-10">
+        <p className="text-on-surface-variant text-sm mt-2">
           {t("roomDetail.booking.subtitle")}
         </p>
-        <p className="text-white/40 text-xs mt-2 font-medium truncate relative z-10">{room.name}</p>
+        <p className="text-primary text-xs mt-3 font-semibold">{room.name}</p>
       </div>
 
-      <div className="p-7 space-y-7">
+      <div className="pt-6 space-y-6">
+        {showIntentNotice && <p role="status" className="rounded-xl bg-amber-50 p-3 text-sm leading-relaxed text-amber-900">{t("rooms.bookingSearch.intentChanged")}</p>}
         {(scheduleFull || hasNoSchedule) && (
           <div
             className="rounded-xl bg-error-container/20 border border-error/20 px-4 py-3 text-sm text-on-surface"
@@ -433,7 +459,10 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
                     <button
                       key={d.date}
                       type="button"
+                      aria-pressed={isActive}
+                      aria-label={d.date}
                       onClick={() => {
+                        setShowIntentNotice(false);
                         setSelectedDate(d.date);
                         setSelectedSlotIds([]);
                       }}
@@ -444,7 +473,7 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
                           : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
                       )}
                     >
-                      <span className="text-[10px] font-bold uppercase tracking-wider">{d.day}</span>
+                      <span className="text-xs font-medium">{d.day}</span>
                       <span className="text-xl font-black leading-tight">{d.dayNum}</span>
                     </button>
                   );
@@ -477,6 +506,7 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
                   selectionOrder={selectionOrder}
                   onSelect={() => {
                     if (slot.status !== "available" || slot.disabledReason) return;
+                    setShowIntentNotice(false);
                     setSelectedSlotIds((prev) => {
                       if (prev.includes(slot.id)) {
                         return prev.filter((id) => id !== slot.id);
@@ -506,6 +536,8 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
             {t("roomDetail.booking.purpose")}
           </label>
           <textarea
+            id="booking-purpose"
+            aria-label={t("roomDetail.booking.purpose")}
             value={purpose}
             onChange={(e) => {
               setPurpose(e.target.value);
@@ -570,16 +602,13 @@ export const BookingSidebar = ({ room }: BookingSidebarProps) => {
             onClick={handleConfirm}
             disabled={isPending || scheduleFull || hasNoSchedule}
             className={cn(
-              "w-full py-4 rounded-xl font-headline font-extrabold tracking-tight text-white transition-all duration-200",
-              "bg-gradient-to-r from-primary to-primary-container",
-              "shadow-xl shadow-primary/20 hover:shadow-primary/30",
-              "hover:scale-[1.015] active:scale-[0.98]",
+              "action-primary w-full",
               "disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
             )}
           >
             {isPending ? t("roomDetail.booking.submitting") : t("roomDetail.booking.confirm")}
           </button>
-          <p className="text-center text-[10px] text-on-surface-variant mt-3 uppercase tracking-[0.15em]">
+          <p className="text-center text-xs leading-relaxed text-on-surface-variant mt-3">
             {t("roomDetail.booking.policy")}
           </p>
         </div>

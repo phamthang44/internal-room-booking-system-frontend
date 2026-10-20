@@ -31,7 +31,7 @@ export const RoomDetailPage = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+      <div className="page-frame">
         {/* ── Loading skeleton ── */}
         {isLoading && <RoomDetailSkeleton />}
 

@@ -2,33 +2,33 @@ import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import type { RoomAvailabilityUI } from "../types/classroom.api.types";
 
-/** Solid fills + white label/icon: readable on photos and on light surfaces (WCAG-friendly). */
+/** Opaque, pale status surfaces remain legible over room photography. */
 const ROOM_STATUS: Record<
   RoomAvailabilityUI,
   { chip: string; icon: string }
 > = {
   available: {
     chip:
-      "bg-emerald-700 text-white ring-2 ring-white/25 shadow-md [text-shadow:0_1px_1px_rgba(0,0,0,0.15)] dark:bg-emerald-600 dark:ring-emerald-300/35",
+      "available",
     icon: "check_circle",
   },
   occupied: {
     chip:
-      "bg-rose-700 text-white ring-2 ring-white/25 shadow-md [text-shadow:0_1px_1px_rgba(0,0,0,0.15)] dark:bg-rose-600 dark:ring-rose-300/35",
+      "occupied",
     icon: "do_not_disturb_on",
   },
   maintenance: {
     chip:
-      "bg-amber-700 text-white ring-2 ring-white/25 shadow-md [text-shadow:0_1px_1px_rgba(0,0,0,0.12)] dark:bg-amber-600 dark:ring-amber-200/40",
+      "maintenance",
     icon: "construction",
   },
 };
 
-/** Card / row accent: colored left bar so status is visible in grid and list */
+/** Retained for existing consumers; the labelled chip carries room status. */
 export const roomStatusCardClasses: Record<RoomAvailabilityUI, string> = {
-  available: "border-l-[5px] border-l-emerald-500",
-  occupied: "border-l-[5px] border-l-rose-500",
-  maintenance: "border-l-[5px] border-l-amber-500",
+  available: "",
+  occupied: "",
+  maintenance: "",
 };
 
 interface RoomStatusChipProps {
@@ -43,7 +43,7 @@ export const RoomStatusChip = ({ status, className }: RoomStatusChipProps) => {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold font-body",
+        "room-status font-body",
         cfg.chip,
         className,
       )}
@@ -51,7 +51,7 @@ export const RoomStatusChip = ({ status, className }: RoomStatusChipProps) => {
       aria-label={t(`rooms.status.${status}`)}
     >
       <span
-        className="material-symbols-outlined text-[14px] leading-none text-white"
+        className="material-symbols-outlined text-[14px] leading-none"
         aria-hidden
       >
         {cfg.icon}

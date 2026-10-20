@@ -133,7 +133,7 @@ export const AdminApprovalsPage = () => {
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">
+            <h1 className="page-title">
               {t("approvals.title")}
             </h1>
             <p className="mt-1 text-on-surface-variant">

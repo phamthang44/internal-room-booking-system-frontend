@@ -109,13 +109,15 @@ export const en = {
     },
     profile: {
       sectionTitle: "My Profile",
-      sectionDescription: "Update your display name and view your account details.",
+      sectionDescription: "Update your display name, phone number, and view your account details.",
       accountInfo: "Account Information",
       editableInfo: "Editable Information",
-      editNote: "Only your display name can be edited here.",
+      editNote: "You can edit your display name and phone number here.",
       fields: {
         fullName: "Full Name",
         fullNamePlaceholder: "e.g. Jane Smith",
+        phoneNumber: "Phone Number",
+        phoneNumberPlaceholder: "e.g. 0912 345 678",
         username: "Username",
         email: "Email Address",
         studentCode: "Student ID",
@@ -128,6 +130,9 @@ export const en = {
       validation: {
         fullNameMin: "Name must be at least 2 characters.",
         fullNameMax: "Name must be 100 characters or fewer.",
+        phoneMin: "Phone number must be at least 8 characters.",
+        phoneMax: "Phone number must be 20 characters or fewer.",
+        phoneFormat: "Use digits with optional + at the start; spaces or hyphens are allowed.",
       },
     },
     security: {
@@ -237,6 +242,7 @@ export const en = {
     roomLabel: "Room",
   },
   nav: {
+    skipToContent: "Skip to content",
     brand: "Academic Atelier",
     portal: "Staff Portal",
     toggleSidebar: "Toggle sidebar",
@@ -379,7 +385,7 @@ export const en = {
   dashboard: {
     greeting: "Welcome back, {{name}}.",
     subtitle:
-      "Your creative space is waiting. Ready to book your next study session?",
+      "Track your bookings and prepare for your next study session.",
     newBooking: "New Booking",
     hero: {
       createBooking: "Create Booking",
@@ -588,6 +594,18 @@ export const en = {
     },
   },
   rooms: {
+    bookingSearch: {
+      anyDate: "Choose a date",
+      title: "When do you need a room?",
+      windowHint: "Choose within the next 7 days. Results update as you choose.",
+      attendees: "Number of attendees",
+      anyCapacity: "Any",
+      slotsHint: "Choose up to 2 slots. Rooms must be free for every selected slot.",
+      chooseDateFirst: "Choose a date first to search by time slot.",
+      clear: "Clear choices",
+      continue: "Continue to booking",
+      intentChanged: "The date or some requested slots are no longer available in this room's schedule. Please choose again before confirming.",
+    },
     pageTitle: "Find Your Space",
     pageSubtitle: "Browse available classrooms and book your session",
     search: {
@@ -595,6 +613,17 @@ export const en = {
       clearLabel: "Clear search",
     },
     filters: {
+      refine: "Refine results",
+      resetRefine: "Reset",
+      autoApply: "Results update as you choose.",
+      allStatuses: "All statuses",
+      anyEquipment: "No preference",
+      singleEquipment: "Choose one required item.",
+      applied: "Applied filters",
+      people: "At least {{count}} people",
+      remove: "Remove filter: {{label}}",
+      showResults: "Show results",
+
       title: "Filter Classrooms",
       clearAll: "Clear all",
       clearAllFilters: "Clear All Filters",
@@ -682,6 +711,9 @@ export const en = {
       retry: "Retry",
     },
     pagination: {
+      label: "Room pagination",
+      previous: "Previous rooms page",
+      next: "Next rooms page",
       pageOf: "Page {{page}} of {{total}}",
     },
     status: {
@@ -763,6 +795,7 @@ export const en = {
     pageSubtitle:
       "Manage your current reservations and review your academic activity history in the Scholarly Sanctuary.",
     search: {
+      moreFilters: "More filters",
       keyword: "Keyword",
       keywordPlaceholder: "Search by room or building…",
       bookingDate: "Booking date",

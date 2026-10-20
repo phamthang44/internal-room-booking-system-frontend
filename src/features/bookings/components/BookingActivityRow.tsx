@@ -56,12 +56,12 @@ export function BookingActivityRow({
       aria-label={rowLabel}
       className={cn(
         "w-full text-left bg-surface-container-lowest p-5 rounded-2xl",
-        "shadow-[0px_8px_24px_rgba(24,28,30,0.04)]",
-        "flex items-center justify-between gap-4 group transition-all hover:scale-[1.01] cursor-pointer",
+        "ring-1 ring-primary/5",
+        "flex flex-wrap items-center justify-between gap-4 group transition-colors hover:bg-surface cursor-pointer",
         "focus:outline-none focus:ring-2 focus:ring-primary/20",
       )}
     >
-      <div className="flex items-center gap-4 min-w-0">
+      <div className="flex flex-1 items-center gap-3 min-w-[180px]">
         <div className="h-12 w-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shrink-0">
           <span className="material-symbols-outlined">{item.icon}</span>
         </div>
@@ -72,7 +72,7 @@ export function BookingActivityRow({
             <span className="text-on-surface-variant font-normal mx-2">•</span>
             <span className="text-sm font-medium">{item.roomName}</span>
           </h4>
-          <div className="flex flex-wrap gap-4 mt-1">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
             <span className="text-xs text-on-surface-variant flex items-center gap-1">
               <span className="material-symbols-outlined text-xs">calendar_today</span>
               {item.dateLabel}
@@ -89,12 +89,12 @@ export function BookingActivityRow({
         {chipStatus ? (
           <StatusChip
             status={chipStatus}
-            className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-tighter"
+            className="px-3 py-1 text-xs font-medium normal-case tracking-normal"
           />
         ) : (
           <span
             className={cn(
-              "px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-tighter border border-outline-variant/20",
+              "px-3 py-1 rounded-full text-xs font-medium border border-outline-variant/20",
               fallbackStyles(item.status)
             )}
           >
@@ -109,7 +109,7 @@ export function BookingActivityRow({
               e.stopPropagation();
               onCancel(item.id);
             }}
-            className="text-error font-bold text-xs opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block"
+            className="text-error font-semibold text-xs underline-offset-4 hover:underline"
           >
             {t("bookings.detail.actions.cancelBooking")}
           </button>

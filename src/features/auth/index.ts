@@ -1,6 +1,7 @@
 // Types
 export type {
   User,
+  UserProfileResponse,
   LoginRequest,
   LoginResponse,
   AuthState,

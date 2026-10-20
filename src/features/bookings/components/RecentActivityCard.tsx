@@ -26,14 +26,14 @@ export function RecentActivityCard({
     <section className={["bg-surface-container-low p-4 sm:p-6 md:p-8 rounded-2xl", className].filter(Boolean).join(" ")}>
       <div className="flex justify-between items-center mb-6 gap-4">
         <h3 className="text-lg font-bold font-headline text-on-surface">{title}</h3>
-        <button
+        {onDownloadReport && <button
           type="button"
           onClick={onDownloadReport}
           className="text-primary text-sm font-bold cursor-pointer flex items-center gap-1 hover:opacity-80 transition-opacity"
         >
           {downloadLabel}
           <span className="material-symbols-outlined text-sm">download</span>
-        </button>
+        </button>}
       </div>
 
       {items.length === 0 ? (

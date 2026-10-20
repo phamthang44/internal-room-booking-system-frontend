@@ -110,13 +110,15 @@ export const vi = {
     },
     profile: {
       sectionTitle: "Hồ sơ của tôi",
-      sectionDescription: "Cập nhật tên hiển thị và xem thông tin tài khoản của bạn.",
+      sectionDescription: "Cập nhật tên hiển thị, số điện thoại và xem thông tin tài khoản của bạn.",
       accountInfo: "Thông tin tài khoản",
       editableInfo: "Thông tin có thể chỉnh sửa",
-      editNote: "Chỉ có thể chỉnh sửa tên hiển thị tại đây.",
+      editNote: "Bạn có thể chỉnh sửa họ tên và số điện thoại tại đây.",
       fields: {
         fullName: "Họ và tên",
         fullNamePlaceholder: "ví dụ: Nguyễn Văn A",
+        phoneNumber: "Số điện thoại",
+        phoneNumberPlaceholder: "ví dụ: 0912 345 678",
         username: "Tên đăng nhập",
         email: "Địa chỉ Email",
         studentCode: "Mã sinh viên",
@@ -129,6 +131,9 @@ export const vi = {
       validation: {
         fullNameMin: "Tên phải có ít nhất 2 ký tự.",
         fullNameMax: "Tên không được vượt quá 100 ký tự.",
+        phoneMin: "Số điện thoại phải có ít nhất 8 ký tự.",
+        phoneMax: "Số điện thoại không được vượt quá 20 ký tự.",
+        phoneFormat: "Chỉ dùng chữ số, có thể bắt đầu bằng +; cho phép khoảng trắng hoặc dấu gạch ngang.",
       },
     },
     security: {
@@ -238,6 +243,7 @@ export const vi = {
     roomLabel: "Phòng",
   },
   nav: {
+    skipToContent: "Chuyển đến nội dung",
     brand: "Academic Atelier",
     portal: "Cổng thông tin",
     toggleSidebar: "Đóng/mở thanh điều hướng",
@@ -380,7 +386,7 @@ export const vi = {
   dashboard: {
     greeting: "Chào mừng trở lại, {{name}}.",
     subtitle:
-      "Không gian sáng tạo đang chờ bạn. Sẵn sàng đặt phòng học tiếp theo chưa?",
+      "Theo dõi lịch đặt phòng và chuẩn bị cho buổi học tiếp theo.",
     newBooking: "Đặt phòng mới",
     hero: {
       createBooking: "Đặt phòng",
@@ -468,10 +474,10 @@ export const vi = {
       browseRooms: "Duyệt các phòng trống →",
       loadError: "Không thể tải đặt phòng. Vui lòng làm mới.",
       status: {
-        confirmed: "ĐÃ XÁC NHẬN",
-        pending: "CHỜ DUYỆT",
-        inUse: "ĐANG SỬ DỤNG",
-        cancelled: "ĐÃ HỦY",
+        confirmed: "Đã xác nhận",
+        pending: "Chờ duyệt",
+        inUse: "Đang sử dụng",
+        cancelled: "Đã hủy",
       },
     },
     loading: {
@@ -589,6 +595,18 @@ export const vi = {
     },
   },
   rooms: {
+    bookingSearch: {
+      anyDate: "Chưa chọn ngày",
+      title: "Bạn cần phòng vào lúc nào?",
+      windowHint: "Chọn trong 7 ngày tới. Kết quả cập nhật theo lựa chọn của bạn.",
+      attendees: "Số người tham dự",
+      anyCapacity: "Bất kỳ",
+      slotsHint: "Chọn tối đa 2 ca. Phòng cần còn trống cho tất cả ca đã chọn.",
+      chooseDateFirst: "Chọn ngày trước để xem phòng theo ca học.",
+      clear: "Xóa lựa chọn",
+      continue: "Tiếp tục đặt phòng",
+      intentChanged: "Ngày hoặc một số ca bạn tìm không còn khả dụng trong lịch phòng. Vui lòng chọn lại trước khi xác nhận.",
+    },
     pageTitle: "Tìm không gian của bạn",
     pageSubtitle: "Duyệt các phòng học có sẵn và đặt phòng",
     search: {
@@ -596,6 +614,17 @@ export const vi = {
       clearLabel: "Xóa tìm kiếm",
     },
     filters: {
+      refine: "Thu hẹp kết quả",
+      resetRefine: "Đặt lại",
+      autoApply: "Kết quả tự cập nhật khi bạn chọn.",
+      allStatuses: "Tất cả trạng thái",
+      anyEquipment: "Không yêu cầu",
+      singleEquipment: "Chọn một thiết bị cần có.",
+      applied: "Đang áp dụng",
+      people: "Từ {{count}} người",
+      remove: "Bỏ điều kiện: {{label}}",
+      showResults: "Xem kết quả",
+
       title: "Lọc phòng học",
       clearAll: "Xóa tất cả",
       clearAllFilters: "Xóa tất cả bộ lọc",
@@ -682,6 +711,9 @@ export const vi = {
       retry: "Thử lại",
     },
     pagination: {
+      label: "Phân trang phòng",
+      previous: "Trang phòng trước",
+      next: "Trang phòng sau",
       pageOf: "Trang {{page}} trên {{total}}",
     },
     status: {
@@ -761,8 +793,9 @@ export const vi = {
   bookings: {
     pageTitle: "Đặt phòng của tôi",
     pageSubtitle:
-      "Quản lý các đặt chỗ hiện tại và xem lại lịch sử hoạt động đặt phòng của bạn trong Scholarly Sanctuary.",
+      "Theo dõi lịch đặt phòng, trạng thái duyệt và lịch sử sử dụng của bạn.",
     search: {
+      moreFilters: "Bộ lọc bổ sung",
       keyword: "Từ khóa",
       keywordPlaceholder: "Tìm theo phòng hoặc tòa nhà…",
       bookingDate: "Ngày đặt",

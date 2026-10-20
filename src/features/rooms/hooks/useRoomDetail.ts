@@ -20,7 +20,9 @@ export const useRoomDetail = (roomId: string) => {
     queryKey: roomDetailQueryKeys.detail(roomId),
     queryFn: () => roomDetailApiService.getRoomById(roomId),
     enabled: !!roomId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    // Slot availability must be checked again when opening a room from search.
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };
 

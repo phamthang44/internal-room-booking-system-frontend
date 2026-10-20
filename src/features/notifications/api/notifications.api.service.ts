@@ -35,7 +35,7 @@ export const notificationsApiService = {
   },
 
   markRead: async (id: number): Promise<void> => {
-    await apiClient.patch<ApiResult<void>>(NOTIFICATIONS_ENDPOINTS.MARK_READ(id));
+    await apiClient.patch<ApiResult<void>>(NOTIFICATIONS_ENDPOINTS.MARK_READ(id), null);
   },
 
   markAllRead: async (): Promise<void> => {

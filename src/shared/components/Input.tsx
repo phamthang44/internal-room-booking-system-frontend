@@ -15,12 +15,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         type={type}
         disabled={isLoading || props.disabled}
         className={cn(
-          "w-full px-4 py-3 rounded-lg border-2 transition-all duration-200",
-          "text-on-surface placeholder-on-surface-variant",
+          "workspace-field",
+          "text-on-surface placeholder:text-on-surface-variant/70",
           "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
           isError
-            ? "border-error bg-error/5"
-            : "border-outline-variant bg-surface hover:border-outline",
+            ? "is-error"
+            : "",
           isLoading && "opacity-50 cursor-wait",
           className,
         )}

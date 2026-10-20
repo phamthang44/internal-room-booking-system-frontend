@@ -98,21 +98,21 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
 
   return (
     <AppLayout>
-      <div className={cn("mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-8 lg:px-8", className)}>
+      <div className={cn("page-frame", className)}>
         {/* Header Section */}
         <div className="mb-8 space-y-6 md:mb-10">
           <div className="flex flex-col gap-6 md:flex-row md:justify-between md:items-end">
             <div>
-              <h2 className="text-4xl font-extrabold tracking-tight text-on-surface mb-2 font-headline">
+              <h1 className="page-title mb-2">
                 {header.title}
-              </h2>
+              </h1>
               <p className="text-on-surface-variant max-w-lg">{header.subtitle}</p>
             </div>
             <BookingStatusTabs value={filter} onChange={setFilter} />
           </div>
 
           {/* Search / Filters */}
-          <section className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 sm:p-5">
+          <section className="booking-filters">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
               <div className="md:col-span-4">
                 <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
@@ -137,10 +137,10 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
                 </label>
                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                   <PopoverTrigger asChild>
-                    <div
-                      role="button"
+                    <button
+                      type="button"
                       aria-expanded={isCalendarOpen}
-                      className="relative flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-outline-variant/40 bg-surface px-3 text-sm transition-all hover:border-outline-variant focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 data-[state=open]:border-primary/50 data-[state=open]:ring-2 data-[state=open]:ring-primary/10"
+                      className="relative flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-outline-variant/40 bg-surface px-3 text-sm transition-all hover:border-outline-variant focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 data-[state=open]:border-primary/50 data-[state=open]:ring-2 data-[state=open]:ring-primary/10"
                     >
                       <span className="material-symbols-outlined pointer-events-none text-[18px] text-on-surface-variant/50">
                         calendar_today
@@ -166,7 +166,7 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
                       >
                         expand_more
                       </span>
-                    </div>
+                    </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
@@ -225,63 +225,7 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
                 </Select>
               </div>
 
-              <div className="md:col-span-1">
-                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
-                  {t("bookings.search.timeSlotId")}
-                </label>
-                <input
-                  inputMode="numeric"
-                  value={timeSlotId}
-                  onChange={(e) => {
-                    setTimeSlotId(e.target.value.replace(/[^\d]/g, ""));
-                    setPage(1);
-                  }}
-                  placeholder="0"
-                  className="h-11 w-full rounded-xl border border-outline-variant/40 bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/10"
-                />
-              </div>
-
-              <div className="md:col-span-1">
-                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
-                  {t("bookings.search.attendees")}
-                </label>
-                <input
-                  inputMode="numeric"
-                  value={attendees}
-                  onChange={(e) => {
-                    setAttendees(e.target.value.replace(/[^\d]/g, ""));
-                    setPage(1);
-                  }}
-                  placeholder="0"
-                  className="h-11 w-full rounded-xl border border-outline-variant/40 bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/10"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
-                  {t("bookings.search.sort")}
-                </label>
-                <Select
-                  value={sort}
-                  onValueChange={(val) => {
-                    setSort(val as BookingSortApi);
-                    setPage(1);
-                  }}
-                >
-                  <SelectTrigger className="h-11">
-                    <SelectValue placeholder={t("bookings.search.sortNewest")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">{t("bookings.search.sortNewest")}</SelectItem>
-                    <SelectItem value="booking_date_asc">{t("bookings.search.sortDateAsc")}</SelectItem>
-                    <SelectItem value="booking_date_desc">{t("bookings.search.sortDateDesc")}</SelectItem>
-                    <SelectItem value="status_asc">{t("bookings.search.sortStatusAsc")}</SelectItem>
-                    <SelectItem value="status_desc">{t("bookings.search.sortStatusDesc")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="md:col-span-2 flex gap-2">
+              <div className="md:col-span-3 flex gap-2">
                 <button
                   type="button"
                   onClick={() => void query.refetch()}
@@ -309,6 +253,68 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
                 </button>
               </div>
             </div>
+
+            <details className="mt-4 rounded-xl bg-surface-container-low/60 p-3">
+              <summary className="cursor-pointer text-xs font-semibold text-on-surface-variant">{t("bookings.search.moreFilters")}</summary>
+              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-12">
+              <div className="md:col-span-3">
+                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
+                  {t("bookings.search.timeSlotId")}
+                </label>
+                <input
+                  inputMode="numeric"
+                  value={timeSlotId}
+                  onChange={(e) => {
+                    setTimeSlotId(e.target.value.replace(/[^\d]/g, ""));
+                    setPage(1);
+                  }}
+                  placeholder="0"
+                  className="h-11 w-full rounded-xl border border-outline-variant/40 bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/10"
+                />
+              </div>
+
+              <div className="md:col-span-3">
+                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
+                  {t("bookings.search.attendees")}
+                </label>
+                <input
+                  inputMode="numeric"
+                  value={attendees}
+                  onChange={(e) => {
+                    setAttendees(e.target.value.replace(/[^\d]/g, ""));
+                    setPage(1);
+                  }}
+                  placeholder="0"
+                  className="h-11 w-full rounded-xl border border-outline-variant/40 bg-surface px-3 text-sm text-on-surface outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/10"
+                />
+              </div>
+
+              <div className="md:col-span-6">
+                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-widest text-on-surface-variant/60">
+                  {t("bookings.search.sort")}
+                </label>
+                <Select
+                  value={sort}
+                  onValueChange={(val) => {
+                    setSort(val as BookingSortApi);
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder={t("bookings.search.sortNewest")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">{t("bookings.search.sortNewest")}</SelectItem>
+                    <SelectItem value="booking_date_asc">{t("bookings.search.sortDateAsc")}</SelectItem>
+                    <SelectItem value="booking_date_desc">{t("bookings.search.sortDateDesc")}</SelectItem>
+                    <SelectItem value="status_asc">{t("bookings.search.sortStatusAsc")}</SelectItem>
+                    <SelectItem value="status_desc">{t("bookings.search.sortStatusDesc")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              </div>
+            </details>
 
             {/* Pagination */}
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -370,7 +376,7 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
           <div className="grid grid-cols-12 gap-6">
             {/* Summary Stats (Top Row Asymmetric) */}
             <ActiveReservoirCard
-              className="col-span-12 lg:col-span-4"
+              className="col-span-12 lg:col-span-4 order-2"
               title={t("bookings.summary.title")}
               description={t("bookings.summary.description", {
                 count: data.summary.reservedSlots,
@@ -379,20 +385,18 @@ export function MyBookingsPage({ className }: Readonly<MyBookingsPageProps>) {
             />
 
             <RecentActivityCard
-              className="col-span-12 lg:col-span-8"
+              className="col-span-12 lg:col-span-8 order-1"
               title={t("bookings.recentActivity.title")}
               downloadLabel={t("bookings.recentActivity.downloadReport")}
               emptyLabel={t("bookings.recentActivity.empty")}
               items={filteredRecentActivityItems}
               onOpenBooking={(bookingId) => navigate(`/bookings/${bookingId}`)}
               onCancelBooking={(bookingId) => navigate(`/bookings/${bookingId}`)}
-              onDownloadReport={() => {
-                // mock action: later can export CSV/pdf
-              }}
+
             />
 
             {/* Booking History Grid (Bottom Row) */}
-            <div className="col-span-12">
+            <div className="col-span-12 order-3">
               <BookingHistoryGrid
                 items={data.history.items}
                 ctaLabel={t("bookings.history.bookNew")}

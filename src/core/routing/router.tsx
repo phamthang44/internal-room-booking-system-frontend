@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage, useAuthStore, useInitAuth, useProfileStore, ForgotPasswordPage, ResetPasswordPage } from "@features/auth";
-import { HomePage, LoadingScreen } from "@features/home";
+import { HomePage } from "@features/home";
 import { AdminDashboard, StudentDashboard } from "@features/dashboard";
 import { RoomListPage, RoomDetailPage, BookingConfirmationPage } from "@features/rooms";
 import { MyBookingsPage, MySchedulePage, BookingDetailPage, BookingCheckInPage } from "@features/bookings";
@@ -66,7 +66,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Staff/admin route wrapper (requires authenticated user with role ADMIN or STAFF)
+// Staff/admin route wrapper (requires authenticated user with role ADMIN or FACILITY_STAFF)
 const StaffRoute = ({ children }: { children: React.ReactNode }) => {
   const { token, hasInitialized } = useAuthStore();
   const { profile, isLoading, fetchProfile } = useProfileStore();
@@ -90,7 +90,7 @@ const StaffRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   const role = profile.roleName;
-  if (role !== "ADMIN" && role !== "STAFF") {
+  if (role !== "ADMIN" && role !== "FACILITY_STAFF") {
     return <Navigate to="/404" replace />;
   }
 
@@ -117,7 +117,7 @@ const RouterContent = () => {
           path="/loading"
           element={
             <ProtectedRoute>
-              <LoadingScreen />
+              <Navigate to="/dashboard" replace />
             </ProtectedRoute>
           }
         />

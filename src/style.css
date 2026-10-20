@@ -1,5 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+@import "./workspace.css";
 
 @tailwind base;
 @tailwind components;
@@ -43,13 +44,13 @@
   .material-symbols-outlined {
     font-variation-settings:
       "FILL" 0,
-      "wght" 400,
+      "wght" 250,
       "GRAD" 0,
       "opsys" 24;
   }
 
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-white font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/10;
+    @apply px-6 py-3 bg-primary text-white font-semibold rounded-full hover:opacity-90 active:scale-[0.98] transition-colors;
   }
 
   .input-field {

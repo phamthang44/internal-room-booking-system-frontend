@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, MapPin } from "lucide-react";
+import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
 import type { RoomDetail } from "../../types/roomDetail.types";
 import { RoomStatusChip, roomStatusCardClasses } from "../RoomStatusChip";
@@ -15,6 +16,7 @@ interface RoomHeroImageProps {
 
 export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const locationLine = [room.building.name, room.building.address].filter(Boolean).join(" · ");
 
   const images = useMemo(() => {
@@ -46,7 +48,7 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
   return (
     <div
       className={cn(
-        "relative group overflow-hidden rounded-2xl",
+        "relative group overflow-hidden rounded-3xl bg-primary",
         roomStatusCardClasses[room.availability],
         className,
       )}
@@ -60,14 +62,13 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
       ) : (
         <div
           className="w-full h-full min-h-[320px]"
-          style={{ background: room.imageGradient }}
+          style={{ background: "#173b58" }}
         >
-          <div className="absolute top-8 right-12 w-48 h-48 rounded-full bg-white/5 blur-3xl animate-pulse" />
-          <div className="absolute bottom-12 left-8 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
+
         </div>
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+      {activeUrl && <div className="absolute inset-0 bg-black/35" />}
 
       {canNavigate ? (
         <>
@@ -75,7 +76,7 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
             type="button"
             onClick={prev}
             aria-label="Previous image"
-            className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all duration-200 z-10"
+            className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center rounded-full bg-white text-primary hover:bg-surface transition-all duration-200 z-10"
           >
             <span className="material-symbols-outlined text-[18px]">chevron_left</span>
           </button>
@@ -83,7 +84,7 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
             type="button"
             onClick={next}
             aria-label="Next image"
-            className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all duration-200 z-10"
+            className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center rounded-full bg-white text-primary hover:bg-surface transition-all duration-200 z-10"
           >
             <span className="material-symbols-outlined text-[18px]">chevron_right</span>
           </button>
@@ -106,11 +107,11 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
 
       <button
         onClick={() => navigate(-1)}
-        aria-label="Back to rooms"
-        className="absolute top-5 left-5 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-all duration-200 z-10"
+        aria-label={t("roomDetail.backToRooms")}
+        className="absolute top-5 left-5 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-primary text-sm font-medium hover:bg-surface transition-all duration-200 z-10"
       >
-        <ArrowLeft size={15} strokeWidth={2.5} />
-        <span className="hidden sm:inline">Rooms</span>
+        <ArrowLeft size={15} strokeWidth={1.5} />
+        <span className="hidden sm:inline">{t("nav.browseRooms")}</span>
       </button>
 
       <div className="absolute top-5 right-5 z-10">
@@ -135,7 +136,7 @@ export const RoomHeroImage = ({ room, className }: RoomHeroImageProps) => {
           </span>
           <span className="flex items-center gap-1.5 text-white/90 text-sm font-medium">
             <Users size={14} />
-            {room.capacity} Seats
+            {room.capacity} {t("rooms.card.seats")}
           </span>
         </div>
       </div>
