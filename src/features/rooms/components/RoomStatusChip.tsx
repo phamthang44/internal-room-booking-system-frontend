@@ -43,7 +43,7 @@ export const RoomStatusChip = ({ status, className }: RoomStatusChipProps) => {
   return (
     <span
       className={cn(
-        "room-status font-body",
+        "room-status font-body whitespace-nowrap shrink-0",
         cfg.chip,
         className,
       )}
@@ -51,12 +51,12 @@ export const RoomStatusChip = ({ status, className }: RoomStatusChipProps) => {
       aria-label={t(`rooms.status.${status}`)}
     >
       <span
-        className="material-symbols-outlined text-[14px] leading-none"
+        className="material-symbols-outlined text-[13px] leading-none shrink-0"
         aria-hidden
       >
         {cfg.icon}
       </span>
-      {t(`rooms.status.${status}`)}
+      <span>{t(`rooms.status.${status}`)}</span>
     </span>
   );
 };

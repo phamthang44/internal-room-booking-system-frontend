@@ -156,6 +156,7 @@ export interface RoomScheduleSlotUI {
   endTime: string;
   isAvailable: boolean;
   status: string;
+  isPast?: boolean;
 }
 
 /** UI-facing room model (produced by the adapter, consumed by components) */

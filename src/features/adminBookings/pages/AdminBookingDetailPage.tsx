@@ -146,13 +146,14 @@ export const AdminBookingDetailPage = () => {
                   {query.data.user.status ? (
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                        "inline-flex whitespace-nowrap shrink-0 items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wide",
                         query.data.user.status === "AVAILABLE" ||
                           query.data.user.status === "ACTIVE"
-                          ? "bg-tertiary-fixed text-on-tertiary-fixed-variant"
-                          : "bg-surface-container-high text-on-surface-variant",
+                          ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                          : "bg-surface-container-high text-on-surface-variant border border-outline-variant/30",
                       )}
                     >
+                      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80 shrink-0" />
                       {t(
                         `adminBookings.userStatus.${query.data.user.status}` as
                           | "adminBookings.userStatus.AVAILABLE"

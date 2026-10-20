@@ -127,20 +127,25 @@ export const RoomCard = ({ room, onCheckAvailability }: RoomCardProps) => {
               {t("rooms.card.schedule")}
             </p>
             <div className="flex flex-wrap gap-1">
-              {slotsToRender.map((slot) => (
-                <span
-                  key={slot.slotId}
-                  title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
-                  className={cn(
-                    "max-w-full truncate rounded-lg px-2 py-0.5 text-xs font-medium",
-                    slot.isAvailable
-                      ? "bg-primary/12 text-primary"
-                      : "bg-error-container/70 text-error border border-error/20"
-                  )}
-                >
-                  {slot.slotName}
-                </span>
-              ))}
+              {slotsToRender.map((slot) => {
+                const isPast = slot.isPast;
+                return (
+                  <span
+                    key={slot.slotId}
+                    title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}${isPast ? ` (${t("roomDetail.slots.past")})` : ""}`}
+                    className={cn(
+                      "max-w-full truncate rounded-lg px-2 py-0.5 text-xs font-medium",
+                      isPast
+                        ? "bg-surface-container-high text-on-surface-variant/70 border border-outline-variant/30"
+                        : slot.isAvailable
+                          ? "bg-primary/12 text-primary"
+                          : "bg-error-container/70 text-error border border-error/20"
+                    )}
+                  >
+                    {slot.slotName}
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}
@@ -304,20 +309,25 @@ export const RoomCardList = ({ room, onCheckAvailability }: RoomCardProps) => {
             <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               {t("rooms.card.schedule")}
             </span>
-            {slotsToRender.map((slot) => (
-              <span
-                key={slot.slotId}
-                title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}`}
-                className={cn(
-                  "truncate rounded-md px-1.5 py-0.5 text-xs font-medium",
-                  slot.isAvailable
-                    ? "bg-primary/12 text-primary"
-                    : "bg-error-container/70 text-error border border-error/20"
-                )}
-              >
-                {slot.slotName}
-              </span>
-            ))}
+            {slotsToRender.map((slot) => {
+              const isPast = slot.isPast;
+              return (
+                <span
+                  key={slot.slotId}
+                  title={`${formatClock(slot.startTime)}–${formatClock(slot.endTime)}${isPast ? ` (${t("roomDetail.slots.past")})` : ""}`}
+                  className={cn(
+                    "truncate rounded-md px-1.5 py-0.5 text-xs font-medium",
+                    isPast
+                      ? "bg-surface-container-high text-on-surface-variant/70 border border-outline-variant/30"
+                      : slot.isAvailable
+                        ? "bg-primary/12 text-primary"
+                        : "bg-error-container/70 text-error border border-error/20"
+                  )}
+                >
+                  {slot.slotName}
+                </span>
+              );
+            })}
           </div>
         )}
 

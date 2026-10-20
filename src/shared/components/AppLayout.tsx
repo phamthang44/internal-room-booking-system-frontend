@@ -267,55 +267,72 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       {/* ── Overlay (mobile only) ── */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-[55] bg-on-surface/25 lg:hidden"
+          className="fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={close}
           aria-hidden="true"
         />
       )}
 
-      {/* ── Sidebar Drawer ── */}
+      {/* ── Sidebar Drawer / Rail ── */}
       <aside
         ref={sidebarRef}
         id="app-sidebar"
         aria-label={t("nav.portal")}
-        aria-hidden={!isOpen}
-        {...(!isOpen ? { inert: "" } : {})}
         className={cn("app-sidebar", isOpen && "is-open")}
       >
         {/* Brand */}
         <div className="app-brand">
-          <svg className="app-brand-mark" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-            <rect x="4" y="4" width="28" height="28" rx="9" stroke="currentColor" strokeWidth="1.4" />
-            <path d="M12 27V10h12v17M16 10v17M20 19h1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-          </svg>
-          <div>
-            <p className="font-headline text-sm font-bold leading-tight text-on-surface">
-              {t("nav.brand")}
-            </p>
-            <p className="text-xs text-on-surface-variant">{t("nav.portal")}</p>
+          <div className="flex items-center gap-3 min-w-0">
+            <svg className="app-brand-mark" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+              <rect x="4" y="4" width="28" height="28" rx="9" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M12 27V10h12v17M16 10v17M20 19h1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+            <div className="app-brand-info min-w-0">
+              <div className="flex items-center gap-1.5">
+                <p className="font-headline text-sm font-bold leading-tight text-on-surface truncate">
+                  {t("nav.brand")}
+                </p>
+                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                  PRO
+                </span>
+              </div>
+              <p className="text-[11px] text-on-surface-variant truncate">{t("nav.portal")}</p>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={toggle}
+            className="app-sidebar-collapse-btn hidden lg:flex h-7 w-7 items-center justify-center rounded-lg text-on-surface-variant/70 hover:bg-surface-container hover:text-on-surface transition-colors"
+            title={isOpen ? t("nav.collapseSidebar") : t("nav.expandSidebar")}
+            aria-label={isOpen ? t("nav.collapseSidebar") : t("nav.expandSidebar")}
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              keyboard_double_arrow_left
+            </span>
+          </button>
         </div>
 
         {/* Nav */}
         <nav className="app-nav">
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {NAV_ITEMS.map((item) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
+                  title={item.label}
                   className={({ isActive }) =>
                     cn(
-                      "app-nav-link",
+                      "app-nav-link group",
                       isActive
                         ? "is-active"
                         : "",
                     )
                   }
                 >
-                  <span className="material-symbols-outlined text-[20px]">
+                  <span className="material-symbols-outlined text-[20px] shrink-0 transition-transform group-hover:scale-110">
                     {item.icon}
                   </span>
-                  {item.label}
+                  <span className="app-nav-link-text truncate">{item.label}</span>
                 </NavLink>
               </li>
             ))}
@@ -323,28 +340,29 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
           {canSeeAdminSection ? (
             <>
-              <div className="mx-3 mt-5 h-px bg-outline-variant/20" />
+              <div className="app-admin-divider mx-3 my-4 h-px bg-outline-variant/20" />
               <p className="app-nav-label">
                 {t("nav.admin.section")}
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-1.5">
                 {ADMIN_NAV_ITEMS.map((item) => (
                   <li key={item.to}>
                     <NavLink
                       to={item.to}
+                      title={item.label}
                       className={({ isActive }) =>
                         cn(
-                          "app-nav-link",
+                          "app-nav-link group",
                           isActive
                             ? "is-active"
                             : "",
                         )
                       }
                     >
-                      <span className="material-symbols-outlined text-[20px]">
+                      <span className="material-symbols-outlined text-[20px] shrink-0 transition-transform group-hover:scale-110">
                         {item.icon}
                       </span>
-                      {item.label}
+                      <span className="app-nav-link-text truncate">{item.label}</span>
                     </NavLink>
                   </li>
                 ))}
@@ -354,28 +372,29 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         </nav>
 
         {/* User profile footer */}
-        <div className="border-t border-outline-variant/20 p-4 select-none">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed">
+        <div className="border-t border-outline-variant/15 p-3 select-none">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-fixed text-sm font-semibold text-on-primary-fixed shadow-xs">
               {(profile?.fullName || user?.fullName)?.charAt(0) ?? "U"}
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-on-surface">
+            <div className="app-user-info min-w-0 flex-1">
+              <p className="truncate text-xs font-bold text-on-surface">
                 {profile?.fullName || user?.fullName || "Student"}
               </p>
-              <p className="truncate text-xs text-on-surface-variant">
+              <p className="truncate text-[11px] text-on-surface-variant">
                 {profile?.email || user?.email || ""}
               </p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-error"
+            title={t("nav.logout")}
+            className="app-logout-btn w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-error-container/15 hover:text-error"
           >
-            <span className="material-symbols-outlined text-[18px]">
+            <span className="material-symbols-outlined text-[18px] shrink-0">
               logout
             </span>
-            {t("nav.logout")}
+            <span className="app-logout-text">{t("nav.logout")}</span>
           </button>
         </div>
       </aside>

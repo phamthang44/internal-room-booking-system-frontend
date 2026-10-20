@@ -5,6 +5,8 @@ import { useI18n } from "@shared/i18n/useI18n";
 import { cn } from "@shared/utils/cn";
 import { TIME_SLOTS, useRoomFilterStore } from "../hooks/useRoomFilterStore";
 
+import { isSlotInPast } from "../utils/slotAvailability";
+
 /** The three booking decisions stay visible on phones as well as desktops. */
 export function BookingSearchControls() {
   const { t, language } = useI18n();
@@ -32,7 +34,20 @@ export function BookingSearchControls() {
               options={[{ value: "", label: "rooms.bookingSearch.anyDate" }, ...dates]}
               placeholder="rooms.bookingSearch.anyDate" ariaLabel={t("rooms.filters.pickDate")}
               describedBy="booking-search-window" icon="calendar_today" menuClassName="booking-date-menu"
-              onChange={(value: string) => { setBookingDate(value); if (!value) clearTimeSlots(); }} />
+              onChange={(value: string) => {
+                setBookingDate(value);
+                if (!value) {
+                  clearTimeSlots();
+                } else {
+                  // Deselect any slot that has already passed on the new date
+                  timeSlotIds.forEach((id) => {
+                    const slot = TIME_SLOTS.find((ts) => ts.id === id);
+                    if (slot && isSlotInPast(value, slot.start)) {
+                      toggleTimeSlotId(id);
+                    }
+                  });
+                }
+              }} />
           </div>
           <div className="booking-search-attendees">
             <label htmlFor="booking-search-attendees" className="field-label">{t("rooms.bookingSearch.attendees")}</label>
@@ -52,11 +67,17 @@ export function BookingSearchControls() {
             <div className="flex flex-wrap gap-2">
               {TIME_SLOTS.map(slot => {
                 const selected = timeSlotIds.includes(slot.id);
+                const isPast = bookingDate ? isSlotInPast(bookingDate, slot.start) : false;
                 return <button
                   key={slot.id} type="button" aria-pressed={selected} data-search-slot={slot.id}
-                  disabled={!bookingDate || (!selected && timeSlotIds.length >= 2)}
+                  disabled={!bookingDate || isPast || (!selected && timeSlotIds.length >= 2)}
+                  title={isPast ? `${slot.label} (${t("roomDetail.slots.past")})` : slot.label}
                   onClick={() => toggleTimeSlotId(slot.id)}
-                  className={cn("booking-slot-choice", selected && "is-selected")}
+                  className={cn(
+                    "booking-slot-choice",
+                    selected && "is-selected",
+                    isPast && "opacity-40 cursor-not-allowed line-through"
+                  )}
                 >{slot.label}</button>;
               })}
               {timeSlotIds.length > 0 && <button type="button" className="min-h-10 px-2 text-xs text-primary hover:underline" onClick={clearTimeSlots}>{t("rooms.filters.anyTime")}</button>}

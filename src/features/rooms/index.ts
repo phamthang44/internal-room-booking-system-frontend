@@ -50,6 +50,7 @@ export { EQUIPMENT_LABELS } from "./types/room.types";
 // ── API service ────────────────────────────────────────────────────────────────
 export { classroomApiService } from "./api/classroom.api.service";
 export { roomDetailApiService } from "./api/roomDetail.api.service";
+export { isSlotInPast } from "./utils/slotAvailability";
 
 // ── Legacy mock API (USE_MOCK = false, kept for reference) ────────────────────
 export { roomsApi } from "./api/rooms.api";

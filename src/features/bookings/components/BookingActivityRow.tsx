@@ -55,52 +55,57 @@ export function BookingActivityRow({
       onKeyDown={handleRowKeyDown}
       aria-label={rowLabel}
       className={cn(
-        "w-full text-left bg-surface-container-lowest p-5 rounded-2xl",
-        "ring-1 ring-primary/5",
-        "flex flex-wrap items-center justify-between gap-4 group transition-colors hover:bg-surface cursor-pointer",
+        "w-full text-left bg-surface-container-lowest p-4 sm:p-5 rounded-2xl",
+        "border border-outline-variant/15 shadow-2xs",
+        "flex flex-wrap items-center justify-between gap-4 group transition-all duration-200 hover:shadow-md hover:border-primary/25 cursor-pointer",
         "focus:outline-none focus:ring-2 focus:ring-primary/20",
       )}
     >
-      <div className="flex flex-1 items-center gap-3 min-w-[180px]">
-        <div className="h-12 w-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shrink-0">
-          <span className="material-symbols-outlined">{item.icon}</span>
+      <div className="flex flex-1 items-center gap-3.5 min-w-[220px]">
+        <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary border border-primary/15 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+          <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
         </div>
 
         <div className="min-w-0">
-          <h4 className="font-bold text-on-surface truncate">
-            {item.roomCode}
-            <span className="text-on-surface-variant font-normal mx-2">•</span>
-            <span className="text-sm font-medium">{item.roomName}</span>
+          <h4 className="font-bold text-on-surface truncate text-sm sm:text-base flex items-center gap-1.5">
+            <span>{item.roomCode}</span>
+            <span className="text-on-surface-variant/40">•</span>
+            <span className="text-xs sm:text-sm font-medium text-on-surface-variant truncate">{item.roomName}</span>
           </h4>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-            <span className="text-xs text-on-surface-variant flex items-center gap-1">
-              <span className="material-symbols-outlined text-xs">calendar_today</span>
+          <div className="flex flex-wrap gap-2 mt-1.5">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-on-surface-variant bg-surface-container-low/70 px-2.5 py-0.5 rounded-md border border-outline-variant/10">
+              <span className="material-symbols-outlined text-[13px]">calendar_today</span>
               {item.dateLabel}
             </span>
-            <span className="text-xs text-on-surface-variant flex items-center gap-1">
-              <span className="material-symbols-outlined text-xs">schedule</span>
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-on-surface-variant bg-surface-container-low/70 px-2.5 py-0.5 rounded-md border border-outline-variant/10">
+              <span className="material-symbols-outlined text-[13px]">schedule</span>
               {item.time.startTime} - {item.time.endTime}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div className="flex items-center gap-3 shrink-0">
         {chipStatus ? (
           <StatusChip
             status={chipStatus}
-            className="px-3 py-1 text-xs font-medium normal-case tracking-normal"
+            className="px-3 py-1 text-xs font-bold uppercase tracking-wider"
           />
         ) : (
           <span
             className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium border border-outline-variant/20",
+              "px-3 py-1 rounded-full text-xs font-bold border border-outline-variant/20 whitespace-nowrap shrink-0",
               fallbackStyles(item.status)
             )}
           >
             {t(`bookings.status.${item.status}`)}
           </span>
         )}
+
+        <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+          <span>{t("bookings.viewDetails")}</span>
+          <span className="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-0.5">arrow_forward</span>
+        </div>
 
         {item.canCancel && onCancel ? (
           <button
@@ -109,7 +114,7 @@ export function BookingActivityRow({
               e.stopPropagation();
               onCancel(item.id);
             }}
-            className="text-error font-semibold text-xs underline-offset-4 hover:underline"
+            className="text-error font-semibold text-xs px-2.5 py-1 rounded-lg hover:bg-error-container/15 transition-colors"
           >
             {t("bookings.detail.actions.cancelBooking")}
           </button>

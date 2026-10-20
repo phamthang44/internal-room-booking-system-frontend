@@ -5,12 +5,12 @@ interface BookingProTipProps {
 
 export function BookingProTip({ title, message }: BookingProTipProps) {
   return (
-    <section className="bg-primary-container p-6 rounded-2xl text-on-primary-container">
-      <h3 className="text-sm font-bold mb-2 flex items-center gap-2 font-headline">
-        <span className="material-symbols-outlined text-lg">info</span>
-        {title}
-      </h3>
-      <p className="text-xs leading-relaxed opacity-90">
+    <section className="rounded-3xl bg-primary/5 p-5 border border-primary/15 text-on-surface">
+      <div className="flex items-center gap-2 mb-2 text-primary font-bold text-xs font-headline">
+        <span className="material-symbols-outlined text-[18px]">verified</span>
+        <span>{title}</span>
+      </div>
+      <p className="text-xs text-on-surface-variant leading-relaxed font-medium">
         {message}
       </p>
     </section>

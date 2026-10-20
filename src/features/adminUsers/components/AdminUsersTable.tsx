@@ -127,11 +127,11 @@ export function AdminUsersTable({
                   <td className="px-6 py-5">
                     <span
                       className={cn(
-                        "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold",
+                        "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap shrink-0",
                         statusPillClass(String(u.status)),
                       )}
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70 shrink-0" />
                       {t(
                         `adminUsers.status.${String(u.status)}` as "adminUsers.status.ACTIVE",
                       )}

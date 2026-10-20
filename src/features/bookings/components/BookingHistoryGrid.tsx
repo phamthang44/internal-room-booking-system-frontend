@@ -27,17 +27,22 @@ export function BookingHistoryGrid({
         type="button"
         onClick={onCreateNew}
         className={cn(
-          "bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10",
+          "min-h-[160px] bg-gradient-to-b from-surface-container-low/40 to-surface-container-lowest p-6 rounded-3xl border-2 border-dashed border-outline-variant/30",
           "flex flex-col justify-center items-center text-center group cursor-pointer",
-          "hover:bg-surface-container-low transition-colors border-dashed border-outline-variant/40",
+          "hover:border-primary/50 hover:from-primary/5 hover:to-surface-container-lowest transition-all duration-200",
           "focus:outline-none focus:ring-2 focus:ring-primary/20"
         )}
       >
-        <span className="material-symbols-outlined text-3xl text-outline-variant group-hover:text-primary transition-colors">
-          add_circle
-        </span>
-        <span className="text-sm font-bold mt-2 text-on-surface-variant group-hover:text-primary transition-colors">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all shadow-xs">
+          <span className="material-symbols-outlined text-2xl">
+            add
+          </span>
+        </div>
+        <span className="text-sm font-bold mt-3 text-on-surface group-hover:text-primary transition-colors">
           {ctaLabel}
+        </span>
+        <span className="text-xs text-on-surface-variant/70 mt-0.5 font-medium">
+          Khám phá không gian học tập trống
         </span>
       </button>
     </section>

@@ -20,39 +20,42 @@ export function BookingSidebarActions({
   const { t } = useI18n();
 
   return (
-    <section className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-[0_8px_24px_rgba(24,28,30,0.04)]">
-      <h3 className="text-sm font-bold text-on-surface mb-4 uppercase tracking-widest font-headline">
-        {t("bookings.detail.sections.actions")}
-      </h3>
-      <div className="space-y-3">
+    <section className="rounded-3xl bg-surface-container-lowest p-6 border border-outline-variant/15 shadow-[0_4px_20px_-2px_rgba(24,28,30,0.04)]">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="material-symbols-outlined text-[18px] text-primary">bolt</span>
+        <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider font-headline">
+          {t("bookings.detail.sections.actions")}
+        </h3>
+      </div>
+      <div className="space-y-2.5">
         <button
           type="button"
-          className="w-full h-12 bg-primary hover:bg-primary-container text-on-primary font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+          className="w-full h-11 bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-outline-variant/15 active:scale-[0.98]"
         >
-          <span className="material-symbols-outlined">event</span>
+          <span className="material-symbols-outlined text-[18px] text-primary">event</span>
           {t("bookings.detail.actions.addToCalendar")}
         </button>
         <button
           type="button"
-          className="w-full h-12 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+          className="w-full h-11 bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-outline-variant/15 active:scale-[0.98]"
         >
-          <span className="material-symbols-outlined">support_agent</span>
+          <span className="material-symbols-outlined text-[18px] text-on-surface-variant">support_agent</span>
           {t("bookings.detail.actions.contactSupport")}
         </button>
 
-        <div className="pt-4 mt-4 border-t border-outline-variant/10">
+        <div className="pt-3 mt-3 border-t border-outline-variant/15">
           <button
             type="button"
             disabled={!canCancel || isCancelling}
             onClick={onTogglePanel}
             className={cn(
-              "w-full h-12 font-bold rounded-xl transition-all flex items-center justify-center gap-2",
+              "w-full h-11 font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2",
               canCancel && !isCancelling
-                ? "text-error hover:bg-error-container/10"
-                : "text-on-surface-variant/50 cursor-not-allowed"
+                ? "text-error bg-error-container/10 hover:bg-error-container/20 border border-error/20 active:scale-[0.98]"
+                : "text-on-surface-variant/40 bg-surface-container-low/40 cursor-not-allowed"
             )}
           >
-            <span className="material-symbols-outlined">
+            <span className="material-symbols-outlined text-[18px]">
               {isCancelling ? "progress_activity" : "cancel"}
             </span>
             {isCancelling
@@ -61,7 +64,7 @@ export function BookingSidebarActions({
                 ? t("bookings.detail.actions.cancelBookingClose")
                 : t("bookings.detail.actions.cancelBooking")}
           </button>
-          <p className="text-[10px] text-on-surface-variant text-center mt-2 px-4 leading-normal">
+          <p className="text-[11px] text-on-surface-variant/80 text-center mt-2.5 px-2 leading-relaxed">
             {t("bookings.detail.actions.cancelHint")}
           </p>
 

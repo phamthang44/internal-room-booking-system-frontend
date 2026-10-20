@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useRoomFilterStore } from "../hooks/useRoomFilterStore";
 import { buildRoomBookingUrl } from "../utils/roomBookingIntent";
+import { isSlotInPast } from "../utils/slotAvailability";
 import { cn } from "@shared/utils/cn";
 import { useI18n } from "@shared/i18n/useI18n";
 import type { RoomUI } from "../types/classroom.api.types";
@@ -33,15 +34,23 @@ export function AvailabilitySummaryModal({
 
   if (!open || !room) return null;
 
+  const scheduleDate = filters.bookingDate || room.dailySchedule?.date || "";
   const hasQueriedSlots = (room.totalQueriedSlots ?? 0) > 0;
   const slots =
     hasQueriedSlots && room.queriedSlotsStatus && room.queriedSlotsStatus.length > 0
       ? room.queriedSlotsStatus
       : room.dailySchedule?.slots ?? [];
 
+  const availableCount = hasQueriedSlots
+    ? slots.filter((s) => s.isAvailable && !s.isPast && !(scheduleDate && isSlotInPast(scheduleDate, s.startTime))).length
+    : (room.availableSlotCount ?? 0);
+
   const summaryText = hasQueriedSlots && room.totalQueriedSlots != null
-    ? `${room.availableSlotCount ?? 0}/${room.totalQueriedSlots}`
+    ? `${availableCount}/${room.totalQueriedSlots}`
     : "";
+
+  const allSlotsPassed = slots.length > 0 && slots.every((s) => s.isPast || (scheduleDate && isSlotInPast(scheduleDate, s.startTime)));
+  const noAvailableSlots = slots.length > 0 && slots.every((s) => !s.isAvailable || s.isPast || (scheduleDate && isSlotInPast(scheduleDate, s.startTime)));
 
   return (
     <div
@@ -93,7 +102,7 @@ export function AvailabilitySummaryModal({
                 </p>
                 <p className="text-sm font-semibold text-on-surface">
                   {t("rooms.availabilitySummary.freeCount", {
-                    available: room.availableSlotCount ?? 0,
+                    available: availableCount,
                     total: room.totalQueriedSlots,
                   })}
                 </p>
@@ -101,9 +110,9 @@ export function AvailabilitySummaryModal({
               <span
                 className={cn(
                   "shrink-0 rounded-full px-3 py-1 text-xs font-black tracking-wide",
-                  (room.availableSlotCount ?? 0) === room.totalQueriedSlots
+                  availableCount === room.totalQueriedSlots && room.totalQueriedSlots > 0
                     ? "bg-tertiary-fixed/30 text-on-tertiary-fixed-variant"
-                    : (room.availableSlotCount ?? 0) === 0
+                    : availableCount === 0
                       ? "bg-error-container/70 text-error"
                       : "bg-secondary-container text-on-secondary-container"
                 )}
@@ -130,38 +139,51 @@ export function AvailabilitySummaryModal({
               </p>
 
               <div className="space-y-2">
-                {slots.map((s) => (
-                  <div
-                    key={s.slotId}
-                    className={cn(
-                      "flex items-center justify-between gap-3 rounded-xl border px-4 py-3",
-                      s.isAvailable
-                        ? "border-tertiary-fixed/25 bg-tertiary-fixed/10"
-                        : "border-error/20 bg-error-container/35"
-                    )}
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-on-surface">
-                        {s.slotName}
-                      </p>
-                      <p className="text-[11px] text-on-surface-variant">
-                        {formatClock(s.startTime)}–{formatClock(s.endTime)}
-                      </p>
-                    </div>
-                    <span
+                {slots.map((s) => {
+                  const isPast = Boolean(s.isPast || (scheduleDate && isSlotInPast(scheduleDate, s.startTime)));
+                  const isFree = !isPast && s.isAvailable;
+                  return (
+                    <div
+                      key={s.slotId}
                       className={cn(
-                        "shrink-0 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest",
-                        s.isAvailable
-                          ? "bg-tertiary-fixed/25 text-on-tertiary-fixed-variant"
-                          : "bg-error-container/70 text-error"
+                        "flex items-center justify-between gap-3 rounded-xl border px-4 py-3 transition-colors",
+                        isPast
+                          ? "border-outline-variant/30 bg-surface-container-low/60 opacity-80"
+                          : isFree
+                            ? "border-tertiary-fixed/25 bg-tertiary-fixed/10"
+                            : "border-error/20 bg-error-container/35"
                       )}
                     >
-                      {s.isAvailable
-                        ? t("rooms.availabilitySummary.free")
-                        : t("rooms.availabilitySummary.occupied")}
-                    </span>
-                  </div>
-                ))}
+                      <div className="min-w-0">
+                        <p className={cn(
+                          "truncate text-sm font-bold",
+                          isPast ? "text-on-surface-variant" : "text-on-surface"
+                        )}>
+                          {s.slotName}
+                        </p>
+                        <p className="text-[11px] text-on-surface-variant">
+                          {formatClock(s.startTime)}–{formatClock(s.endTime)}
+                        </p>
+                      </div>
+                      <span
+                        className={cn(
+                          "shrink-0 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest",
+                          isPast
+                            ? "bg-surface-container-high text-on-surface-variant"
+                            : isFree
+                              ? "bg-tertiary-fixed/25 text-on-tertiary-fixed-variant"
+                              : "bg-error-container/70 text-error"
+                        )}
+                      >
+                        {isPast
+                          ? t("rooms.availabilitySummary.past")
+                          : isFree
+                            ? t("rooms.availabilitySummary.free")
+                            : t("rooms.availabilitySummary.occupied")}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ) : (
@@ -172,15 +194,32 @@ export function AvailabilitySummaryModal({
             </div>
           )}
 
+          {/* Hint if all slots in the day have passed */}
+          {allSlotsPassed ? (
+            <div className="rounded-2xl border border-outline-variant/30 bg-surface px-4 py-3">
+              <p className="text-xs text-on-surface-variant">
+                {t("rooms.availabilitySummary.allSlotsPassedHint")}
+              </p>
+            </div>
+          ) : null}
+
+          {/* Action button */}
           {room.availability === "available" && (
-            <Link className="action-primary w-full" to={buildRoomBookingUrl(room.id, filters)}>
-              {t("rooms.bookingSearch.continue")}
-              <span aria-hidden="true" className="action-arrow">↗</span>
-            </Link>
+            allSlotsPassed || (hasQueriedSlots && availableCount === 0) ? (
+              <Link className="action-primary w-full text-center" to={`/rooms/${room.id}`}>
+                {t("rooms.card.viewDetails")}
+                <span aria-hidden="true" className="action-arrow">↗</span>
+              </Link>
+            ) : (
+              <Link className="action-primary w-full" to={buildRoomBookingUrl(room.id, filters)}>
+                {t("rooms.bookingSearch.continue")}
+                <span aria-hidden="true" className="action-arrow">↗</span>
+              </Link>
+            )
           )}
 
           {/* Note */}
-          {room.availableForQuery === false ? (
+          {room.availableForQuery === false && !allSlotsPassed ? (
             <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3">
               <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
                 {t("rooms.card.notMatchingFilters")}

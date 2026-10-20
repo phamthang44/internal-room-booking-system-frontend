@@ -22,7 +22,7 @@ export function BookingStatusTabs({
     ];
 
   return (
-    <div className={cn("status-tabs", className)}>
+    <div className={cn("inline-flex items-center gap-1 p-1 rounded-2xl bg-surface-container-low/70 border border-outline-variant/15 shadow-2xs", className)}>
       {TABS.map((tab) => {
         const isActive = tab.value === value;
         return (
@@ -32,10 +32,10 @@ export function BookingStatusTabs({
             aria-pressed={isActive}
             onClick={() => onChange(tab.value)}
             className={cn(
-              "status-tab",
+              "px-3.5 py-1.5 text-xs rounded-xl font-bold transition-all duration-200 select-none whitespace-nowrap",
               isActive
-                ? "font-semibold"
-                : "font-medium text-on-surface-variant hover:text-primary"
+                ? "bg-surface-container-lowest text-primary shadow-xs"
+                : "text-on-surface-variant/70 hover:text-on-surface hover:bg-surface-container-lowest/50"
             )}
           >
             {tab.label}

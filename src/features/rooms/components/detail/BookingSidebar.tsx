@@ -23,29 +23,7 @@ const MAX_SLOT_SELECTION = 2;
 
 const formatTimeShort = (time: string) => time.slice(0, 5);
 
-const parseTimeToParts = (time: string): { hours: number; minutes: number; seconds: number } => {
-  const [h, m, s] = time.split(":");
-  return {
-    hours: Number.parseInt(h ?? "0", 10) || 0,
-    minutes: Number.parseInt(m ?? "0", 10) || 0,
-    seconds: Number.parseInt(s ?? "0", 10) || 0,
-  };
-};
-
-const isSlotInPast = (selectedDateIso: string, slotStartTime: string, now: Date): boolean => {
-  if (!selectedDateIso) return false;
-  const day = parseISO(selectedDateIso);
-  const today = new Date();
-
-  // Entire prior days are always "past".
-  if (isBefore(day, set(today, { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }))) return true;
-  // Future days are never "past".
-  if (!isSameDay(day, today)) return false;
-
-  const { hours, minutes, seconds } = parseTimeToParts(slotStartTime);
-  const slotStart = set(day, { hours, minutes, seconds, milliseconds: 0 });
-  return isBefore(slotStart, now) || slotStart.getTime() === now.getTime();
-};
+import { isSlotInPast } from "../../utils/slotAvailability";
 
 /**
  * When the classroom is not AVAILABLE, every slot is non-bookable — label by room status,

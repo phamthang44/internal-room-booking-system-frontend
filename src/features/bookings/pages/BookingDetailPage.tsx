@@ -94,15 +94,44 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
 
   return (
     <AppLayout>
-      <div className={cn("mx-auto max-w-5xl px-4 py-6 sm:px-6 md:py-8 lg:px-8", className)}>
+      <div className={cn("mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-8 lg:px-8", className)}>
+        {/* Top Header & Breadcrumbs */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={() => navigate("/bookings")}
+            className="inline-flex items-center gap-2 rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all shadow-2xs active:scale-[0.98]"
+          >
+            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            <span>{t("bookings.detail.backToList")}</span>
+          </button>
+
+          {data && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-on-surface-variant font-medium">Trạng thái:</span>
+              <span className="font-mono text-xs font-bold text-on-surface bg-surface-container-low px-2.5 py-1 rounded-lg border border-outline-variant/15">
+                {data.bookingCode}
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Loading / error */}
         {isLoading ? (
-          <div className="rounded-2xl bg-surface-container-lowest p-8 text-on-surface-variant">
-            {t("bookings.detail.loading")}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start animate-pulse">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="h-64 rounded-3xl bg-surface-container-low" />
+              <div className="h-32 rounded-3xl bg-surface-container-low" />
+              <div className="h-48 rounded-3xl bg-surface-container-low" />
+            </div>
+            <div className="space-y-6">
+              <div className="h-56 rounded-3xl bg-surface-container-low" />
+              <div className="h-44 rounded-3xl bg-surface-container-low" />
+            </div>
           </div>
         ) : isError || !data ? (
-          <div className="rounded-2xl border border-error-container bg-error-container/20 p-8 text-error">
-            <p className="font-semibold">{t("bookings.detail.error.title")}</p>
+          <div className="rounded-3xl border border-error-container bg-error-container/20 p-8 text-error shadow-sm">
+            <p className="font-bold text-base">{t("bookings.detail.error.title")}</p>
             <p className="text-sm mt-1 text-on-surface-variant">
               {t("bookings.detail.error.subtitle")}
             </p>
@@ -110,7 +139,7 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
               <button
                 type="button"
                 onClick={() => void refetch()}
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary hover:opacity-90 active:scale-95 transition-all"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary hover:opacity-90 active:scale-95 transition-all shadow-xs"
               >
                 <span className="material-symbols-outlined text-[18px]">refresh</span>
                 {t("bookings.detail.retry")}
@@ -126,9 +155,9 @@ export function BookingDetailPage({ className }: Readonly<BookingDetailPageProps
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
             {/* Left column */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6 sm:space-y-8">
               {/* Summary Card */}
               <BookingSummaryCard
                 status={data.status}

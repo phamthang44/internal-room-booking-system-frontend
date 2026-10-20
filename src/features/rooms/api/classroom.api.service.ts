@@ -16,6 +16,7 @@ import type {
   RoomScheduleSlotUI,
 } from "../types/classroom.api.types";
 import { mapRoomStatusApiToAvailability } from "../utils/roomStatusMapping";
+import { isSlotInPast } from "../utils/slotAvailability";
 
 // ── Deterministic gradient (client-side only, no API field) ──────────────────
 
@@ -31,41 +32,75 @@ const GRADIENTS = [
 const buildGradient = (id: number): string =>
   GRADIENTS[id % GRADIENTS.length];
 
-const adaptSlot = (s: ClassroomScheduleSlotResponse): RoomScheduleSlotUI => ({
-  slotId: s.slotId ?? 0,
-  slotName: s.slotName ?? "",
-  startTime: s.startTime ?? "",
-  endTime: s.endTime ?? "",
-  isAvailable: Boolean(s.isAvailable),
-  status: s.status != null ? String(s.status) : "",
-});
+const adaptSlot = (
+  s: ClassroomScheduleSlotResponse,
+  scheduleDate?: string,
+  now: Date = new Date(),
+): RoomScheduleSlotUI => {
+  const inPast = scheduleDate ? isSlotInPast(scheduleDate, s.startTime ?? "", now) : false;
+  return {
+    slotId: s.slotId ?? 0,
+    slotName: s.slotName ?? "",
+    startTime: s.startTime ?? "",
+    endTime: s.endTime ?? "",
+    isAvailable: Boolean(s.isAvailable) && !inPast,
+    isPast: inPast,
+    status: inPast ? "PAST" : (s.status != null ? String(s.status) : ""),
+  };
+};
 
 // ── Response adapter ──────────────────────────────────────────────────────────
 // Converts the raw API wire type into the UI model consumed by components.
 // This is the ONLY place that touches ClassroomListResponse fields.
 
-const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): RoomUI => ({
-  id: String(raw.classroomId ?? 0),
-  name: raw.roomName ?? "",
-  building: raw.buildingName ?? "",
-  capacity: raw.capacity ?? 0,
-  availability: mapRoomStatusApiToAvailability(raw.status),
-  equipmentNames: (raw.equipments ?? []).map((e: EquipmentResponse) => e.name ?? "").filter(Boolean),
-  equipments: raw.equipments ?? [],
-  roomType: raw.roomType ?? "",
-  imageGradient: buildGradient(raw.classroomId ?? 0),
-  imageUrl: raw.imageUrl ?? undefined,
-  dailySchedule: raw.dailySchedule
-    ? {
-        date: raw.dailySchedule.date ?? "",
-        slots: (raw.dailySchedule.slots ?? []).map(adaptSlot),
-      }
-    : undefined,
-  queriedSlotsStatus: (raw.queriedSlotsStatus ?? []).map(adaptSlot),
-  availableSlotCount: raw.availableSlotCount,
-  totalQueriedSlots: raw.totalQueriedSlots,
-  availableForQuery: raw.isAvailableForQuery ?? raw.availableForQuery,
-});
+const adaptRoom = (raw: NonNullable<ApiResultClassroomList["data"]>[number]): RoomUI => {
+  const scheduleDate = raw.dailySchedule?.date ?? "";
+  const now = new Date();
+
+  const adaptedDailySlots = (raw.dailySchedule?.slots ?? []).map((s) => adaptSlot(s, scheduleDate, now));
+  const adaptedQueriedSlots = (raw.queriedSlotsStatus ?? []).map((s) => adaptSlot(s, scheduleDate, now));
+
+  const hasQueriedSlots = (raw.totalQueriedSlots ?? 0) > 0 || adaptedQueriedSlots.length > 0;
+  const effectiveTotalQueried = raw.totalQueriedSlots ?? (adaptedQueriedSlots.length || undefined);
+  const effectiveAvailableCount = hasQueriedSlots
+    ? adaptedQueriedSlots.filter((s) => s.isAvailable).length
+    : raw.availableSlotCount;
+
+  let effectiveAvailableForQuery = raw.isAvailableForQuery ?? raw.availableForQuery;
+  if (hasQueriedSlots && effectiveTotalQueried != null) {
+    effectiveAvailableForQuery = effectiveAvailableCount === effectiveTotalQueried && effectiveTotalQueried > 0;
+  } else if (adaptedDailySlots.length > 0) {
+    effectiveAvailableForQuery = adaptedDailySlots.some((s) => s.isAvailable);
+  }
+
+  const roomAvailability = mapRoomStatusApiToAvailability(raw.status);
+  if (roomAvailability !== "available") {
+    effectiveAvailableForQuery = false;
+  }
+
+  return {
+    id: String(raw.classroomId ?? 0),
+    name: raw.roomName ?? "",
+    building: raw.buildingName ?? "",
+    capacity: raw.capacity ?? 0,
+    availability: roomAvailability,
+    equipmentNames: (raw.equipments ?? []).map((e: EquipmentResponse) => e.name ?? "").filter(Boolean),
+    equipments: raw.equipments ?? [],
+    roomType: raw.roomType ?? "",
+    imageGradient: buildGradient(raw.classroomId ?? 0),
+    imageUrl: raw.imageUrl ?? undefined,
+    dailySchedule: raw.dailySchedule
+      ? {
+          date: scheduleDate,
+          slots: adaptedDailySlots,
+        }
+      : undefined,
+    queriedSlotsStatus: adaptedQueriedSlots,
+    availableSlotCount: effectiveAvailableCount,
+    totalQueriedSlots: effectiveTotalQueried,
+    availableForQuery: effectiveAvailableForQuery,
+  };
+};
 
 // ── API service ───────────────────────────────────────────────────────────────
 

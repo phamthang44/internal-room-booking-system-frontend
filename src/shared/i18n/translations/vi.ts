@@ -147,7 +147,7 @@ export const vi = {
       sessions: {
         title: "Phiên đăng nhập",
         description: "Bạn hiện đang đăng nhập trên thiết bị này.",
-        active: "Đang hoạt động",
+        active: "Hoạt động",
       },
     },
     appearance: {
@@ -247,6 +247,8 @@ export const vi = {
     brand: "Academic Atelier",
     portal: "Cổng thông tin",
     toggleSidebar: "Đóng/mở thanh điều hướng",
+    collapseSidebar: "Thu gọn",
+    expandSidebar: "Mở rộng",
     dashboard: "Bảng điều khiển",
     browseRooms: "Tìm phòng",
     myBookings: "Đặt phòng của tôi",
@@ -441,7 +443,7 @@ export const vi = {
       pendingRequests: "Yêu cầu đang chờ",
       labels: {
         lifetime: "Toàn bộ",
-        active: "Đang hoạt động",
+        active: "Hoạt động",
         awaiting: "Chờ xử lý",
       },
     },
@@ -522,7 +524,7 @@ export const vi = {
       },
       pendingApprovals: "Yêu cầu chờ duyệt",
       bookingsToday: "Đặt phòng hôm nay",
-      activeRooms: "Phòng đang hoạt động",
+      activeRooms: "Phòng hoạt động",
       activePenalties: "Hình phạt đang áp dụng",
     },
     breakdown: {
@@ -685,6 +687,8 @@ export const vi = {
       daySchedule: "Lịch trong ngày",
       free: "Trống",
       occupied: "Đã bận",
+      past: "Đã qua",
+      allSlotsPassedHint: "Các ca học trong ngày này đã kết thúc hoặc không còn trống.",
       noSlotFilterHint: "Hãy chọn ngày và ca học để xem tóm tắt nhanh.",
       noSchedule: "Không có dữ liệu lịch cho phòng này.",
       roomUnavailableTitle: "Phòng không khả dụng",
@@ -990,7 +994,7 @@ export const vi = {
       searchPlaceholder: "Tìm theo tên phòng hoặc tòa nhà...",
       stats: {
         totalRooms: "Tổng số phòng",
-        activeNow: "Đang hoạt động",
+        activeNow: "Hoạt động",
         underRepair: "Đang sửa chữa",
         avgCapacity: "Sức chứa TB",
         seats: "chỗ",
@@ -1290,7 +1294,7 @@ export const vi = {
       STUDENT: "Sinh viên",
     },
     status: {
-      ACTIVE: "Đang hoạt động",
+      ACTIVE: "Hoạt động",
       INACTIVE: "Không hoạt động",
       BANNED: "Bị khóa",
     },
@@ -1457,7 +1461,7 @@ export const vi = {
     },
     userStatus: {
       AVAILABLE: "Còn trống",
-      ACTIVE: "Đang hoạt động",
+      ACTIVE: "Hoạt động",
     },
   },
   notifications: {
